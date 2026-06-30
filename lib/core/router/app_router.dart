@@ -13,6 +13,9 @@ import '../../features/authentication/presentation/screens/student_onboarding_sc
 import '../../features/applications/presentation/screens/applicants_screen.dart';
 import '../../features/applications/presentation/screens/apply_screen.dart';
 import '../../features/applications/presentation/screens/my_applications_screen.dart';
+import '../../features/bookmarks/presentation/screens/bookmarks_screen.dart';
+import '../../features/dashboard/presentation/screens/startup_dashboard_screen.dart';
+import '../../features/dashboard/presentation/screens/student_dashboard_screen.dart';
 import '../../features/opportunities/domain/entities/opportunity_entity.dart';
 import '../../features/opportunities/presentation/screens/create_edit_opportunity_screen.dart';
 import '../../features/opportunities/presentation/screens/opportunity_detail_screen.dart';
@@ -20,16 +23,6 @@ import '../../features/startup_profile/presentation/screens/edit_startup_profile
 import '../../features/startup_profile/presentation/screens/startup_profile_screen.dart';
 import '../widgets/error_view.dart';
 
-// Placeholder screens used until the full features are implemented
-class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen({required this.title});
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text(title)));
-  }
-}
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -93,11 +86,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/student-dashboard',
-        builder: (_, __) => const _PlaceholderScreen(title: 'Student Dashboard'),
+        builder: (_, __) => const StudentDashboardScreen(),
       ),
       GoRoute(
         path: '/startup-dashboard',
-        builder: (_, __) => const _PlaceholderScreen(title: 'Startup Dashboard'),
+        builder: (_, __) => const StartupDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/bookmarks',
+        builder: (_, __) => const BookmarksScreen(),
       ),
       GoRoute(
         path: '/startup-profile/:ownerId',
