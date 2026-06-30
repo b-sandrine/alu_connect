@@ -10,6 +10,8 @@ import '../../features/authentication/presentation/screens/role_selection_screen
 import '../../features/authentication/presentation/screens/splash_screen.dart';
 import '../../features/authentication/presentation/screens/startup_onboarding_screen.dart';
 import '../../features/authentication/presentation/screens/student_onboarding_screen.dart';
+import '../../features/startup_profile/presentation/screens/edit_startup_profile_screen.dart';
+import '../../features/startup_profile/presentation/screens/startup_profile_screen.dart';
 import '../widgets/error_view.dart';
 
 // Placeholder screens used until the full features are implemented
@@ -90,6 +92,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/startup-dashboard',
         builder: (_, __) => const _PlaceholderScreen(title: 'Startup Dashboard'),
+      ),
+      GoRoute(
+        path: '/startup-profile/:ownerId',
+        builder: (_, state) =>
+            StartupProfileScreen(ownerId: state.pathParameters['ownerId']!),
+      ),
+      GoRoute(
+        path: '/startup-profile/edit',
+        builder: (_, __) => const EditStartupProfileScreen(),
       ),
     ],
     errorBuilder: (_, state) => Scaffold(
