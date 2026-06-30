@@ -10,6 +10,9 @@ import '../../features/authentication/presentation/screens/role_selection_screen
 import '../../features/authentication/presentation/screens/splash_screen.dart';
 import '../../features/authentication/presentation/screens/startup_onboarding_screen.dart';
 import '../../features/authentication/presentation/screens/student_onboarding_screen.dart';
+import '../../features/opportunities/domain/entities/opportunity_entity.dart';
+import '../../features/opportunities/presentation/screens/create_edit_opportunity_screen.dart';
+import '../../features/opportunities/presentation/screens/opportunity_detail_screen.dart';
 import '../../features/startup_profile/presentation/screens/edit_startup_profile_screen.dart';
 import '../../features/startup_profile/presentation/screens/startup_profile_screen.dart';
 import '../widgets/error_view.dart';
@@ -101,6 +104,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/startup-profile/edit',
         builder: (_, __) => const EditStartupProfileScreen(),
+      ),
+      GoRoute(
+        path: '/opportunities/:id',
+        builder: (_, state) =>
+            OpportunityDetailScreen(opportunityId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/opportunities/new',
+        builder: (_, __) => const CreateEditOpportunityScreen(),
+      ),
+      GoRoute(
+        path: '/opportunities/:id/edit',
+        builder: (_, state) => CreateEditOpportunityScreen(
+          existing: state.extra as OpportunityEntity?,
+        ),
       ),
     ],
     errorBuilder: (_, state) => Scaffold(
