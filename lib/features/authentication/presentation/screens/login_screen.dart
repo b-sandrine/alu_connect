@@ -125,7 +125,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.push('/register'),
+                      onPressed: () => context.push('/role-selection'),
                       child: const Text('Sign up'),
                     ),
                   ],
