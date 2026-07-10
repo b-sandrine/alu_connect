@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:async';
 
 import '../../features/authentication/domain/entities/user_entity.dart';
 import '../../features/authentication/presentation/providers/auth_providers.dart';
@@ -23,13 +24,32 @@ import '../../features/startup_profile/presentation/screens/edit_startup_profile
 import '../../features/startup_profile/presentation/screens/startup_profile_screen.dart';
 import '../widgets/error_view.dart';
 
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateProvider);
+  final refreshStream = GoRouterRefreshStream (
+    ref.watch(authRepositoryProvider).authStateChanges,
+  );
+  ref.onDispose(() => refreshStream.dispose());
 
   return GoRouter(
     initialLocation: '/',
+    refreshListenable: refreshStream,
     redirect: (context, state) {
+      final authState = ref.read(authStateProvider);
       final isLoading = authState.isLoading;
       if (isLoading) return '/';
 
@@ -97,18 +117,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const BookmarksScreen(),
       ),
       GoRoute(
-        path: '/startup-profile/:ownerId',
-        builder: (_, state) =>
-            StartupProfileScreen(ownerId: state.pathParameters['ownerId']!),
-      ),
-      GoRoute(
         path: '/startup-profile/edit',
         builder: (_, __) => const EditStartupProfileScreen(),
       ),
       GoRoute(
-        path: '/opportunities/:id',
+        path: '/startup-profile/:ownerId',
         builder: (_, state) =>
-            OpportunityDetailScreen(opportunityId: state.pathParameters['id']!),
+            StartupProfileScreen(ownerId: state.pathParameters['ownerId']!),
       ),
       GoRoute(
         path: '/opportunities/new',
@@ -119,6 +134,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => CreateEditOpportunityScreen(
           existing: state.extra as OpportunityEntity?,
         ),
+      ),
+      GoRoute(
+        path: '/opportunities/:id',
+        builder: (_, state) =>
+            OpportunityDetailScreen(opportunityId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/opportunities/:id/apply',
