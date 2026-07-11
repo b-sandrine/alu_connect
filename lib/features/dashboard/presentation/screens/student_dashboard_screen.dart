@@ -79,7 +79,7 @@ class _HomeTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final opportunitiesAsync = ref.watch(filteredOpportunitiesProvider);
-    final applicationsAsync = ref.watch(applicantApplicationsProvider(userId));
+    final statsAsync = ref.watch(applicantApplicationStatsProvider(userId));
 
     return Scaffold(
       appBar: AppBar(
@@ -104,7 +104,7 @@ class _HomeTab extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            _ApplicationsSummary(applicationsAsync: applicationsAsync),
+            _ApplicationsSummary(statsAsync: statsAsync),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -155,24 +155,14 @@ class _HomeTab extends ConsumerWidget {
 }
 
 class _ApplicationsSummary extends StatelessWidget {
-  const _ApplicationsSummary({required this.applicationsAsync});
+  const _ApplicationsSummary({required this.statsAsync});
 
-  final AsyncValue<dynamic> applicationsAsync;
+  final AsyncValue<ApplicationStats> statsAsync;
 
   @override
   Widget build(BuildContext context) {
-    return applicationsAsync.when(
-      data: (applications) {
-        final list = applications as List;
-        final pending = list.where((a) {
-          final dynamic app = a;
-          return app.isPending as bool;
-        }).length;
-        final accepted = list.where((a) {
-          final dynamic app = a;
-          return app.isAccepted as bool;
-        }).length;
-
+    return statsAsync.when(
+      data: (stats) {
         return InkWell(
           onTap: () => context.push('/my-applications'),
           borderRadius: BorderRadius.circular(16),
@@ -196,11 +186,11 @@ class _ApplicationsSummary extends StatelessWidget {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    _StatItem(label: 'Total', value: '${list.length}'),
+                    _StatItem(label: 'Total', value: '${stats.total}'),
                     const SizedBox(width: 24),
-                    _StatItem(label: 'Pending', value: '$pending'),
+                    _StatItem(label: 'Pending', value: '${stats.pending}'),
                     const SizedBox(width: 24),
-                    _StatItem(label: 'Accepted', value: '$accepted'),
+                    _StatItem(label: 'Accepted', value: '${stats.accepted}'),
                   ],
                 ),
               ],

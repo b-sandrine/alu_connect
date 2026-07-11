@@ -39,6 +39,20 @@ final startupApplicationsProvider =
       .watchApplicationsByStartup(startupId);
 });
 
+typedef ApplicationStats = ({int total, int pending, int accepted});
+
+final applicantApplicationStatsProvider =
+    Provider.family<AsyncValue<ApplicationStats>, String>((ref, applicantId) {
+  final applicationsAsync = ref.watch(applicantApplicationsProvider(applicantId));
+  return applicationsAsync.whenData((applications) {
+    return (
+      total: applications.length,
+      pending: applications.where((a) => a.isPending).length,
+      accepted: applications.where((a) => a.isAccepted).length,
+    );
+  });
+});
+
 final hasAppliedProvider =
     FutureProvider.family<bool, ({String applicantId, String opportunityId})>(
   (ref, args) => ref.watch(applicationRepositoryProvider).hasApplied(

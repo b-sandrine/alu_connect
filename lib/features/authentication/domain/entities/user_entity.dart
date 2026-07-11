@@ -1,37 +1,23 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'user_entity.freezed.dart';
 
 enum UserRole { student, startup }
 
-class UserEntity extends Equatable {
-  const UserEntity({
-    required this.id,
-    required this.email,
-    required this.displayName,
-    required this.role,
-    this.photoUrl,
-    this.hasCompletedOnboarding = false,
-    required this.createdAt,
-  });
+@freezed
+abstract class UserEntity with _$UserEntity {
+  const UserEntity._();
 
-  final String id;
-  final String email;
-  final String displayName;
-  final UserRole role;
-  final String? photoUrl;
-  final bool hasCompletedOnboarding;
-  final DateTime createdAt;
+  const factory UserEntity({
+    required String id,
+    required String email,
+    required String displayName,
+    required UserRole role,
+    String? photoUrl,
+    @Default(false) bool hasCompletedOnboarding,
+    required DateTime createdAt,
+  }) = _UserEntity;
 
   bool get isStudent => role == UserRole.student;
   bool get isStartup => role == UserRole.startup;
-
-  @override
-  List<Object?> get props => [
-        id,
-        email,
-        displayName,
-        role,
-        photoUrl,
-        hasCompletedOnboarding,
-        createdAt,
-      ];
 }

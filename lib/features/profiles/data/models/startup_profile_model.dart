@@ -1,21 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/startup_profile_entity.dart';
 
-class StartupProfileModel extends StartupProfileEntity {
+class StartupProfileModel {
   const StartupProfileModel({
-    required super.id,
-    required super.ownerId,
-    required super.companyName,
-    required super.tagline,
-    required super.description,
-    required super.industry,
-    required super.location,
-    super.website,
-    super.logoUrl,
-    super.isVerified,
-    required super.createdAt,
-    required super.updatedAt,
+    required this.id,
+    required this.ownerId,
+    required this.companyName,
+    required this.tagline,
+    required this.description,
+    required this.industry,
+    required this.location,
+    this.website,
+    this.logoUrl,
+    this.isVerified = false,
+    required this.createdAt,
+    required this.updatedAt,
   });
+
+  final String id;
+  final String ownerId;
+  final String companyName;
+  final String tagline;
+  final String description;
+  final String industry;
+  final String location;
+  final String? website;
+  final String? logoUrl;
+  final bool isVerified;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   factory StartupProfileModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -35,6 +48,23 @@ class StartupProfileModel extends StartupProfileEntity {
     );
   }
 
+  factory StartupProfileModel.fromEntity(StartupProfileEntity e) {
+    return StartupProfileModel(
+      id: e.id,
+      ownerId: e.ownerId,
+      companyName: e.companyName,
+      tagline: e.tagline,
+      description: e.description,
+      industry: e.industry,
+      location: e.location,
+      website: e.website,
+      logoUrl: e.logoUrl,
+      isVerified: e.isVerified,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+    );
+  }
+
   Map<String, dynamic> toFirestore() {
     return {
       'ownerId': ownerId,
@@ -49,6 +79,23 @@ class StartupProfileModel extends StartupProfileEntity {
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
+  }
+
+  StartupProfileEntity toEntity() {
+    return StartupProfileEntity(
+      id: id,
+      ownerId: ownerId,
+      companyName: companyName,
+      tagline: tagline,
+      description: description,
+      industry: industry,
+      location: location,
+      website: website,
+      logoUrl: logoUrl,
+      isVerified: isVerified,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
   }
 
   StartupProfileModel copyWith({

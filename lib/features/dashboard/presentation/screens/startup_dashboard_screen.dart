@@ -10,9 +10,9 @@ import '../../../../features/applications/domain/entities/application_entity.dar
 import '../../../../features/applications/presentation/providers/application_providers.dart';
 import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
-import '../../../../features/opportunities/domain/entities/opportunity_entity.dart';
 import '../../../../features/opportunities/presentation/providers/opportunity_providers.dart';
-import '../../../../features/startup_profile/presentation/providers/startup_profile_providers.dart';
+import '../../../../features/profiles/presentation/providers/startup_profile_providers.dart';
+import '../providers/dashboard_stats_provider.dart';
 
 class StartupDashboardScreen extends ConsumerStatefulWidget {
   const StartupDashboardScreen({super.key});
@@ -77,8 +77,6 @@ class _HomeTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final opportunitiesAsync =
-        ref.watch(opportunitiesByStartupProvider(userId));
     final applicationsAsync =
         ref.watch(startupApplicationsProvider(userId));
     final profileAsync =
@@ -99,10 +97,7 @@ class _HomeTab extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _StatsRow(
-            opportunitiesAsync: opportunitiesAsync,
-            applicationsAsync: applicationsAsync,
-          ),
+          _StatsRow(statsAsync: ref.watch(startupDashboardStatsProvider(userId))),
           const SizedBox(height: 24),
           _RecentApplicationsSection(
             applicationsAsync: applicationsAsync,
@@ -115,22 +110,16 @@ class _HomeTab extends ConsumerWidget {
 }
 
 class _StatsRow extends StatelessWidget {
-  const _StatsRow({
-    required this.opportunitiesAsync,
-    required this.applicationsAsync,
-  });
+  const _StatsRow({required this.statsAsync});
 
-  final AsyncValue<List<OpportunityEntity>> opportunitiesAsync;
-  final AsyncValue<List<ApplicationEntity>> applicationsAsync;
+  final AsyncValue<StartupDashboardStats> statsAsync;
 
   @override
   Widget build(BuildContext context) {
-    final totalPostings = opportunitiesAsync.valueOrNull?.length ?? 0;
-    final totalApplicants = applicationsAsync.valueOrNull?.length ?? 0;
-    final pendingReview = applicationsAsync.valueOrNull
-            ?.where((a) => a.isPending)
-            .length ??
-        0;
+    final stats = statsAsync.valueOrNull;
+    final totalPostings = stats?.totalPostings ?? 0;
+    final totalApplicants = stats?.totalApplicants ?? 0;
+    final pendingReview = stats?.pendingReview ?? 0;
 
     return Row(
       children: [

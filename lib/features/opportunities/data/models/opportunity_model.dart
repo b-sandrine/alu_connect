@@ -1,25 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/opportunity_entity.dart';
 
-class OpportunityModel extends OpportunityEntity {
+class OpportunityModel {
   const OpportunityModel({
-    required super.id,
-    required super.startupId,
-    required super.startupName,
-    super.startupLogoUrl,
-    required super.title,
-    required super.description,
-    required super.type,
-    required super.category,
-    required super.requiredSkills,
-    required super.location,
-    super.isRemote,
-    required super.deadline,
-    super.compensation,
-    required super.createdAt,
-    required super.updatedAt,
-    super.isActive,
+    required this.id,
+    required this.startupId,
+    required this.startupName,
+    this.startupLogoUrl,
+    required this.title,
+    required this.description,
+    required this.type,
+    required this.category,
+    required this.requiredSkills,
+    required this.location,
+    this.isRemote = false,
+    required this.deadline,
+    this.compensation,
+    required this.createdAt,
+    required this.updatedAt,
+    this.isActive = true,
   });
+
+  final String id;
+  final String startupId;
+  final String startupName;
+  final String? startupLogoUrl;
+  final String title;
+  final String description;
+  final OpportunityType type;
+  final OpportunityCategory category;
+  final List<String> requiredSkills;
+  final String location;
+  final bool isRemote;
+  final DateTime deadline;
+  final String? compensation;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final bool isActive;
 
   factory OpportunityModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -43,6 +60,27 @@ class OpportunityModel extends OpportunityEntity {
     );
   }
 
+  factory OpportunityModel.fromEntity(OpportunityEntity e) {
+    return OpportunityModel(
+      id: e.id,
+      startupId: e.startupId,
+      startupName: e.startupName,
+      startupLogoUrl: e.startupLogoUrl,
+      title: e.title,
+      description: e.description,
+      type: e.type,
+      category: e.category,
+      requiredSkills: e.requiredSkills,
+      location: e.location,
+      isRemote: e.isRemote,
+      deadline: e.deadline,
+      compensation: e.compensation,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+      isActive: e.isActive,
+    );
+  }
+
   Map<String, dynamic> toFirestore() {
     return {
       'startupId': startupId,
@@ -61,5 +99,26 @@ class OpportunityModel extends OpportunityEntity {
       'updatedAt': Timestamp.fromDate(updatedAt),
       'isActive': isActive,
     };
+  }
+
+  OpportunityEntity toEntity() {
+    return OpportunityEntity(
+      id: id,
+      startupId: startupId,
+      startupName: startupName,
+      startupLogoUrl: startupLogoUrl,
+      title: title,
+      description: description,
+      type: type,
+      category: category,
+      requiredSkills: requiredSkills,
+      location: location,
+      isRemote: isRemote,
+      deadline: deadline,
+      compensation: compensation,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      isActive: isActive,
+    );
   }
 }

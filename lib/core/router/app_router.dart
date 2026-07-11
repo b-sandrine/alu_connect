@@ -20,8 +20,8 @@ import '../../features/dashboard/presentation/screens/student_dashboard_screen.d
 import '../../features/opportunities/domain/entities/opportunity_entity.dart';
 import '../../features/opportunities/presentation/screens/create_edit_opportunity_screen.dart';
 import '../../features/opportunities/presentation/screens/opportunity_detail_screen.dart';
-import '../../features/startup_profile/presentation/screens/edit_startup_profile_screen.dart';
-import '../../features/startup_profile/presentation/screens/startup_profile_screen.dart';
+import '../../features/profiles/presentation/screens/edit_startup_profile_screen.dart';
+import '../../features/profiles/presentation/screens/startup_profile_screen.dart';
 import '../widgets/error_view.dart';
 
 class GoRouterRefreshNotifier extends ChangeNotifier {

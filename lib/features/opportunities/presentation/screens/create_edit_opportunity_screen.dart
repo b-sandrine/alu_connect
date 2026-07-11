@@ -7,7 +7,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
-import '../../../../features/startup_profile/presentation/providers/startup_profile_providers.dart';
+import '../../../../features/profiles/presentation/providers/startup_profile_providers.dart';
 import '../../domain/entities/opportunity_entity.dart';
 import '../providers/opportunity_providers.dart';
 

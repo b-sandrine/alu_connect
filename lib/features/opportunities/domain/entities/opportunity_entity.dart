@@ -1,85 +1,50 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'opportunity_entity.freezed.dart';
 
 enum OpportunityType { internship, partTime, fullTime, contract, volunteer }
 
 enum OpportunityCategory { engineering, design, marketing, business, research, other }
 
-class OpportunityEntity extends Equatable {
-  const OpportunityEntity({
-    required this.id,
-    required this.startupId,
-    required this.startupName,
-    this.startupLogoUrl,
-    required this.title,
-    required this.description,
-    required this.type,
-    required this.category,
-    required this.requiredSkills,
-    required this.location,
-    this.isRemote = false,
-    required this.deadline,
-    this.compensation,
-    required this.createdAt,
-    required this.updatedAt,
-    this.isActive = true,
-  });
+@freezed
+abstract class OpportunityEntity with _$OpportunityEntity {
+  const OpportunityEntity._();
 
-  final String id;
-  final String startupId;
-  final String startupName;
-  final String? startupLogoUrl;
-  final String title;
-  final String description;
-  final OpportunityType type;
-  final OpportunityCategory category;
-  final List<String> requiredSkills;
-  final String location;
-  final bool isRemote;
-  final DateTime deadline;
-  final String? compensation;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final bool isActive;
+  const factory OpportunityEntity({
+    required String id,
+    required String startupId,
+    required String startupName,
+    String? startupLogoUrl,
+    required String title,
+    required String description,
+    required OpportunityType type,
+    required OpportunityCategory category,
+    required List<String> requiredSkills,
+    required String location,
+    @Default(false) bool isRemote,
+    required DateTime deadline,
+    String? compensation,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    @Default(true) bool isActive,
+  }) = _OpportunityEntity;
 
   bool get isExpired => deadline.isBefore(DateTime.now());
-
-  @override
-  List<Object?> get props => [
-        id, startupId, startupName, startupLogoUrl, title, description,
-        type, category, requiredSkills, location, isRemote, deadline,
-        compensation, createdAt, updatedAt, isActive,
-      ];
 }
 
-class OpportunityFilter {
-  const OpportunityFilter({
-    this.query,
-    this.type,
-    this.category,
-    this.isRemote,
-  });
+@freezed
+abstract class OpportunityFilter with _$OpportunityFilter {
+  const OpportunityFilter._();
 
-  final String? query;
-  final OpportunityType? type;
-  final OpportunityCategory? category;
-  final bool? isRemote;
-
-  bool get hasActiveFilters =>
-      query != null || type != null || category != null || isRemote != null;
-
-  OpportunityFilter copyWith({
+  const factory OpportunityFilter({
     String? query,
     OpportunityType? type,
     OpportunityCategory? category,
     bool? isRemote,
-  }) {
-    return OpportunityFilter(
-      query: query ?? this.query,
-      type: type ?? this.type,
-      category: category ?? this.category,
-      isRemote: isRemote ?? this.isRemote,
-    );
-  }
+  }) = _OpportunityFilter;
+
+  bool get hasActiveFilters =>
+      query != null || type != null || category != null || isRemote != null;
 
   OpportunityFilter clear() => const OpportunityFilter();
 }

@@ -8,17 +8,19 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDatasource _datasource;
 
   @override
-  Stream<UserEntity?> get authStateChanges => _datasource.authStateChanges;
+  Stream<UserEntity?> get authStateChanges =>
+      _datasource.authStateChanges.map((model) => model?.toEntity());
 
   @override
   Future<UserEntity> signInWithEmailAndPassword({
     required String email,
     required String password,
-  }) {
-    return _datasource.signInWithEmailAndPassword(
+  }) async {
+    final model = await _datasource.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
+    return model.toEntity();
   }
 
   @override
@@ -27,20 +29,24 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String displayName,
     required UserRole role,
-  }) {
-    return _datasource.createUserWithEmailAndPassword(
+  }) async {
+    final model = await _datasource.createUserWithEmailAndPassword(
       email: email,
       password: password,
       displayName: displayName,
       role: role,
     );
+    return model.toEntity();
   }
 
   @override
   Future<void> signOut() => _datasource.signOut();
 
   @override
-  Future<UserEntity?> getCurrentUser() => _datasource.getCurrentUser();
+  Future<UserEntity?> getCurrentUser() async {
+    final model = await _datasource.getCurrentUser();
+    return model?.toEntity();
+  }
 
   @override
   Future<void> completeOnboarding(String userId) =>

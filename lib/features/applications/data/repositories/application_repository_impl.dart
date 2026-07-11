@@ -9,8 +9,12 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   final ApplicationRemoteDatasource _datasource;
 
   @override
-  Future<ApplicationEntity> submitApplication(ApplicationEntity application) =>
-      _datasource.submitApplication(_toModel(application));
+  Future<ApplicationEntity> submitApplication(ApplicationEntity application) async {
+    final model = await _datasource.submitApplication(
+      ApplicationModel.fromEntity(application),
+    );
+    return model.toEntity();
+  }
 
   @override
   Future<bool> hasApplied({
@@ -25,16 +29,22 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   @override
   Stream<List<ApplicationEntity>> watchApplicationsByApplicant(
           String applicantId) =>
-      _datasource.watchApplicationsByApplicant(applicantId);
+      _datasource
+          .watchApplicationsByApplicant(applicantId)
+          .map((models) => models.map((m) => m.toEntity()).toList());
 
   @override
   Stream<List<ApplicationEntity>> watchApplicationsByOpportunity(
           String opportunityId) =>
-      _datasource.watchApplicationsByOpportunity(opportunityId);
+      _datasource
+          .watchApplicationsByOpportunity(opportunityId)
+          .map((models) => models.map((m) => m.toEntity()).toList());
 
   @override
   Stream<List<ApplicationEntity>> watchApplicationsByStartup(String startupId) =>
-      _datasource.watchApplicationsByStartup(startupId);
+      _datasource
+          .watchApplicationsByStartup(startupId)
+          .map((models) => models.map((m) => m.toEntity()).toList());
 
   @override
   Future<void> updateApplicationStatus({
@@ -47,21 +57,4 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
         status: status,
         reviewNote: reviewNote,
       );
-
-  ApplicationModel _toModel(ApplicationEntity e) {
-    return ApplicationModel(
-      id: e.id,
-      opportunityId: e.opportunityId,
-      opportunityTitle: e.opportunityTitle,
-      startupId: e.startupId,
-      startupName: e.startupName,
-      applicantId: e.applicantId,
-      applicantName: e.applicantName,
-      coverLetter: e.coverLetter,
-      status: e.status,
-      appliedAt: e.appliedAt,
-      reviewedAt: e.reviewedAt,
-      reviewNote: e.reviewNote,
-    );
-  }
 }

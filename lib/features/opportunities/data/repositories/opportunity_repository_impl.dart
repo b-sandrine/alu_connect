@@ -9,47 +9,39 @@ class OpportunityRepositoryImpl implements OpportunityRepository {
   final OpportunityRemoteDatasource _datasource;
 
   @override
-  Stream<List<OpportunityEntity>> watchOpportunities() =>
-      _datasource.watchOpportunities();
+  Stream<List<OpportunityEntity>> watchOpportunities() => _datasource
+      .watchOpportunities()
+      .map((models) => models.map((m) => m.toEntity()).toList());
 
   @override
   Stream<List<OpportunityEntity>> watchOpportunitiesByStartup(String startupId) =>
-      _datasource.watchOpportunitiesByStartup(startupId);
+      _datasource
+          .watchOpportunitiesByStartup(startupId)
+          .map((models) => models.map((m) => m.toEntity()).toList());
 
   @override
-  Future<OpportunityEntity> getOpportunityById(String id) =>
-      _datasource.getOpportunityById(id);
+  Future<OpportunityEntity> getOpportunityById(String id) async {
+    final model = await _datasource.getOpportunityById(id);
+    return model.toEntity();
+  }
 
   @override
-  Future<OpportunityEntity> createOpportunity(OpportunityEntity opportunity) =>
-      _datasource.createOpportunity(_toModel(opportunity));
+  Future<OpportunityEntity> createOpportunity(OpportunityEntity opportunity) async {
+    final model = await _datasource.createOpportunity(
+      OpportunityModel.fromEntity(opportunity),
+    );
+    return model.toEntity();
+  }
 
   @override
-  Future<OpportunityEntity> updateOpportunity(OpportunityEntity opportunity) =>
-      _datasource.updateOpportunity(_toModel(opportunity));
+  Future<OpportunityEntity> updateOpportunity(OpportunityEntity opportunity) async {
+    final model = await _datasource.updateOpportunity(
+      OpportunityModel.fromEntity(opportunity),
+    );
+    return model.toEntity();
+  }
 
   @override
   Future<void> deleteOpportunity(String id) =>
       _datasource.deleteOpportunity(id);
-
-  OpportunityModel _toModel(OpportunityEntity e) {
-    return OpportunityModel(
-      id: e.id,
-      startupId: e.startupId,
-      startupName: e.startupName,
-      startupLogoUrl: e.startupLogoUrl,
-      title: e.title,
-      description: e.description,
-      type: e.type,
-      category: e.category,
-      requiredSkills: e.requiredSkills,
-      location: e.location,
-      isRemote: e.isRemote,
-      deadline: e.deadline,
-      compensation: e.compensation,
-      createdAt: e.createdAt,
-      updatedAt: e.updatedAt,
-      isActive: e.isActive,
-    );
-  }
 }
