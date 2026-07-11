@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:async';
 
 import '../../features/authentication/domain/entities/user_entity.dart';
 import '../../features/authentication/presentation/providers/auth_providers.dart';
@@ -24,30 +23,19 @@ import '../../features/startup_profile/presentation/screens/edit_startup_profile
 import '../../features/startup_profile/presentation/screens/startup_profile_screen.dart';
 import '../widgets/error_view.dart';
 
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
-  }
-
-  late final StreamSubscription<dynamic> _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
+class GoRouterRefreshNotifier extends ChangeNotifier {
+  void refresh() => notifyListeners();
 }
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final refreshStream = GoRouterRefreshStream (
-    ref.watch(authRepositoryProvider).authStateChanges,
-  );
-  ref.onDispose(() => refreshStream.dispose());
+  final refreshNotifier = GoRouterRefreshNotifier();
+  ref.listen(authStateProvider, (previous, next) {
+    refreshNotifier.refresh();
+  });
 
   return GoRouter(
     initialLocation: '/',
-    refreshListenable: refreshStream,
+    refreshListenable: refreshNotifier,
     redirect: (context, state) {
       final authState = ref.read(authStateProvider);
       final isLoading = authState.isLoading;
@@ -56,8 +44,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final user = authState.valueOrNull;
       final location = state.uri.toString();
 
-      final publicRoutes = ['/', '/login', '/register', '/role-selection'];
-      final isPublic = publicRoutes.any((r) => location.startsWith(r));
+      final publicRoutes = ['/login', '/register', '/role-selection'];
+      final isPublic = publicRoutes.contains(location);
 
       if (user == null) {
         return isPublic ? null : '/login';
@@ -70,9 +58,30 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return onboardingRoute;
       }
 
-      if (isPublic || location.contains('onboarding')) {
+      if (location == '/' || isPublic || location.contains('onboarding')) {
         return user.isStudent ? '/student-dashboard' : '/startup-dashboard';
       }
+
+      final isEditOpportunity =
+          location.startsWith('/opportunities/') && location.endsWith('/edit');
+      final isApplicantsView =
+          location.startsWith('/opportunities/') && location.endsWith('/applicants');
+      final isApplyView =
+          location.startsWith('/opportunities/') && location.endsWith('/apply');
+
+      final startupOnly = location == '/startup-dashboard' ||
+          location == '/opportunities/new' ||
+          location == '/startup-profile/edit' ||
+          isEditOpportunity ||
+          isApplicantsView;
+
+      final studentOnly = location == '/student-dashboard' ||
+          location == '/my-applications' ||
+          location == '/bookmarks' ||
+          isApplyView;
+
+      if (user.isStudent && startupOnly) return '/student-dashboard';
+      if (user.isStartup && studentOnly) return '/startup-dashboard';
 
       return null;
     },
