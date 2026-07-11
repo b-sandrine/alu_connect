@@ -10,6 +10,7 @@ class UserModel {
     this.photoUrl,
     this.hasCompletedOnboarding = false,
     required this.createdAt,
+    this.lastActiveAt,
   });
 
   final String id;
@@ -19,6 +20,7 @@ class UserModel {
   final String? photoUrl;
   final bool hasCompletedOnboarding;
   final DateTime createdAt;
+  final DateTime? lastActiveAt;
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -30,6 +32,9 @@ class UserModel {
       photoUrl: data['photoUrl'] as String?,
       hasCompletedOnboarding: data['hasCompletedOnboarding'] as bool? ?? false,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
+      lastActiveAt: data['lastActiveAt'] != null
+          ? (data['lastActiveAt'] as Timestamp).toDate()
+          : null,
     );
   }
 
@@ -41,6 +46,8 @@ class UserModel {
       'photoUrl': photoUrl,
       'hasCompletedOnboarding': hasCompletedOnboarding,
       'createdAt': Timestamp.fromDate(createdAt),
+      'lastActiveAt':
+          lastActiveAt != null ? Timestamp.fromDate(lastActiveAt!) : null,
     };
   }
 
@@ -53,6 +60,7 @@ class UserModel {
       photoUrl: photoUrl,
       hasCompletedOnboarding: hasCompletedOnboarding,
       createdAt: createdAt,
+      lastActiveAt: lastActiveAt,
     );
   }
 
@@ -69,6 +77,7 @@ class UserModel {
       photoUrl: photoUrl ?? this.photoUrl,
       hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
       createdAt: createdAt,
+      lastActiveAt: lastActiveAt,
     );
   }
 }

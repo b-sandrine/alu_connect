@@ -105,5 +105,34 @@ service cloud.firestore {
     match /bookmarks/{userId} {
       allow read, write: if isSelf(userId);
     }
+
+    // conversations/{id} — 1:1 thread between a student and a startup.
+    // Doc ID is deterministic (sorted participant UIDs joined with '_'),
+    // not auto-generated, so participantIds is derivable from the ID itself;
+    // the check below still guards against writes/reads by anyone else.
+    match /conversations/{conversationId} {
+      allow read, update: if isSignedIn()
+        && request.auth.uid in resource.data.participantIds;
+
+      allow create: if isSignedIn()
+        && request.auth.uid in request.resource.data.participantIds
+        && request.resource.data.participantIds.size() == 2;
+
+      allow delete: if false;
+
+      // messages/{id} — immutable once sent; only a participant of the
+      // parent conversation can read, and only the sender (who must also be
+      // a participant) can create.
+      match /messages/{messageId} {
+        allow read: if isSignedIn()
+          && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds;
+
+        allow create: if isSignedIn()
+          && request.resource.data.senderId == request.auth.uid
+          && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds;
+
+        allow update, delete: if false;
+      }
+    }
   }
 }

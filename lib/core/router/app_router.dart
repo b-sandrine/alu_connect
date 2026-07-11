@@ -19,6 +19,9 @@ import '../../features/applications/presentation/screens/my_applications_screen.
 import '../../features/bookmarks/presentation/screens/bookmarks_screen.dart';
 import '../../features/dashboard/presentation/screens/startup_dashboard_screen.dart';
 import '../../features/dashboard/presentation/screens/student_dashboard_screen.dart';
+import '../../features/messaging/presentation/providers/presence_heartbeat_provider.dart';
+import '../../features/messaging/presentation/screens/chat_screen.dart';
+import '../../features/messaging/presentation/screens/conversations_screen.dart';
 import '../../features/opportunities/domain/entities/opportunity_entity.dart';
 import '../../features/opportunities/presentation/screens/create_edit_opportunity_screen.dart';
 import '../../features/opportunities/presentation/screens/opportunity_detail_screen.dart';
@@ -35,6 +38,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.listen(authStateProvider, (previous, next) {
     refreshNotifier.refresh();
   });
+  ref.watch(presenceHeartbeatProvider);
 
   return GoRouter(
     initialLocation: '/',
@@ -179,6 +183,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/applications/:id',
         builder: (_, state) =>
             ApplicationDetailScreen(applicationId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/messages',
+        builder: (_, __) => const ConversationsScreen(),
+      ),
+      GoRoute(
+        path: '/messages/:id',
+        builder: (_, state) =>
+            ChatScreen(conversationId: state.pathParameters['id']!),
       ),
     ],
     errorBuilder: (_, state) => Scaffold(

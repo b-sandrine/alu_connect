@@ -11,6 +11,8 @@ import '../../../../features/applications/presentation/providers/application_pro
 import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../../../features/applications/presentation/widgets/application_timeline.dart';
+import '../../../../features/messaging/presentation/providers/messaging_providers.dart';
+import '../../../../features/messaging/presentation/screens/conversations_screen.dart';
 import '../../../../features/opportunities/presentation/providers/opportunity_providers.dart';
 import '../../../../features/profiles/presentation/providers/startup_profile_providers.dart';
 import '../providers/dashboard_stats_provider.dart';
@@ -32,10 +34,13 @@ class _StartupDashboardScreenState
     final user = ref.watch(authStateProvider).value;
     if (user == null) return const SizedBox.shrink();
 
+    final unreadCount = ref.watch(unreadConversationCountProvider(user.id));
+
     final screens = [
       _HomeTab(userId: user.id),
       _OpportunitiesTab(userId: user.id),
       _ApplicationsTab(startupId: user.id),
+      const ConversationsScreen(),
       _ProfileTab(userId: user.id, userName: user.displayName),
     ];
 
@@ -44,23 +49,32 @@ class _StartupDashboardScreenState
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
-        destinations: const [
-          NavigationDestination(
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.dashboard_outlined),
             selectedIcon: Icon(Icons.dashboard),
             label: 'Overview',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.work_outline),
             selectedIcon: Icon(Icons.work),
             label: 'Postings',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.people_outline),
             selectedIcon: Icon(Icons.people),
             label: 'Applicants',
           ),
           NavigationDestination(
+            icon: Badge(
+              isLabelVisible: unreadCount > 0,
+              label: Text('$unreadCount'),
+              child: const Icon(Icons.chat_bubble_outline),
+            ),
+            selectedIcon: const Icon(Icons.chat_bubble),
+            label: 'Messages',
+          ),
+          const NavigationDestination(
             icon: Icon(Icons.business_outlined),
             selectedIcon: Icon(Icons.business),
             label: 'Profile',

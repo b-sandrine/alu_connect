@@ -21,3 +21,8 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 final authStateProvider = StreamProvider<UserEntity?>((ref) {
   return ref.watch(authRepositoryProvider).authStateChanges;
 });
+
+final userByIdProvider =
+    StreamProvider.family<UserEntity?, String>((ref, userId) {
+  return ref.watch(authRepositoryProvider).watchUserById(userId);
+});

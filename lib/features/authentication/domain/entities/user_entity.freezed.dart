@@ -23,6 +23,7 @@ mixin _$UserEntity {
   String? get photoUrl => throw _privateConstructorUsedError;
   bool get hasCompletedOnboarding => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime? get lastActiveAt => throw _privateConstructorUsedError;
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -44,7 +45,8 @@ abstract class $UserEntityCopyWith<$Res> {
       UserRole role,
       String? photoUrl,
       bool hasCompletedOnboarding,
-      DateTime createdAt});
+      DateTime createdAt,
+      DateTime? lastActiveAt});
 }
 
 /// @nodoc
@@ -69,6 +71,7 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
     Object? photoUrl = freezed,
     Object? hasCompletedOnboarding = null,
     Object? createdAt = null,
+    Object? lastActiveAt = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -99,6 +102,10 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      lastActiveAt: freezed == lastActiveAt
+          ? _value.lastActiveAt
+          : lastActiveAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ) as $Val);
   }
 }
@@ -118,7 +125,8 @@ abstract class _$$UserEntityImplCopyWith<$Res>
       UserRole role,
       String? photoUrl,
       bool hasCompletedOnboarding,
-      DateTime createdAt});
+      DateTime createdAt,
+      DateTime? lastActiveAt});
 }
 
 /// @nodoc
@@ -141,6 +149,7 @@ class __$$UserEntityImplCopyWithImpl<$Res>
     Object? photoUrl = freezed,
     Object? hasCompletedOnboarding = null,
     Object? createdAt = null,
+    Object? lastActiveAt = freezed,
   }) {
     return _then(_$UserEntityImpl(
       id: null == id
@@ -171,6 +180,10 @@ class __$$UserEntityImplCopyWithImpl<$Res>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      lastActiveAt: freezed == lastActiveAt
+          ? _value.lastActiveAt
+          : lastActiveAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ));
   }
 }
@@ -185,7 +198,8 @@ class _$UserEntityImpl extends _UserEntity {
       required this.role,
       this.photoUrl,
       this.hasCompletedOnboarding = false,
-      required this.createdAt})
+      required this.createdAt,
+      this.lastActiveAt})
       : super._();
 
   @override
@@ -203,10 +217,12 @@ class _$UserEntityImpl extends _UserEntity {
   final bool hasCompletedOnboarding;
   @override
   final DateTime createdAt;
+  @override
+  final DateTime? lastActiveAt;
 
   @override
   String toString() {
-    return 'UserEntity(id: $id, email: $email, displayName: $displayName, role: $role, photoUrl: $photoUrl, hasCompletedOnboarding: $hasCompletedOnboarding, createdAt: $createdAt)';
+    return 'UserEntity(id: $id, email: $email, displayName: $displayName, role: $role, photoUrl: $photoUrl, hasCompletedOnboarding: $hasCompletedOnboarding, createdAt: $createdAt, lastActiveAt: $lastActiveAt)';
   }
 
   @override
@@ -224,12 +240,14 @@ class _$UserEntityImpl extends _UserEntity {
             (identical(other.hasCompletedOnboarding, hasCompletedOnboarding) ||
                 other.hasCompletedOnboarding == hasCompletedOnboarding) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.lastActiveAt, lastActiveAt) ||
+                other.lastActiveAt == lastActiveAt));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, id, email, displayName, role,
-      photoUrl, hasCompletedOnboarding, createdAt);
+      photoUrl, hasCompletedOnboarding, createdAt, lastActiveAt);
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -248,7 +266,8 @@ abstract class _UserEntity extends UserEntity {
       required final UserRole role,
       final String? photoUrl,
       final bool hasCompletedOnboarding,
-      required final DateTime createdAt}) = _$UserEntityImpl;
+      required final DateTime createdAt,
+      final DateTime? lastActiveAt}) = _$UserEntityImpl;
   const _UserEntity._() : super._();
 
   @override
@@ -265,6 +284,8 @@ abstract class _UserEntity extends UserEntity {
   bool get hasCompletedOnboarding;
   @override
   DateTime get createdAt;
+  @override
+  DateTime? get lastActiveAt;
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.

@@ -11,6 +11,7 @@ import '../../../../core/widgets/loading_overlay.dart';
 import '../../../../features/applications/presentation/providers/application_providers.dart';
 import '../../../../features/authentication/domain/entities/user_entity.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
+import '../../../../features/messaging/presentation/providers/messaging_providers.dart';
 import '../../domain/entities/opportunity_entity.dart';
 import '../providers/opportunity_providers.dart';
 
@@ -79,6 +80,12 @@ class _DetailContent extends ConsumerWidget {
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
+            if (user != null && user!.isStudent)
+              IconButton(
+                icon: const Icon(Icons.chat_bubble_outline),
+                tooltip: 'Message ${opportunity.startupName}',
+                onPressed: () => _messageStartup(context, ref),
+              ),
             if (isStartupOwner)
               PopupMenuButton(
                 itemBuilder: (_) => [
@@ -131,6 +138,27 @@ class _DetailContent extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _messageStartup(BuildContext context, WidgetRef ref) async {
+    final currentUser = user;
+    if (currentUser == null) return;
+
+    final conversation =
+        await ref.read(messagingControllerProvider.notifier).startConversation(
+              currentUserId: currentUser.id,
+              currentUserName: currentUser.displayName,
+              currentUserPhotoUrl: currentUser.photoUrl,
+              otherUserId: opportunity.startupId,
+              otherUserName: opportunity.startupName,
+              otherUserPhotoUrl: opportunity.startupLogoUrl,
+              contextOpportunityId: opportunity.id,
+              contextOpportunityTitle: opportunity.title,
+            );
+
+    if (conversation != null && context.mounted) {
+      context.push('/messages/${conversation.id}');
+    }
   }
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {

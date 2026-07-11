@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/loading_overlay.dart';
+import '../../../../features/authentication/presentation/providers/auth_providers.dart';
+import '../../../../features/messaging/presentation/providers/messaging_providers.dart';
 import '../../domain/entities/application_entity.dart';
 import '../providers/application_providers.dart';
 import '../widgets/application_timeline.dart';
@@ -81,6 +84,11 @@ class _ApplicantCard extends ConsumerWidget {
                   ),
                 ),
                 _StatusChip(status: application.status),
+                IconButton(
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  tooltip: 'Message ${application.applicantName}',
+                  onPressed: () => _messageApplicant(context, ref),
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -100,6 +108,26 @@ class _ApplicantCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _messageApplicant(BuildContext context, WidgetRef ref) async {
+    final currentUser = ref.read(authStateProvider).value;
+    if (currentUser == null) return;
+
+    final conversation =
+        await ref.read(messagingControllerProvider.notifier).startConversation(
+              currentUserId: currentUser.id,
+              currentUserName: currentUser.displayName,
+              currentUserPhotoUrl: currentUser.photoUrl,
+              otherUserId: application.applicantId,
+              otherUserName: application.applicantName,
+              contextOpportunityId: application.opportunityId,
+              contextOpportunityTitle: application.opportunityTitle,
+            );
+
+    if (conversation != null && context.mounted) {
+      context.push('/messages/${conversation.id}');
+    }
   }
 }
 

@@ -55,4 +55,12 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> updateFcmToken(String userId, String token) =>
       _datasource.updateFcmToken(userId, token);
+
+  @override
+  Future<void> updateLastActiveAt(String userId) =>
+      _datasource.updateLastActiveAt(userId);
+
+  @override
+  Stream<UserEntity?> watchUserById(String userId) =>
+      _datasource.watchUserById(userId).map((model) => model?.toEntity());
 }

@@ -10,6 +10,8 @@ import '../../../../features/applications/presentation/providers/application_pro
 import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../../../features/bookmarks/presentation/screens/bookmarks_screen.dart';
+import '../../../../features/messaging/presentation/providers/messaging_providers.dart';
+import '../../../../features/messaging/presentation/screens/conversations_screen.dart';
 import '../../../../features/opportunities/presentation/providers/opportunity_providers.dart';
 import '../../../../features/opportunities/presentation/screens/opportunities_screen.dart';
 import '../../../../features/opportunities/presentation/widgets/opportunity_card.dart';
@@ -31,10 +33,13 @@ class _StudentDashboardScreenState
     final user = ref.watch(authStateProvider).value;
     if (user == null) return const SizedBox.shrink();
 
+    final unreadCount = ref.watch(unreadConversationCountProvider(user.id));
+
     final screens = [
       _HomeTab(userId: user.id, userName: user.displayName),
       const OpportunitiesScreen(),
       const BookmarksScreen(),
+      const ConversationsScreen(),
       _ProfileTab(userId: user.id, userName: user.displayName),
     ];
 
@@ -43,23 +48,32 @@ class _StudentDashboardScreenState
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
-        destinations: const [
-          NavigationDestination(
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.search_outlined),
             selectedIcon: Icon(Icons.search),
             label: 'Discover',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.bookmark_outline),
             selectedIcon: Icon(Icons.bookmark),
             label: 'Saved',
           ),
           NavigationDestination(
+            icon: Badge(
+              isLabelVisible: unreadCount > 0,
+              label: Text('$unreadCount'),
+              child: const Icon(Icons.chat_bubble_outline),
+            ),
+            selectedIcon: const Icon(Icons.chat_bubble),
+            label: 'Messages',
+          ),
+          const NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
             label: 'Profile',

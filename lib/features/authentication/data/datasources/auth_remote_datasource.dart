@@ -112,6 +112,25 @@ class AuthRemoteDatasource {
     }
   }
 
+  Future<void> updateLastActiveAt(String userId) async {
+    try {
+      await _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(userId)
+          .update({'lastActiveAt': Timestamp.now()});
+    } on FirebaseException catch (e) {
+      throw FirebaseErrorMapper.fromCode(e.code);
+    }
+  }
+
+  Stream<UserModel?> watchUserById(String userId) {
+    return _firestore
+        .collection(AppConstants.usersCollection)
+        .doc(userId)
+        .snapshots()
+        .map((doc) => doc.exists ? UserModel.fromFirestore(doc) : null);
+  }
+
   Future<UserModel> _fetchUserDocument(String uid) async {
     try {
       final doc = await _firestore

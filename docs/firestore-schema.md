@@ -17,6 +17,7 @@ Doc ID = Firebase Auth UID.
 | `createdAt` | timestamp | immutable |
 | `fcmToken` | string? | current device's FCM push token |
 | `fcmTokenUpdatedAt` | timestamp? | |
+| `lastActiveAt` | timestamp? | presence heartbeat — see "Presence" below |
 
 **Why it exists**: the auth-linked identity record and role gate the entire app's navigation (student vs. startup dashboards, protected routes). Kept minimal and immutable on the sensitive fields so a compromised client can't self-promote from student to startup.
 
@@ -83,6 +84,32 @@ Doc ID = the bookmarking user's UID. One document per user.
 **Why it exists**: kept separate from `users` purely so toggling a bookmark never rewrites the user's core profile doc (different write frequency, different concern).
 
 **Known scaling ceiling**: this is an array-in-document design, not a subcollection. It's simple and cheap for realistic bookmark counts (tens per user) but has two real limits: (1) Firestore's 1MB document size cap bounds the array's practical size, and (2) there's no way to query "which users bookmarked opportunity X" without a different structure. If bookmark counts or that reverse-query need ever become real, migrate to `users/{uid}/bookmarks/{opportunityId}` subcollection docs (doc ID = opportunity ID, body = `{createdAt}`) — each bookmark becomes its own tiny doc, unbounded count, and a `collectionGroup('bookmarks')` query becomes possible for "most bookmarked" features. Not done this pass: it requires rewriting the bookmark datasource/repository/provider layer plus migrating any already-bookmarked users' data.
+
+### `conversations/{id}`
+Doc ID = **deterministic**: the two participants' UIDs, sorted and joined with `_` (not auto-generated) — makes "find or create the thread between these two users" a direct doc read instead of a query.
+
+| Field | Type | Notes |
+|---|---|---|
+| `participantIds` | string[2] | `array-contains` powers "my conversations"; immutable after creation |
+| `participantNames`, `participantPhotoUrls` | `{uid: string}`, `{uid: string?}` | **denormalized** — list screen never joins back to `users`/`startup_profiles` |
+| `contextOpportunityId`, `contextOpportunityTitle` | string? | which opportunity/application prompted the thread, set once at creation, display-only |
+| `lastMessageText`, `lastMessageSenderId`, `lastMessageAt` | string?, string?, timestamp? | **denormalized** preview — avoids reading the `messages` subcollection just to render the list |
+| `lastReadAt` | `{uid: timestamp}` | powers both read receipts (compare a message's `sentAt` against the *other* participant's entry) and unread badges (`lastMessageAt > lastReadAt[myUid]`) — zero per-message writes |
+| `typingUserIds`, `typingUpdatedAt` | string[], `{uid: timestamp}` | typing state lives on the conversation doc itself; the timestamp lets the UI treat entries older than ~5s as stale even if a crashed client never cleared them |
+| `createdAt` | timestamp | |
+
+**Why it exists**: one thread per (student, startup) pair, not per-opportunity — messaging the same startup about a second opportunity stays in the existing conversation, matching how real platforms work; `contextOpportunityId` just labels which conversation started why.
+
+#### `conversations/{id}/messages/{id}`
+| Field | Type | Notes |
+|---|---|---|
+| `senderId` | string | |
+| `text`, `imageUrl` | string?, string? | exactly one is set per message |
+| `sentAt` | timestamp | |
+
+Immutable once sent (no edit/delete) — standard chat simplification. No per-message read tracking; read status is derived from the parent conversation's `lastReadAt`.
+
+**Presence (online / last seen)**: reuses `users/{uid}.lastActiveAt` rather than a new collection or Realtime Database. A heartbeat writes it periodically while the app is foregrounded; "online" is computed client-side as "updated within the last 60s" wherever it's shown. This is deliberately approximate — a killed (not gracefully backgrounded) app can show "online" for up to the heartbeat window — chosen over adding Realtime Database's `onDisconnect()` (which would give accurate, server-detected presence) to avoid a second Firebase service, console setup step, and rules file for presence accuracy alone, given this app's scale.
 
 ## Query & index design
 
