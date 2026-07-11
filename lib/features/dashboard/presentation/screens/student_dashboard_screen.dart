@@ -7,7 +7,6 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/loading_overlay.dart';
 import '../../../../features/applications/presentation/providers/application_providers.dart';
-import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../../../features/bookmarks/presentation/screens/bookmarks_screen.dart';
 import '../../../../features/messaging/presentation/providers/messaging_providers.dart';
@@ -15,6 +14,7 @@ import '../../../../features/messaging/presentation/screens/conversations_screen
 import '../../../../features/opportunities/presentation/providers/opportunity_providers.dart';
 import '../../../../features/opportunities/presentation/screens/opportunities_screen.dart';
 import '../../../../features/opportunities/presentation/widgets/opportunity_card.dart';
+import '../../../../features/profiles/presentation/screens/student_profile_screen.dart';
 
 class StudentDashboardScreen extends ConsumerStatefulWidget {
   const StudentDashboardScreen({super.key});
@@ -40,7 +40,7 @@ class _StudentDashboardScreenState
       const OpportunitiesScreen(),
       const BookmarksScreen(),
       const ConversationsScreen(),
-      _ProfileTab(userId: user.id, userName: user.displayName),
+      const StudentProfileScreen(),
     ];
 
     return Scaffold(
@@ -244,101 +244,3 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _ProfileTab extends ConsumerWidget {
-  const _ProfileTab({required this.userId, required this.userName});
-
-  final String userId;
-  final String userName;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Center(
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                  child: Text(
-                    userName.isNotEmpty ? userName[0].toUpperCase() : '?',
-                    style: AppTextStyles.displayMedium
-                        .copyWith(color: AppColors.primary),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(userName, style: AppTextStyles.titleLarge),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.studentBadge.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'Student',
-                    style: AppTextStyles.labelSmall
-                        .copyWith(color: AppColors.studentBadge),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-          _ProfileMenuItem(
-            icon: Icons.inbox_outlined,
-            label: 'My Applications',
-            onTap: () => context.push('/my-applications'),
-          ),
-          _ProfileMenuItem(
-            icon: Icons.bookmark_outline,
-            label: 'Saved Opportunities',
-            onTap: () => context.push('/bookmarks'),
-          ),
-          const Divider(height: 32),
-          _ProfileMenuItem(
-            icon: Icons.logout,
-            label: 'Sign out',
-            color: AppColors.error,
-            onTap: () async {
-              await ref.read(authControllerProvider.notifier).signOut();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileMenuItem extends StatelessWidget {
-  const _ProfileMenuItem({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    final effectiveColor = color ?? AppColors.textPrimary;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: effectiveColor),
-      title: Text(label,
-          style: AppTextStyles.bodyMedium.copyWith(color: effectiveColor)),
-      trailing: color == null
-          ? const Icon(Icons.arrow_forward_ios,
-              size: 16, color: AppColors.textHint)
-          : null,
-      onTap: onTap,
-    );
-  }
-}

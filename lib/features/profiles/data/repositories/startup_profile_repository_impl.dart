@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import '../../domain/entities/startup_profile_entity.dart';
 import '../../domain/repositories/startup_profile_repository.dart';
@@ -39,8 +39,8 @@ class StartupProfileRepositoryImpl implements StartupProfileRepository {
   }
 
   @override
-  Future<String> uploadLogo(String profileId, File imageFile) =>
-      _datasource.uploadLogo(profileId, imageFile);
+  Future<String> uploadLogo(String profileId, Uint8List imageBytes) =>
+      _datasource.uploadLogo(profileId, imageBytes);
 
   @override
   Stream<StartupProfileEntity?> watchProfileByOwnerId(String ownerId) =>

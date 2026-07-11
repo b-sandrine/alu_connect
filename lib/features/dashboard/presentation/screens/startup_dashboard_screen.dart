@@ -8,13 +8,13 @@ import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/loading_overlay.dart';
 import '../../../../features/applications/domain/entities/application_entity.dart';
 import '../../../../features/applications/presentation/providers/application_providers.dart';
-import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../../../features/applications/presentation/widgets/application_timeline.dart';
 import '../../../../features/messaging/presentation/providers/messaging_providers.dart';
 import '../../../../features/messaging/presentation/screens/conversations_screen.dart';
 import '../../../../features/opportunities/presentation/providers/opportunity_providers.dart';
 import '../../../../features/profiles/presentation/providers/startup_profile_providers.dart';
+import '../../../../features/profiles/presentation/screens/startup_profile_screen.dart';
 import '../providers/dashboard_stats_provider.dart';
 
 class StartupDashboardScreen extends ConsumerStatefulWidget {
@@ -41,7 +41,7 @@ class _StartupDashboardScreenState
       _OpportunitiesTab(userId: user.id),
       _ApplicationsTab(startupId: user.id),
       const ConversationsScreen(),
-      _ProfileTab(userId: user.id, userName: user.displayName),
+      StartupProfileScreen(ownerId: user.id),
     ];
 
     return Scaffold(
@@ -412,118 +412,3 @@ class _ApplicationsTab extends ConsumerWidget {
   }
 }
 
-class _ProfileTab extends ConsumerWidget {
-  const _ProfileTab({required this.userId, required this.userName});
-
-  final String userId;
-  final String userName;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(startupProfileByOwnerProvider(userId));
-    final profile = profileAsync.value;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Company Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            onPressed: () => context.push('/startup-profile/edit'),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Center(
-            child: Column(
-              children: [
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: const Icon(Icons.business,
-                      size: 36, color: AppColors.primary),
-                ),
-                const SizedBox(height: 12),
-                Text(profile?.companyName ?? userName,
-                    style: AppTextStyles.titleLarge),
-                if (profile != null) ...[
-                  const SizedBox(height: 4),
-                  Text(profile.tagline, style: AppTextStyles.bodySmall),
-                  if (profile.isVerified) ...[
-                    const SizedBox(height: 8),
-                    const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.verified,
-                            size: 16, color: AppColors.verifiedBadge),
-                        SizedBox(width: 4),
-                        Text('Verified',
-                            style: TextStyle(color: AppColors.verifiedBadge)),
-                      ],
-                    ),
-                  ],
-                ],
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-          _ProfileMenuItem(
-            icon: Icons.person_outlined,
-            label: 'View public profile',
-            onTap: () => context.push('/startup-profile/$userId'),
-          ),
-          _ProfileMenuItem(
-            icon: Icons.edit_outlined,
-            label: 'Edit profile',
-            onTap: () => context.push('/startup-profile/edit'),
-          ),
-          const Divider(height: 32),
-          _ProfileMenuItem(
-            icon: Icons.logout,
-            label: 'Sign out',
-            color: AppColors.error,
-            onTap: () async {
-              await ref.read(authControllerProvider.notifier).signOut();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileMenuItem extends StatelessWidget {
-  const _ProfileMenuItem({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    final effectiveColor = color ?? AppColors.textPrimary;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: effectiveColor),
-      title: Text(label,
-          style: AppTextStyles.bodyMedium.copyWith(color: effectiveColor)),
-      trailing: color == null
-          ? const Icon(Icons.arrow_forward_ios,
-              size: 16, color: AppColors.textHint)
-          : null,
-      onTap: onTap,
-    );
-  }
-}

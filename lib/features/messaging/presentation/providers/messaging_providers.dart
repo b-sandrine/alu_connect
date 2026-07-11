@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -100,14 +100,14 @@ class MessagingController extends AsyncNotifier<void> {
   Future<void> sendImageMessage({
     required String conversationId,
     required String senderId,
-    required File imageFile,
+    required Uint8List imageBytes,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => _repository.sendImageMessage(
         conversationId: conversationId,
         senderId: senderId,
-        imageFile: imageFile,
+        imageBytes: imageBytes,
       ),
     );
   }

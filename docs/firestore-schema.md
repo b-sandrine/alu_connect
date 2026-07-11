@@ -70,9 +70,31 @@ Doc ID = auto-generated (not the owner's UID — see below).
 | `industry`, `location` | string | |
 | `website`, `logoUrl` | string? | |
 | `isVerified` | bool | |
+| `founded` | int? | founding year |
+| `startupStage` | string | one of `StartupProfileEntity.stages` (Idea/MVP/Seed/Series A/Series B+/Growth) |
+| `companySize` | string | one of `StartupProfileEntity.companySizes` (1-10/11-50/51-200/201-500/500+) |
+| `mission`, `vision`, `culture` | string | optional "About Startup" sub-sections, shown alongside `description` on the profile screen |
 | `createdAt`, `updatedAt` | timestamp | |
 
 **Why it exists, and why it's separate from `users`**: a startup's public-facing company page (logo, tagline, verification badge) has a different read audience — any student browsing — than the private auth record. Keeping it separate means `users/{uid}` stays small and rarely-read-by-others, while `startup_profiles` can grow richer (more fields, more public reads) without bloating the identity doc every client fetches on every auth check.
+
+**Startup Profile module, Pass 1 (header + about)**: `founded`/`startupStage`/`companySize`/`mission`/`vision`/`culture` were added additively to support the redesigned header (logo, verification badge, industry/location/founded line, stage/size/website chips) and About section. Later passes add Founders, Team Members, Gallery (new substructures), Active-Opportunities view tracking + an Analytics Dashboard (`fl_chart`), and Applicant Management Notes/Rating — none of which require restructuring this collection further.
+
+### `student_profiles/{id}`
+Doc ID = auto-generated (mirrors `startup_profiles`, not doc-id-as-owner-UID).
+
+| Field | Type | Notes |
+|---|---|---|
+| `ownerId` | string | owning user's UID |
+| `photoUrl` | string? | |
+| `university`, `degree`, `yearOfStudy`, `location` | string | |
+| `bio`, `careerInterests`, `personalStatement` | string | |
+| `skills` | string[] | |
+| `createdAt`, `updatedAt` | timestamp | |
+
+**Why it exists, and why it's separate from `users`**: same reasoning as `startup_profiles` — a rich, publicly-readable profile (bio, skills, education) shouldn't bloat the auth identity doc, and a startup will eventually need to read an applicant's profile.
+
+**Verification badge**: unlike `startup_profiles.isVerified` (an admin-granted flag), the student verification checkmark is `completionPercentage >= 100`, computed client-side on `StudentProfileEntity` from how many of its fields are filled — no separate Firestore field needed. Pass 2/3 additions (resume, portfolio, projects, etc.) will extend this calculation's denominator additively, not restructure it.
 
 ### `bookmarks/{uid}`
 Doc ID = the bookmarking user's UID. One document per user.

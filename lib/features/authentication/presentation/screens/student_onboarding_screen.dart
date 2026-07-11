@@ -9,6 +9,8 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../profiles/domain/entities/student_profile_entity.dart';
+import '../../../profiles/presentation/providers/student_profile_providers.dart';
 import '../providers/auth_controller.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/onboarding_header.dart';
@@ -70,8 +72,30 @@ class _StudentOnboardingScreenState
     final user = ref.read(authStateProvider).value;
     if (user == null) return;
 
-    // Save profile data to Firestore via a dedicated provider (created in profiles feature)
-    // For now, just mark onboarding complete
+    final now = DateTime.now();
+    await ref.read(studentProfileControllerProvider.notifier).saveProfile(
+          StudentProfileEntity(
+            id: '',
+            ownerId: user.id,
+            university: _universityController.text.trim(),
+            degree: _programController.text.trim(),
+            yearOfStudy: _selectedYear!,
+            location: '',
+            bio: _bioController.text.trim(),
+            skills: List.unmodifiable(_skills),
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+
+    if (!mounted) return;
+    final profileError =
+        ref.read(studentProfileControllerProvider.notifier).getErrorMessage();
+    if (profileError != null) {
+      AppSnackBar.showError(context, profileError);
+      return;
+    }
+
     await ref.read(authControllerProvider.notifier).completeOnboarding(user.id);
 
     if (!mounted) return;
@@ -86,7 +110,8 @@ class _StudentOnboardingScreenState
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authControllerProvider).isLoading;
+    final isLoading = ref.watch(authControllerProvider).isLoading ||
+        ref.watch(studentProfileControllerProvider).isLoading;
     final colors = context.colors;
 
     return Scaffold(

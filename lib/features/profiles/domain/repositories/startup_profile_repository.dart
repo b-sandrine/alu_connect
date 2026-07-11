@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import '../entities/startup_profile_entity.dart';
 
 abstract interface class StartupProfileRepository {
@@ -10,7 +10,7 @@ abstract interface class StartupProfileRepository {
 
   Future<StartupProfileEntity> updateProfile(StartupProfileEntity profile);
 
-  Future<String> uploadLogo(String profileId, File imageFile);
+  Future<String> uploadLogo(String profileId, Uint8List imageBytes);
 
   Stream<StartupProfileEntity?> watchProfileByOwnerId(String ownerId);
 }

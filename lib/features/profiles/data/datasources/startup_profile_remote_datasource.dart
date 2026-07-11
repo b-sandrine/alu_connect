@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -77,12 +77,12 @@ class StartupProfileRemoteDatasource {
     }
   }
 
-  Future<String> uploadLogo(String profileId, File imageFile) async {
+  Future<String> uploadLogo(String profileId, Uint8List imageBytes) async {
     try {
       final ref = _storage.ref().child(
             '${AppConstants.startupLogosPath}/$profileId.jpg',
           );
-      await ref.putFile(imageFile);
+      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
       final downloadUrl = await ref.getDownloadURL();
       await _collection.doc(profileId).update({'logoUrl': downloadUrl});
       return downloadUrl;

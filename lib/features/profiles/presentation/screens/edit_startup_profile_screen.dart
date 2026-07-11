@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,9 +30,15 @@ class _EditStartupProfileScreenState
   final _descriptionController = TextEditingController();
   final _websiteController = TextEditingController();
   final _locationController = TextEditingController();
+  final _foundedController = TextEditingController();
+  final _missionController = TextEditingController();
+  final _visionController = TextEditingController();
+  final _cultureController = TextEditingController();
 
   String? _selectedIndustry;
-  File? _pickedLogo;
+  String? _selectedStage;
+  String? _selectedCompanySize;
+  Uint8List? _pickedLogoBytes;
   StartupProfileEntity? _existingProfile;
   bool _initialized = false;
 
@@ -48,6 +54,10 @@ class _EditStartupProfileScreenState
     _descriptionController.dispose();
     _websiteController.dispose();
     _locationController.dispose();
+    _foundedController.dispose();
+    _missionController.dispose();
+    _visionController.dispose();
+    _cultureController.dispose();
     super.dispose();
   }
 
@@ -58,7 +68,14 @@ class _EditStartupProfileScreenState
     _descriptionController.text = profile.description;
     _locationController.text = profile.location;
     _websiteController.text = profile.website ?? '';
+    _foundedController.text = profile.founded?.toString() ?? '';
+    _missionController.text = profile.mission;
+    _visionController.text = profile.vision;
+    _cultureController.text = profile.culture;
     _selectedIndustry = profile.industry;
+    _selectedStage = profile.startupStage.isEmpty ? null : profile.startupStage;
+    _selectedCompanySize =
+        profile.companySize.isEmpty ? null : profile.companySize;
     _existingProfile = profile;
     _initialized = true;
   }
@@ -71,7 +88,8 @@ class _EditStartupProfileScreenState
       maxWidth: 512,
     );
     if (picked != null) {
-      setState(() => _pickedLogo = File(picked.path));
+      final bytes = await picked.readAsBytes();
+      setState(() => _pickedLogoBytes = bytes);
     }
   }
 
@@ -101,6 +119,12 @@ class _EditStartupProfileScreenState
           : _websiteController.text.trim(),
       logoUrl: _existingProfile?.logoUrl,
       isVerified: _existingProfile?.isVerified ?? false,
+      founded: int.tryParse(_foundedController.text.trim()),
+      startupStage: _selectedStage ?? '',
+      companySize: _selectedCompanySize ?? '',
+      mission: _missionController.text.trim(),
+      vision: _visionController.text.trim(),
+      culture: _cultureController.text.trim(),
       createdAt: _existingProfile?.createdAt ?? now,
       updatedAt: now,
     );
@@ -115,8 +139,8 @@ class _EditStartupProfileScreenState
       return;
     }
 
-    if (_pickedLogo != null && _existingProfile != null) {
-      await controller.uploadLogo(_existingProfile!.id, _pickedLogo!);
+    if (_pickedLogoBytes != null && _existingProfile != null) {
+      await controller.uploadLogo(_existingProfile!.id, _pickedLogoBytes!);
     }
 
     if (!mounted) return;
@@ -152,7 +176,7 @@ class _EditStartupProfileScreenState
             children: [
               _LogoPicker(
                 currentLogoUrl: _existingProfile?.logoUrl,
-                pickedFile: _pickedLogo,
+                pickedBytes: _pickedLogoBytes,
                 onTap: _pickLogo,
               ),
               const SizedBox(height: 24),
@@ -198,12 +222,83 @@ class _EditStartupProfileScreenState
                 validator: Validators.url,
               ),
               const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: AppTextField(
+                      label: 'Founded (year)',
+                      controller: _foundedController,
+                      prefixIcon: Icons.event_outlined,
+                      keyboardType: TextInputType.number,
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty) return null;
+                        final year = int.tryParse(v.trim());
+                        if (year == null || year < 1900 || year > DateTime.now().year) {
+                          return 'Enter a valid year';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: _selectedCompanySize,
+                      decoration: const InputDecoration(
+                        labelText: 'Company size',
+                        prefixIcon: Icon(Icons.groups_outlined),
+                      ),
+                      items: StartupProfileEntity.companySizes
+                          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                          .toList(),
+                      onChanged: (v) => _selectedCompanySize = v,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedStage,
+                decoration: const InputDecoration(
+                  labelText: 'Startup stage',
+                  prefixIcon: Icon(Icons.rocket_launch_outlined),
+                ),
+                items: StartupProfileEntity.stages
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) => _selectedStage = v,
+              ),
+              const SizedBox(height: 16),
               AppTextField(
                 label: 'About your startup',
                 controller: _descriptionController,
                 maxLines: 4,
                 validator: (v) =>
                     Validators.minLength(v, 50, fieldName: 'Description'),
+              ),
+              const SizedBox(height: 24),
+              Text('Mission, vision & culture', style: AppTextStyles.titleSmall),
+              const SizedBox(height: 12),
+              AppTextField(
+                label: 'Mission (optional)',
+                hint: 'What is your startup working to achieve?',
+                controller: _missionController,
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                label: 'Vision (optional)',
+                hint: 'Where is your startup headed?',
+                controller: _visionController,
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                label: 'Culture (optional)',
+                hint: 'What is it like to work at your startup?',
+                controller: _cultureController,
+                maxLines: 3,
               ),
               const SizedBox(height: 32),
               AppButton(
@@ -222,12 +317,12 @@ class _EditStartupProfileScreenState
 class _LogoPicker extends StatelessWidget {
   const _LogoPicker({
     required this.currentLogoUrl,
-    required this.pickedFile,
+    required this.pickedBytes,
     required this.onTap,
   });
 
   final String? currentLogoUrl;
-  final File? pickedFile;
+  final Uint8List? pickedBytes;
   final VoidCallback onTap;
 
   @override
@@ -245,13 +340,18 @@ class _LogoPicker extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: AppColors.border),
               ),
-              child: pickedFile != null
+              child: pickedBytes != null
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: Image.file(pickedFile!, fit: BoxFit.cover),
+                      child: Image.memory(pickedBytes!, fit: BoxFit.cover),
                     )
-                  : const Icon(Icons.add_a_photo_outlined,
-                      size: 32, color: AppColors.textHint),
+                  : currentLogoUrl != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(currentLogoUrl!, fit: BoxFit.cover),
+                        )
+                      : const Icon(Icons.add_a_photo_outlined,
+                          size: 32, color: AppColors.textHint),
             ),
           ),
           const SizedBox(height: 8),

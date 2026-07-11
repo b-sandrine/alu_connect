@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -87,10 +86,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final picked =
         await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (picked == null || !mounted) return;
+    final bytes = await picked.readAsBytes();
+    if (!mounted) return;
     await ref.read(messagingControllerProvider.notifier).sendImageMessage(
           conversationId: widget.conversationId,
           senderId: userId,
-          imageFile: File(picked.path),
+          imageBytes: bytes,
         );
   }
 

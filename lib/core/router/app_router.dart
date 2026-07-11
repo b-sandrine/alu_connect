@@ -26,6 +26,7 @@ import '../../features/opportunities/domain/entities/opportunity_entity.dart';
 import '../../features/opportunities/presentation/screens/create_edit_opportunity_screen.dart';
 import '../../features/opportunities/presentation/screens/opportunity_detail_screen.dart';
 import '../../features/profiles/presentation/screens/edit_startup_profile_screen.dart';
+import '../../features/profiles/presentation/screens/edit_student_profile_screen.dart';
 import '../../features/profiles/presentation/screens/startup_profile_screen.dart';
 import '../widgets/error_view.dart';
 
@@ -88,6 +89,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final studentOnly = location == '/student-dashboard' ||
           location == '/my-applications' ||
           location == '/bookmarks' ||
+          location == '/student-profile/edit' ||
           isApplyView ||
           isApplicationDetail;
 
@@ -144,6 +146,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/startup-profile/edit',
         builder: (_, __) => const EditStartupProfileScreen(),
+      ),
+      GoRoute(
+        path: '/student-profile/edit',
+        builder: (_, __) => const EditStudentProfileScreen(),
       ),
       GoRoute(
         path: '/startup-profile/:ownerId',

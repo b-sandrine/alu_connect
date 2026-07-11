@@ -15,6 +15,15 @@ service firebase.storage {
         && request.resource.contentType.matches('image/.*');
     }
 
+    // profile_images/{fileName} — student profile photos. Public read,
+    // write only by an authenticated user uploading their own photo.
+    match /profile_images/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
     // chat_images/{conversationId}/{fileName} — only the two participants
     // of the parent conversation may read or upload. Cross-service rule:
     // Storage Rules can read Firestore data via firestore.get() (verify

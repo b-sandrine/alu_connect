@@ -7,6 +7,7 @@ class AppConstants {
   // Firestore collections
   static const String usersCollection = 'users';
   static const String startupProfilesCollection = 'startup_profiles';
+  static const String studentProfilesCollection = 'student_profiles';
   static const String opportunitiesCollection = 'opportunities';
   static const String applicationsCollection = 'applications';
   static const String bookmarksCollection = 'bookmarks';

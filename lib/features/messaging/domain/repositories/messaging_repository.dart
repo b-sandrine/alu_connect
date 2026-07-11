@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import '../entities/conversation_entity.dart';
 import '../entities/message_entity.dart';
@@ -33,7 +33,7 @@ abstract interface class MessagingRepository {
   Future<void> sendImageMessage({
     required String conversationId,
     required String senderId,
-    required File imageFile,
+    required Uint8List imageBytes,
   });
 
   Future<void> setTyping({

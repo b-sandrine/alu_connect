@@ -26,6 +26,12 @@ mixin _$StartupProfileEntity {
   String? get website => throw _privateConstructorUsedError;
   String? get logoUrl => throw _privateConstructorUsedError;
   bool get isVerified => throw _privateConstructorUsedError;
+  int? get founded => throw _privateConstructorUsedError;
+  String get startupStage => throw _privateConstructorUsedError;
+  String get companySize => throw _privateConstructorUsedError;
+  String get mission => throw _privateConstructorUsedError;
+  String get vision => throw _privateConstructorUsedError;
+  String get culture => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -53,6 +59,12 @@ abstract class $StartupProfileEntityCopyWith<$Res> {
       String? website,
       String? logoUrl,
       bool isVerified,
+      int? founded,
+      String startupStage,
+      String companySize,
+      String mission,
+      String vision,
+      String culture,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -83,6 +95,12 @@ class _$StartupProfileEntityCopyWithImpl<$Res,
     Object? website = freezed,
     Object? logoUrl = freezed,
     Object? isVerified = null,
+    Object? founded = freezed,
+    Object? startupStage = null,
+    Object? companySize = null,
+    Object? mission = null,
+    Object? vision = null,
+    Object? culture = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -127,6 +145,30 @@ class _$StartupProfileEntityCopyWithImpl<$Res,
           ? _value.isVerified
           : isVerified // ignore: cast_nullable_to_non_nullable
               as bool,
+      founded: freezed == founded
+          ? _value.founded
+          : founded // ignore: cast_nullable_to_non_nullable
+              as int?,
+      startupStage: null == startupStage
+          ? _value.startupStage
+          : startupStage // ignore: cast_nullable_to_non_nullable
+              as String,
+      companySize: null == companySize
+          ? _value.companySize
+          : companySize // ignore: cast_nullable_to_non_nullable
+              as String,
+      mission: null == mission
+          ? _value.mission
+          : mission // ignore: cast_nullable_to_non_nullable
+              as String,
+      vision: null == vision
+          ? _value.vision
+          : vision // ignore: cast_nullable_to_non_nullable
+              as String,
+      culture: null == culture
+          ? _value.culture
+          : culture // ignore: cast_nullable_to_non_nullable
+              as String,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -158,6 +200,12 @@ abstract class _$$StartupProfileEntityImplCopyWith<$Res>
       String? website,
       String? logoUrl,
       bool isVerified,
+      int? founded,
+      String startupStage,
+      String companySize,
+      String mission,
+      String vision,
+      String culture,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -185,6 +233,12 @@ class __$$StartupProfileEntityImplCopyWithImpl<$Res>
     Object? website = freezed,
     Object? logoUrl = freezed,
     Object? isVerified = null,
+    Object? founded = freezed,
+    Object? startupStage = null,
+    Object? companySize = null,
+    Object? mission = null,
+    Object? vision = null,
+    Object? culture = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -229,6 +283,30 @@ class __$$StartupProfileEntityImplCopyWithImpl<$Res>
           ? _value.isVerified
           : isVerified // ignore: cast_nullable_to_non_nullable
               as bool,
+      founded: freezed == founded
+          ? _value.founded
+          : founded // ignore: cast_nullable_to_non_nullable
+              as int?,
+      startupStage: null == startupStage
+          ? _value.startupStage
+          : startupStage // ignore: cast_nullable_to_non_nullable
+              as String,
+      companySize: null == companySize
+          ? _value.companySize
+          : companySize // ignore: cast_nullable_to_non_nullable
+              as String,
+      mission: null == mission
+          ? _value.mission
+          : mission // ignore: cast_nullable_to_non_nullable
+              as String,
+      vision: null == vision
+          ? _value.vision
+          : vision // ignore: cast_nullable_to_non_nullable
+              as String,
+      culture: null == culture
+          ? _value.culture
+          : culture // ignore: cast_nullable_to_non_nullable
+              as String,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -243,7 +321,7 @@ class __$$StartupProfileEntityImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$StartupProfileEntityImpl implements _StartupProfileEntity {
+class _$StartupProfileEntityImpl extends _StartupProfileEntity {
   const _$StartupProfileEntityImpl(
       {required this.id,
       required this.ownerId,
@@ -255,8 +333,15 @@ class _$StartupProfileEntityImpl implements _StartupProfileEntity {
       this.website,
       this.logoUrl,
       this.isVerified = false,
+      this.founded,
+      this.startupStage = '',
+      this.companySize = '',
+      this.mission = '',
+      this.vision = '',
+      this.culture = '',
       required this.createdAt,
-      required this.updatedAt});
+      required this.updatedAt})
+      : super._();
 
   @override
   final String id;
@@ -280,13 +365,30 @@ class _$StartupProfileEntityImpl implements _StartupProfileEntity {
   @JsonKey()
   final bool isVerified;
   @override
+  final int? founded;
+  @override
+  @JsonKey()
+  final String startupStage;
+  @override
+  @JsonKey()
+  final String companySize;
+  @override
+  @JsonKey()
+  final String mission;
+  @override
+  @JsonKey()
+  final String vision;
+  @override
+  @JsonKey()
+  final String culture;
+  @override
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'StartupProfileEntity(id: $id, ownerId: $ownerId, companyName: $companyName, tagline: $tagline, description: $description, industry: $industry, location: $location, website: $website, logoUrl: $logoUrl, isVerified: $isVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'StartupProfileEntity(id: $id, ownerId: $ownerId, companyName: $companyName, tagline: $tagline, description: $description, industry: $industry, location: $location, website: $website, logoUrl: $logoUrl, isVerified: $isVerified, founded: $founded, startupStage: $startupStage, companySize: $companySize, mission: $mission, vision: $vision, culture: $culture, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -309,6 +411,14 @@ class _$StartupProfileEntityImpl implements _StartupProfileEntity {
             (identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl) &&
             (identical(other.isVerified, isVerified) ||
                 other.isVerified == isVerified) &&
+            (identical(other.founded, founded) || other.founded == founded) &&
+            (identical(other.startupStage, startupStage) ||
+                other.startupStage == startupStage) &&
+            (identical(other.companySize, companySize) ||
+                other.companySize == companySize) &&
+            (identical(other.mission, mission) || other.mission == mission) &&
+            (identical(other.vision, vision) || other.vision == vision) &&
+            (identical(other.culture, culture) || other.culture == culture) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -328,6 +438,12 @@ class _$StartupProfileEntityImpl implements _StartupProfileEntity {
       website,
       logoUrl,
       isVerified,
+      founded,
+      startupStage,
+      companySize,
+      mission,
+      vision,
+      culture,
       createdAt,
       updatedAt);
 
@@ -342,7 +458,7 @@ class _$StartupProfileEntityImpl implements _StartupProfileEntity {
               this, _$identity);
 }
 
-abstract class _StartupProfileEntity implements StartupProfileEntity {
+abstract class _StartupProfileEntity extends StartupProfileEntity {
   const factory _StartupProfileEntity(
       {required final String id,
       required final String ownerId,
@@ -354,8 +470,15 @@ abstract class _StartupProfileEntity implements StartupProfileEntity {
       final String? website,
       final String? logoUrl,
       final bool isVerified,
+      final int? founded,
+      final String startupStage,
+      final String companySize,
+      final String mission,
+      final String vision,
+      final String culture,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$StartupProfileEntityImpl;
+  const _StartupProfileEntity._() : super._();
 
   @override
   String get id;
@@ -377,6 +500,18 @@ abstract class _StartupProfileEntity implements StartupProfileEntity {
   String? get logoUrl;
   @override
   bool get isVerified;
+  @override
+  int? get founded;
+  @override
+  String get startupStage;
+  @override
+  String get companySize;
+  @override
+  String get mission;
+  @override
+  String get vision;
+  @override
+  String get culture;
   @override
   DateTime get createdAt;
   @override

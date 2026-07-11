@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import '../../domain/entities/conversation_entity.dart';
 import '../../domain/entities/message_entity.dart';
@@ -68,12 +68,12 @@ class MessagingRepositoryImpl implements MessagingRepository {
   Future<void> sendImageMessage({
     required String conversationId,
     required String senderId,
-    required File imageFile,
+    required Uint8List imageBytes,
   }) =>
       _datasource.sendImageMessage(
         conversationId: conversationId,
         senderId: senderId,
-        imageFile: imageFile,
+        imageBytes: imageBytes,
       );
 
   @override

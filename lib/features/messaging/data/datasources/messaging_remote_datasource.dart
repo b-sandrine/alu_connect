@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -130,7 +130,7 @@ class MessagingRemoteDatasource {
   Future<void> sendImageMessage({
     required String conversationId,
     required String senderId,
-    required File imageFile,
+    required Uint8List imageBytes,
   }) async {
     final messageRef = _messages(conversationId).doc();
     String imageUrl;
@@ -138,7 +138,7 @@ class MessagingRemoteDatasource {
       final ref = _storage
           .ref()
           .child('${AppConstants.chatImagesPath}/$conversationId/${messageRef.id}.jpg');
-      await ref.putFile(imageFile);
+      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
       imageUrl = await ref.getDownloadURL();
     } on FirebaseException catch (e) {
       throw StorageException('Image upload failed: ${e.message}');

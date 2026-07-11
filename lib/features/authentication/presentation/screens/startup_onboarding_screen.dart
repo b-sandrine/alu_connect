@@ -7,6 +7,8 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../profiles/domain/entities/startup_profile_entity.dart';
+import '../../../profiles/presentation/providers/startup_profile_providers.dart';
 import '../providers/auth_controller.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/onboarding_header.dart';
@@ -63,6 +65,32 @@ class _StartupOnboardingScreenState
     final user = ref.read(authStateProvider).value;
     if (user == null) return;
 
+    final now = DateTime.now();
+    await ref.read(startupProfileControllerProvider.notifier).saveProfile(
+          StartupProfileEntity(
+            id: '',
+            ownerId: user.id,
+            companyName: _companyNameController.text.trim(),
+            tagline: _taglineController.text.trim(),
+            description: _descriptionController.text.trim(),
+            industry: _selectedIndustry!,
+            location: _locationController.text.trim(),
+            website: _websiteController.text.trim().isEmpty
+                ? null
+                : _websiteController.text.trim(),
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+
+    if (!mounted) return;
+    final profileError =
+        ref.read(startupProfileControllerProvider.notifier).getErrorMessage();
+    if (profileError != null) {
+      AppSnackBar.showError(context, profileError);
+      return;
+    }
+
     await ref.read(authControllerProvider.notifier).completeOnboarding(user.id);
 
     if (!mounted) return;
@@ -77,7 +105,8 @@ class _StartupOnboardingScreenState
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authControllerProvider).isLoading;
+    final isLoading = ref.watch(authControllerProvider).isLoading ||
+        ref.watch(startupProfileControllerProvider).isLoading;
 
     return Scaffold(
       body: SafeArea(
