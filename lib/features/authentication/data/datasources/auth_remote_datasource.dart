@@ -133,10 +133,20 @@ class AuthRemoteDatasource {
 
   Future<UserModel> _fetchUserDocument(String uid) async {
     try {
-      final doc = await _firestore
-          .collection(AppConstants.usersCollection)
-          .doc(uid)
-          .get();
+      final collection = _firestore.collection(AppConstants.usersCollection);
+      var doc = await collection.doc(uid).get();
+
+      // Right after account creation, Firebase's authStateChanges() can
+      // notify listeners a moment before the corresponding profile document
+      // finishes writing (see createUserWithEmailAndPassword below). Retry
+      // briefly instead of surfacing a hard "not found" error that would
+      // permanently poison the authStateChanges stream.
+      var attempts = 0;
+      while (!doc.exists && attempts < 5) {
+        await Future.delayed(const Duration(milliseconds: 300));
+        doc = await collection.doc(uid).get();
+        attempts++;
+      }
 
       if (!doc.exists) throw const NotFoundException('User profile not found.');
       return UserModel.fromFirestore(doc);
