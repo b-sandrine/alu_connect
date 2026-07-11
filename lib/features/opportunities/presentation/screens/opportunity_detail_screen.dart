@@ -8,6 +8,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/loading_overlay.dart';
+import '../../../../features/applications/presentation/providers/application_providers.dart';
 import '../../../../features/authentication/domain/entities/user_entity.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../domain/entities/opportunity_entity.dart';
@@ -38,6 +39,20 @@ class OpportunityDetailScreen extends ConsumerWidget {
           appBar: AppBar(),
           body: ErrorView(message: e.toString()),
         ),
+      ),
+      bottomNavigationBar: opportunityAsync.maybeWhen(
+        data: (opportunity) {
+          final canApply = user != null &&
+              user.isStudent &&
+              opportunity.isActive &&
+              !opportunity.isExpired;
+          if (!canApply) return null;
+          return ApplyButton(
+            opportunityId: opportunity.id,
+            applicantId: user.id,
+          );
+        },
+        orElse: () => null,
       ),
     );
   }
@@ -335,17 +350,31 @@ class _DescriptionSection extends StatelessWidget {
 }
 
 class ApplyButton extends ConsumerWidget {
-  const ApplyButton({super.key, required this.opportunityId});
+  const ApplyButton({
+    super.key,
+    required this.opportunityId,
+    required this.applicantId,
+  });
+
   final String opportunityId;
+  final String applicantId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final hasAppliedAsync = ref.watch(hasAppliedProvider((
+      applicantId: applicantId,
+      opportunityId: opportunityId,
+    )));
+    final hasApplied = hasAppliedAsync.valueOrNull ?? false;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: AppButton(
-          label: 'Apply now',
-          onPressed: () => context.push('/opportunities/$opportunityId/apply'),
+          label: hasApplied ? 'Already applied' : 'Apply now',
+          onPressed: hasApplied
+              ? null
+              : () => context.push('/opportunities/$opportunityId/apply'),
         ),
       ),
     );
