@@ -1,0 +1,92 @@
+rules_version = '2';
+
+// See docs/firestore-schema.md for the full collection design rationale.
+// NOT DEPLOYED YET — review before running `firebase deploy --only firestore:rules`.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function userRole(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data.role;
+    }
+
+    function unchanged(field) {
+      return !(field in request.resource.data) ||
+        !(field in resource.data) ||
+        request.resource.data[field] == resource.data[field];
+    }
+
+    // users/{uid} — auth-linked identity + role gate for the whole app.
+    // Anyone signed in can read (display-name lookups on opportunities/
+    // applications); only the owner can write, and role/email/createdAt
+    // are immutable after creation.
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSelf(userId);
+      allow update: if isSelf(userId)
+        && unchanged('role')
+        && unchanged('email')
+        && unchanged('createdAt');
+      allow delete: if false;
+    }
+
+    // opportunities/{id} — postings browsed by every student, managed only
+    // by the owning startup.
+    match /opportunities/{opportunityId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.startupId == request.auth.uid
+        && userRole(request.auth.uid) == 'startup';
+      allow update, delete: if isSignedIn()
+        && resource.data.startupId == request.auth.uid;
+    }
+
+    // applications/{id} — the join between a student and an opportunity.
+    // Students can create their own and read their own; the owning startup
+    // can read theirs and update status/review fields only (can't rewrite
+    // the applicant's submitted content).
+    match /applications/{applicationId} {
+      allow read: if isSignedIn()
+        && (resource.data.applicantId == request.auth.uid
+            || resource.data.startupId == request.auth.uid);
+
+      allow create: if isSignedIn()
+        && request.resource.data.applicantId == request.auth.uid
+        && userRole(request.auth.uid) == 'student'
+        && get(/databases/$(database)/documents/opportunities/$(request.resource.data.opportunityId)).data.isActive == true;
+
+      allow update: if isSignedIn()
+        && resource.data.startupId == request.auth.uid
+        && unchanged('applicantId')
+        && unchanged('opportunityId')
+        && unchanged('coverLetter')
+        && unchanged('appliedAt');
+
+      allow delete: if false;
+    }
+
+    // startup_profiles/{id} — public-facing company info, separate from the
+    // private users/ auth record so it can be read by anyone browsing.
+    match /startup_profiles/{profileId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && userRole(request.auth.uid) == 'startup';
+      allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    // bookmarks/{uid} — one array-in-doc per user; never shared.
+    match /bookmarks/{userId} {
+      allow read, write: if isSelf(userId);
+    }
+  }
+}

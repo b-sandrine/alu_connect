@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'page_transitions.dart';
+import '../analytics/analytics_service.dart';
 import '../../features/authentication/domain/entities/user_entity.dart';
 import '../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../features/authentication/presentation/screens/login_screen.dart';
@@ -37,6 +38,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
     refreshListenable: refreshNotifier,
+    observers: [ref.watch(analyticsServiceProvider).observer],
     redirect: (context, state) {
       final authState = ref.read(authStateProvider);
       final isLoading = authState.isLoading;

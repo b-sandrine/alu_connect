@@ -20,7 +20,6 @@ class BookmarksScreen extends ConsumerWidget {
     if (user == null) return const SizedBox.shrink();
 
     final bookmarkedIdsAsync = ref.watch(bookmarkedIdsProvider(user.id));
-    final allOpportunitiesAsync = ref.watch(opportunitiesStreamProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Bookmarks')),
@@ -30,11 +29,11 @@ class BookmarksScreen extends ConsumerWidget {
             return const _EmptyState();
           }
 
-          return allOpportunitiesAsync.when(
-            data: (all) {
-              final bookmarked =
-                  all.where((o) => bookmarkedIds.contains(o.id)).toList();
+          final bookmarkedOpportunitiesAsync =
+              ref.watch(opportunitiesByIdsProvider(bookmarkedIds));
 
+          return bookmarkedOpportunitiesAsync.when(
+            data: (bookmarked) {
               if (bookmarked.isEmpty) {
                 return const _EmptyState();
               }

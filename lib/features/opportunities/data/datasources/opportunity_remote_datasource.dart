@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/firebase_error_mapper.dart';
+import '../../domain/entities/opportunity_entity.dart';
 import '../models/opportunity_model.dart';
 
 class OpportunityRemoteDatasource {
@@ -14,10 +15,23 @@ class OpportunityRemoteDatasource {
   CollectionReference<Map<String, dynamic>> get _collection =>
       _firestore.collection(AppConstants.opportunitiesCollection);
 
-  Stream<List<OpportunityModel>> watchOpportunities() {
-    return _collection
-        .where('isActive', isEqualTo: true)
+  Stream<List<OpportunityModel>> watchOpportunities({
+    OpportunityType? type,
+    OpportunityCategory? category,
+    bool? isRemote,
+    required int limit,
+  }) {
+    Query<Map<String, dynamic>> query =
+        _collection.where('isActive', isEqualTo: true);
+    if (type != null) query = query.where('type', isEqualTo: type.name);
+    if (category != null) {
+      query = query.where('category', isEqualTo: category.name);
+    }
+    if (isRemote != null) query = query.where('isRemote', isEqualTo: isRemote);
+
+    return query
         .orderBy('createdAt', descending: true)
+        .limit(limit)
         .snapshots()
         .map((snap) =>
             snap.docs.map(OpportunityModel.fromFirestore).toList());
@@ -37,6 +51,31 @@ class OpportunityRemoteDatasource {
       final doc = await _collection.doc(id).get();
       if (!doc.exists) throw const NotFoundException('Opportunity not found.');
       return OpportunityModel.fromFirestore(doc);
+    } on FirebaseException catch (e) {
+      throw FirebaseErrorMapper.fromCode(e.code);
+    }
+  }
+
+  /// Fetches exactly the given opportunities by ID (e.g. a user's bookmarks)
+  /// instead of relying on the paginated discovery feed, so a bookmark never
+  /// silently disappears just because it isn't on the current page.
+  /// Firestore's `whereIn` caps at 30 values per query, so this chunks.
+  Future<List<OpportunityModel>> getOpportunitiesByIds(List<String> ids) async {
+    if (ids.isEmpty) return [];
+    try {
+      final chunks = <List<String>>[
+        for (var i = 0; i < ids.length; i += 30)
+          ids.sublist(i, i + 30 > ids.length ? ids.length : i + 30),
+      ];
+      final snapshots = await Future.wait(
+        chunks.map(
+          (chunk) => _collection.where(FieldPath.documentId, whereIn: chunk).get(),
+        ),
+      );
+      return snapshots
+          .expand((snap) => snap.docs)
+          .map(OpportunityModel.fromFirestore)
+          .toList();
     } on FirebaseException catch (e) {
       throw FirebaseErrorMapper.fromCode(e.code);
     }

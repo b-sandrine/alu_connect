@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/analytics/analytics_service.dart';
 import '../../data/datasources/bookmark_remote_datasource.dart';
 import '../../data/repositories/bookmark_repository_impl.dart';
 import '../../domain/repositories/bookmark_repository.dart';
@@ -51,6 +54,11 @@ class BookmarkController extends AsyncNotifier<void> {
       await _repository.addBookmark(
           userId: userId, opportunityId: opportunityId);
     }
+
+    unawaited(ref.read(analyticsServiceProvider).logBookmarkToggle(
+          opportunityId: opportunityId,
+          added: !isCurrentlyBookmarked,
+        ));
 
     ref.invalidate(bookmarkedIdsProvider(userId));
     ref.invalidate(

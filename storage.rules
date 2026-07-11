@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// NOT DEPLOYED YET — review before running `firebase deploy --only storage`.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // startup_logos/{profileId}.jpg — public read (shown on opportunity
+    // cards/detail to any browsing student), write only by an authenticated
+    // user uploading their own startup profile's logo.
+    match /startup_logos/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

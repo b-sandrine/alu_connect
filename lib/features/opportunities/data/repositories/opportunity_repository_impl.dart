@@ -9,9 +9,20 @@ class OpportunityRepositoryImpl implements OpportunityRepository {
   final OpportunityRemoteDatasource _datasource;
 
   @override
-  Stream<List<OpportunityEntity>> watchOpportunities() => _datasource
-      .watchOpportunities()
-      .map((models) => models.map((m) => m.toEntity()).toList());
+  Stream<List<OpportunityEntity>> watchOpportunities({
+    OpportunityType? type,
+    OpportunityCategory? category,
+    bool? isRemote,
+    required int limit,
+  }) =>
+      _datasource
+          .watchOpportunities(
+            type: type,
+            category: category,
+            isRemote: isRemote,
+            limit: limit,
+          )
+          .map((models) => models.map((m) => m.toEntity()).toList());
 
   @override
   Stream<List<OpportunityEntity>> watchOpportunitiesByStartup(String startupId) =>
@@ -23,6 +34,12 @@ class OpportunityRepositoryImpl implements OpportunityRepository {
   Future<OpportunityEntity> getOpportunityById(String id) async {
     final model = await _datasource.getOpportunityById(id);
     return model.toEntity();
+  }
+
+  @override
+  Future<List<OpportunityEntity>> getOpportunitiesByIds(List<String> ids) async {
+    final models = await _datasource.getOpportunitiesByIds(ids);
+    return models.map((m) => m.toEntity()).toList();
   }
 
   @override

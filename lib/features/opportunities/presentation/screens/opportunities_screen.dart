@@ -61,18 +61,31 @@ class _OpportunitiesScreenState extends ConsumerState<OpportunitiesScreen> {
                   onClear: _clearFilters,
                 );
               }
+              final hasMore = ref.watch(hasMoreOpportunitiesProvider);
+              final itemCount = opportunities.length + (hasMore ? 1 : 0);
+
               return RefreshIndicator(
                 onRefresh: () async =>
                     ref.invalidate(opportunitiesStreamProvider),
                 child: ListView.separated(
                   padding: const EdgeInsets.all(16),
-                  itemCount: opportunities.length,
+                  itemCount: itemCount,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (_, index) => OpportunityCard(
-                    opportunity: opportunities[index],
-                    onTap: () =>
-                        context.push('/opportunities/${opportunities[index].id}'),
-                  ),
+                  itemBuilder: (_, index) {
+                    if (index >= opportunities.length) {
+                      return Center(
+                        child: TextButton(
+                          onPressed: () => loadMoreOpportunities(ref),
+                          child: const Text('Load more'),
+                        ),
+                      );
+                    }
+                    return OpportunityCard(
+                      opportunity: opportunities[index],
+                      onTap: () => context
+                          .push('/opportunities/${opportunities[index].id}'),
+                    );
+                  },
                 ),
               );
             },

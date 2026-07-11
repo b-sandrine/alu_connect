@@ -101,6 +101,17 @@ class AuthRemoteDatasource {
     }
   }
 
+  Future<void> updateFcmToken(String userId, String token) async {
+    try {
+      await _firestore.collection(AppConstants.usersCollection).doc(userId).update({
+        'fcmToken': token,
+        'fcmTokenUpdatedAt': Timestamp.now(),
+      });
+    } on FirebaseException catch (e) {
+      throw FirebaseErrorMapper.fromCode(e.code);
+    }
+  }
+
   Future<UserModel> _fetchUserDocument(String uid) async {
     try {
       final doc = await _firestore

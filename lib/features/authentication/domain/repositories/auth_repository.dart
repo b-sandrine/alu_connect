@@ -20,4 +20,6 @@ abstract interface class AuthRepository {
   Future<UserEntity?> getCurrentUser();
 
   Future<void> completeOnboarding(String userId);
+
+  Future<void> updateFcmToken(String userId, String token);
 }

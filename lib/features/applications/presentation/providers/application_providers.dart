@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/analytics/analytics_service.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../data/datasources/application_remote_datasource.dart';
 import '../../data/repositories/application_repository_impl.dart';
@@ -74,6 +77,9 @@ class ApplicationController extends AsyncNotifier<void> {
     state = await AsyncValue.guard(
       () => _repository.submitApplication(application),
     );
+    if (!state.hasError) {
+      unawaited(ref.read(analyticsServiceProvider).logApply(application.opportunityId));
+    }
   }
 
   Future<void> updateStatus({

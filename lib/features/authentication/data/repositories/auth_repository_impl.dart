@@ -51,4 +51,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> completeOnboarding(String userId) =>
       _datasource.completeOnboarding(userId);
+
+  @override
+  Future<void> updateFcmToken(String userId, String token) =>
+      _datasource.updateFcmToken(userId, token);
 }
