@@ -43,6 +43,30 @@ class StartupProfileRepositoryImpl implements StartupProfileRepository {
       _datasource.uploadLogo(profileId, imageBytes);
 
   @override
+  Future<String> uploadFounderPhoto(
+    String profileId,
+    String founderId,
+    Uint8List imageBytes,
+  ) =>
+      _datasource.uploadFounderPhoto(profileId, founderId, imageBytes);
+
+  @override
+  Future<String> uploadTeamMemberPhoto(
+    String profileId,
+    String memberId,
+    Uint8List imageBytes,
+  ) =>
+      _datasource.uploadTeamMemberPhoto(profileId, memberId, imageBytes);
+
+  @override
+  Future<String> uploadGalleryImage(
+    String profileId,
+    String imageId,
+    Uint8List imageBytes,
+  ) =>
+      _datasource.uploadGalleryImage(profileId, imageId, imageBytes);
+
+  @override
   Stream<StartupProfileEntity?> watchProfileByOwnerId(String ownerId) =>
       _datasource.watchProfileByOwnerId(ownerId).map((model) => model?.toEntity());
 }

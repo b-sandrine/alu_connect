@@ -68,6 +68,9 @@ class StartupProfileController
             mission: profile.mission,
             vision: profile.vision,
             culture: profile.culture,
+            founders: existing.founders,
+            teamMembers: existing.teamMembers,
+            galleryImages: existing.galleryImages,
             createdAt: existing.createdAt,
             updatedAt: DateTime.now(),
           ),
@@ -82,6 +85,63 @@ class StartupProfileController
       await _repository.uploadLogo(profileId, imageBytes);
       return state.value;
     });
+  }
+
+  Future<String> uploadFounderPhoto(
+    String profileId,
+    String founderId,
+    Uint8List imageBytes,
+  ) =>
+      _repository.uploadFounderPhoto(profileId, founderId, imageBytes);
+
+  Future<String> uploadTeamMemberPhoto(
+    String profileId,
+    String memberId,
+    Uint8List imageBytes,
+  ) =>
+      _repository.uploadTeamMemberPhoto(profileId, memberId, imageBytes);
+
+  Future<String> uploadGalleryImage(
+    String profileId,
+    String imageId,
+    Uint8List imageBytes,
+  ) =>
+      _repository.uploadGalleryImage(profileId, imageId, imageBytes);
+
+  Future<void> updateFounders(
+    StartupProfileEntity profile,
+    List<FounderEntity> founders,
+  ) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.updateProfile(
+        profile.copyWith(founders: founders, updatedAt: DateTime.now()),
+      ),
+    );
+  }
+
+  Future<void> updateTeamMembers(
+    StartupProfileEntity profile,
+    List<TeamMemberEntity> teamMembers,
+  ) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.updateProfile(
+        profile.copyWith(teamMembers: teamMembers, updatedAt: DateTime.now()),
+      ),
+    );
+  }
+
+  Future<void> updateGalleryImages(
+    StartupProfileEntity profile,
+    List<GalleryImageEntity> galleryImages,
+  ) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.updateProfile(
+        profile.copyWith(galleryImages: galleryImages, updatedAt: DateTime.now()),
+      ),
+    );
   }
 
   String? getErrorMessage() {

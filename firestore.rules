@@ -36,6 +36,14 @@ service cloud.firestore {
         && unchanged('email')
         && unchanged('createdAt');
       allow delete: if false;
+
+      // users/{uid}/bookmarks/{opportunityId} — one tiny doc per bookmark
+      // (doc ID = opportunityId) rather than an array-in-doc, so a
+      // collectionGroup query can answer "how many users bookmarked
+      // opportunity X" — see the broader collectionGroup rule below.
+      match /bookmarks/{opportunityId} {
+        allow read, write: if isSelf(userId);
+      }
     }
 
     // opportunities/{id} — postings browsed by every student, managed only
@@ -108,9 +116,22 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // bookmarks/{uid} — one array-in-doc per user; never shared.
+    // bookmarks/{uid} — LEGACY array-in-doc shape, superseded by
+    // users/{uid}/bookmarks/{opportunityId}. Kept read/write-able only so
+    // BookmarkRemoteDatasource.migrateLegacyBookmarksIfNeeded can lift a
+    // user's old data into the new subcollection on their next sign-in;
+    // safe to delete this block once all users have migrated.
     match /bookmarks/{userId} {
       allow read, write: if isSelf(userId);
+    }
+
+    // Recursive-wildcard rule authorizing the startup analytics dashboard's
+    // collectionGroup('bookmarks').where('opportunityId', ==) aggregate
+    // count query. Aggregate counts never return document data to the
+    // client — only the numeric count — so this only exposes "how many",
+    // never who or which other opportunities a user bookmarked.
+    match /{path=**}/bookmarks/{bookmarkId} {
+      allow read: if isSignedIn();
     }
 
     // student_profiles/{id} — rich, publicly-readable student profile,

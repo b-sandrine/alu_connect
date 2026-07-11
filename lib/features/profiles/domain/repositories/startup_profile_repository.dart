@@ -12,5 +12,23 @@ abstract interface class StartupProfileRepository {
 
   Future<String> uploadLogo(String profileId, Uint8List imageBytes);
 
+  Future<String> uploadFounderPhoto(
+    String profileId,
+    String founderId,
+    Uint8List imageBytes,
+  );
+
+  Future<String> uploadTeamMemberPhoto(
+    String profileId,
+    String memberId,
+    Uint8List imageBytes,
+  );
+
+  Future<String> uploadGalleryImage(
+    String profileId,
+    String imageId,
+    Uint8List imageBytes,
+  );
+
   Stream<StartupProfileEntity?> watchProfileByOwnerId(String ownerId);
 }

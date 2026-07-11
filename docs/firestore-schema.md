@@ -77,7 +77,14 @@ Doc ID = auto-generated (not the owner's UID — see below).
 | `startupStage` | string | one of `StartupProfileEntity.stages` (Idea/MVP/Seed/Series A/Series B+/Growth) |
 | `companySize` | string | one of `StartupProfileEntity.companySizes` (1-10/11-50/51-200/201-500/500+) |
 | `mission`, `vision`, `culture` | string | optional "About Startup" sub-sections, shown alongside `description` on the profile screen |
+| `founders` | array of `{id, name, role, photoUrl?, linkedinUrl?, email?}` | embedded array, not a subcollection — founders are always read/written together with the profile, never queried independently |
+| `teamMembers` | array of `{id, name, role, department, photoUrl?}` | same embedded-array reasoning as `founders` |
+| `galleryImages` | array of `{id, url, category, uploadedAt}` | `category` is one of `office`/`events`/`products`/`achievements`; embedded rather than a subcollection for the same reason — the gallery is small (dozens of images, not thousands) and always rendered as a whole |
 | `createdAt`, `updatedAt` | timestamp | |
+
+**Founders/Team/Gallery as embedded arrays, not subcollections**: unlike bookmarks (which needed a subcollection specifically to enable a reverse "who bookmarked X" query), nothing here needs to be queried independently of its parent profile — a founder is never looked up on its own, so an embedded array keeps reads to the single profile fetch already happening, at the cost of the whole array being rewritten on every edit (acceptable at realistic counts: a handful of founders, tens of team members, dozens of gallery images, well under Firestore's 1MB document cap). Each item carries a client-generated `id` (via the `uuid` package) purely so the UI can target it for edit/remove within the array — Firestore never sees these ids as document ids.
+
+**Storage paths**: `founder_photos/{profileId}/{founderId}.jpg`, `team_photos/{profileId}/{memberId}.jpg`, `startup_gallery/{profileId}/{imageId}.jpg` — all public-read, write-restricted to the owning startup via a `firestore.get()` cross-service check against `startup_profiles/{profileId}.ownerId` (same pattern as `chat_images`'s participant check).
 
 **Why it exists, and why it's separate from `users`**: a startup's public-facing company page (logo, tagline, verification badge) has a different read audience — any student browsing — than the private auth record. Keeping it separate means `users/{uid}` stays small and rarely-read-by-others, while `startup_profiles` can grow richer (more fields, more public reads) without bloating the identity doc every client fetches on every auth check.
 
@@ -99,16 +106,19 @@ Doc ID = auto-generated (mirrors `startup_profiles`, not doc-id-as-owner-UID).
 
 **Verification badge**: unlike `startup_profiles.isVerified` (an admin-granted flag), the student verification checkmark is `completionPercentage >= 100`, computed client-side on `StudentProfileEntity` from how many of its fields are filled — no separate Firestore field needed. Pass 2/3 additions (resume, portfolio, projects, etc.) will extend this calculation's denominator additively, not restructure it.
 
-### `bookmarks/{uid}`
-Doc ID = the bookmarking user's UID. One document per user.
+### `users/{uid}/bookmarks/{opportunityId}`
+Doc ID = the bookmarked opportunity's ID — one tiny doc per bookmark, not an array-in-doc.
 
 | Field | Type | Notes |
 |---|---|---|
-| `opportunityIds` | string[] | array-in-doc, mutated via `arrayUnion`/`arrayRemove` |
+| `opportunityId` | string | duplicated as a field (not just the doc ID) so `collectionGroup('bookmarks').where('opportunityId', ==)` can filter across every user's subcollection |
+| `createdAt` | timestamp | |
 
-**Why it exists**: kept separate from `users` purely so toggling a bookmark never rewrites the user's core profile doc (different write frequency, different concern).
+**Why it exists, and why a subcollection**: kept separate from `users` purely so toggling a bookmark never rewrites the user's core profile doc. This *replaced* an earlier array-in-doc design (`bookmarks/{uid}.opportunityIds`) specifically to fix two limits that design had: Firestore's 1MB document size cap bounding the array's practical size, and there being no way to query "which users bookmarked opportunity X." The subcollection shape removes both — unbounded count per user, and a `collectionGroup('bookmarks')` query now powers the startup analytics dashboard's per-opportunity "Bookmarks" stat (see `firestore.indexes.json`'s `COLLECTION_GROUP` index on `opportunityId`).
 
-**Known scaling ceiling**: this is an array-in-document design, not a subcollection. It's simple and cheap for realistic bookmark counts (tens per user) but has two real limits: (1) Firestore's 1MB document size cap bounds the array's practical size, and (2) there's no way to query "which users bookmarked opportunity X" without a different structure. If bookmark counts or that reverse-query need ever become real, migrate to `users/{uid}/bookmarks/{opportunityId}` subcollection docs (doc ID = opportunity ID, body = `{createdAt}`) — each bookmark becomes its own tiny doc, unbounded count, and a `collectionGroup('bookmarks')` query becomes possible for "most bookmarked" features. Not done this pass: it requires rewriting the bookmark datasource/repository/provider layer plus migrating any already-bookmarked users' data.
+**Migration**: `BookmarkRemoteDatasource.migrateLegacyBookmarksIfNeeded(userId)` runs once per sign-in (wired through `bookmarkMigrationProvider`, watched from `appRouterProvider` the same way `presenceHeartbeatProvider` is) — it lifts any existing `bookmarks/{uid}.opportunityIds` array into the new subcollection the first time it finds the subcollection empty, then no-ops on every subsequent call. The legacy top-level `bookmarks/{uid}` doc is left in place (harmless, unread by the app after migration) rather than deleted, and its `firestore.rules` entry is kept read/write-able only so this migration can still reach it.
+
+**Read exposure tradeoff**: the `collectionGroup` count query requires a broad rule (`match /{path=**}/bookmarks/{bookmarkId} { allow read: if isSignedIn(); }`) since Firestore evaluates rules per-document even for aggregate queries. This is safe because `.count()` never returns document data to the client — only the numeric total — so no user's individual bookmark list is exposed, only "how many bookmarked this opportunity."
 
 ### `conversations/{id}`
 Doc ID = **deterministic**: the two participants' UIDs, sorted and joined with `_` (not auto-generated) — makes "find or create the thread between these two users" a direct doc read instead of a query.

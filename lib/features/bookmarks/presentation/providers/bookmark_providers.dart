@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/analytics/analytics_service.dart';
+import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../data/datasources/bookmark_remote_datasource.dart';
 import '../../data/repositories/bookmark_repository_impl.dart';
 import '../../domain/repositories/bookmark_repository.dart';
@@ -29,6 +30,24 @@ final isBookmarkedProvider =
         opportunityId: args.opportunityId,
       ),
 );
+
+final bookmarkCountProvider = FutureProvider.family<int, String>((ref, opportunityId) {
+  return ref.watch(bookmarkRepositoryProvider).getBookmarkCount(opportunityId);
+});
+
+/// Self-managing, mirrors `presenceHeartbeatProvider`: watch once from the
+/// app root. Lifts each newly-seen user's legacy bookmark array into the
+/// subcollection structure exactly once per sign-in.
+final bookmarkMigrationProvider = Provider<void>((ref) {
+  String? migratedUserId;
+
+  ref.listen(authStateProvider, (previous, next) {
+    final user = next.valueOrNull;
+    if (user == null || migratedUserId == user.id) return;
+    migratedUserId = user.id;
+    ref.read(bookmarkRepositoryProvider).migrateLegacyBookmarksIfNeeded(user.id);
+  }, fireImmediately: true);
+});
 
 class BookmarkController extends AsyncNotifier<void> {
   late BookmarkRepository _repository;

@@ -58,6 +58,15 @@ class StartupProfileRemoteDatasource {
         website: profile.website,
         logoUrl: profile.logoUrl,
         isVerified: profile.isVerified,
+        founded: profile.founded,
+        startupStage: profile.startupStage,
+        companySize: profile.companySize,
+        mission: profile.mission,
+        vision: profile.vision,
+        culture: profile.culture,
+        founders: profile.founders,
+        teamMembers: profile.teamMembers,
+        galleryImages: profile.galleryImages,
         createdAt: profile.createdAt,
         updatedAt: profile.updatedAt,
       );
@@ -88,6 +97,57 @@ class StartupProfileRemoteDatasource {
       return downloadUrl;
     } on FirebaseException catch (e) {
       throw StorageException('Logo upload failed: ${e.message}');
+    }
+  }
+
+  /// Uploads a founder's photo and returns its download URL. Callers embed
+  /// the URL into the `FounderEntity` before writing the founders array via
+  /// [updateProfile] — no separate Firestore write happens here.
+  Future<String> uploadFounderPhoto(
+    String profileId,
+    String founderId,
+    Uint8List imageBytes,
+  ) async {
+    try {
+      final ref = _storage
+          .ref()
+          .child('${AppConstants.founderPhotosPath}/$profileId/$founderId.jpg');
+      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
+      return ref.getDownloadURL();
+    } on FirebaseException catch (e) {
+      throw StorageException('Founder photo upload failed: ${e.message}');
+    }
+  }
+
+  Future<String> uploadTeamMemberPhoto(
+    String profileId,
+    String memberId,
+    Uint8List imageBytes,
+  ) async {
+    try {
+      final ref = _storage
+          .ref()
+          .child('${AppConstants.teamPhotosPath}/$profileId/$memberId.jpg');
+      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
+      return ref.getDownloadURL();
+    } on FirebaseException catch (e) {
+      throw StorageException('Team member photo upload failed: ${e.message}');
+    }
+  }
+
+  Future<String> uploadGalleryImage(
+    String profileId,
+    String imageId,
+    Uint8List imageBytes,
+  ) async {
+    try {
+      final ref = _storage
+          .ref()
+          .child('${AppConstants.startupGalleryPath}/$profileId/$imageId.jpg');
+      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
+      return ref.getDownloadURL();
+    } on FirebaseException catch (e) {
+      throw StorageException('Gallery image upload failed: ${e.message}');
     }
   }
 

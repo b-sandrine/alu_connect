@@ -16,6 +16,19 @@ import '../../../../features/authentication/presentation/providers/auth_provider
 import '../../domain/entities/startup_profile_entity.dart';
 import '../providers/startup_profile_providers.dart';
 
+String _galleryCategoryLabel(GalleryCategory c) {
+  switch (c) {
+    case GalleryCategory.office:
+      return 'Office';
+    case GalleryCategory.events:
+      return 'Events';
+    case GalleryCategory.products:
+      return 'Products';
+    case GalleryCategory.achievements:
+      return 'Achievements';
+  }
+}
+
 class StartupProfileScreen extends ConsumerWidget {
   const StartupProfileScreen({super.key, required this.ownerId});
 
@@ -66,9 +79,245 @@ class _ProfileContent extends ConsumerWidget {
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               _AboutSection(profile: profile),
+              const SizedBox(height: AppSpacing.xxl),
+              _FoundersSection(profile: profile, isOwner: isOwner),
+              const SizedBox(height: AppSpacing.xxl),
+              _TeamSection(profile: profile, isOwner: isOwner),
+              const SizedBox(height: AppSpacing.xxl),
+              _GallerySection(profile: profile, isOwner: isOwner),
             ]),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, this.onManage});
+
+  final String title;
+  final VoidCallback? onManage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title, style: AppTextStyles.titleSmall),
+        if (onManage != null)
+          TextButton.icon(
+            onPressed: onManage,
+            icon: const Icon(Icons.edit_outlined, size: 16),
+            label: const Text('Manage'),
+          ),
+      ],
+    );
+  }
+}
+
+class _FoundersSection extends StatelessWidget {
+  const _FoundersSection({required this.profile, required this.isOwner});
+
+  final StartupProfileEntity profile;
+  final bool isOwner;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    if (profile.founders.isEmpty && !isOwner) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(
+          title: 'Founders',
+          onManage: isOwner ? () => context.push('/startup-profile/founders') : null,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        if (profile.founders.isEmpty)
+          Text(
+            'No founders added yet.',
+            style: AppTextStyles.bodySmall.copyWith(color: colors.textHint),
+          )
+        else
+          SizedBox(
+            height: 108,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: profile.founders.length,
+              separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+              itemBuilder: (_, i) {
+                final f = profile.founders[i];
+                return SizedBox(
+                  width: 96,
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 32,
+                        backgroundColor: colors.info.withValues(alpha: 0.12),
+                        backgroundImage:
+                            f.photoUrl != null ? CachedNetworkImageProvider(f.photoUrl!) : null,
+                        child: f.photoUrl == null
+                            ? Text(
+                                f.name.isNotEmpty ? f.name[0].toUpperCase() : '?',
+                                style: AppTextStyles.titleMedium.copyWith(color: colors.info),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(f.name, style: AppTextStyles.labelSmall, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
+                      Text(f.role, style: AppTextStyles.caption, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _TeamSection extends StatelessWidget {
+  const _TeamSection({required this.profile, required this.isOwner});
+
+  final StartupProfileEntity profile;
+  final bool isOwner;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    if (profile.teamMembers.isEmpty && !isOwner) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(
+          title: 'Team',
+          onManage: isOwner ? () => context.push('/startup-profile/team') : null,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        if (profile.teamMembers.isEmpty)
+          Text(
+            'No team members added yet.',
+            style: AppTextStyles.bodySmall.copyWith(color: colors.textHint),
+          )
+        else
+          SizedBox(
+            height: 120,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: profile.teamMembers.length,
+              separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+              itemBuilder: (_, i) {
+                final m = profile.teamMembers[i];
+                return Container(
+                  width: 108,
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    border: Border.all(color: colors.border),
+                  ),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 26,
+                        backgroundColor: colors.startupAccent.withValues(alpha: 0.14),
+                        backgroundImage:
+                            m.photoUrl != null ? CachedNetworkImageProvider(m.photoUrl!) : null,
+                        child: m.photoUrl == null
+                            ? Text(
+                                m.name.isNotEmpty ? m.name[0].toUpperCase() : '?',
+                                style: AppTextStyles.titleSmall.copyWith(color: colors.startupAccent),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(m.name, style: AppTextStyles.labelSmall, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
+                      Text(m.department, style: AppTextStyles.caption, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _GallerySection extends StatelessWidget {
+  const _GallerySection({required this.profile, required this.isOwner});
+
+  final StartupProfileEntity profile;
+  final bool isOwner;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    if (profile.galleryImages.isEmpty && !isOwner) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(
+          title: 'Gallery',
+          onManage: isOwner ? () => context.push('/startup-profile/gallery') : null,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        if (profile.galleryImages.isEmpty)
+          Text(
+            'No photos added yet.',
+            style: AppTextStyles.bodySmall.copyWith(color: colors.textHint),
+          )
+        else
+          SizedBox(
+            height: 90,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: profile.galleryImages.length,
+              separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+              itemBuilder: (_, i) {
+                final g = profile.galleryImages[i];
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  child: Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: g.url,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => const ColoredBox(
+                          color: Colors.black12,
+                          child: SizedBox(width: 90, height: 90),
+                        ),
+                        errorWidget: (_, __, ___) =>
+                            const SizedBox(width: 90, height: 90, child: Icon(Icons.broken_image_outlined)),
+                      ),
+                      Positioned(
+                        left: 4,
+                        bottom: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                          ),
+                          child: Text(
+                            _galleryCategoryLabel(g.category),
+                            style: AppTextStyles.caption.copyWith(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
       ],
     );
   }

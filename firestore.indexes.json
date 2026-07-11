@@ -66,6 +66,13 @@
         { "fieldPath": "startupId", "order": "ASCENDING" },
         { "fieldPath": "appliedAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "bookmarks",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "opportunityId", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

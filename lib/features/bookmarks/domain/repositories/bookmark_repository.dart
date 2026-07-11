@@ -15,4 +15,11 @@ abstract interface class BookmarkRepository {
     required String userId,
     required String opportunityId,
   });
+
+  /// How many users have bookmarked this opportunity.
+  Future<int> getBookmarkCount(String opportunityId);
+
+  /// One-time lift of a user's legacy array-in-doc bookmarks into the
+  /// current subcollection structure. Safe to call repeatedly.
+  Future<void> migrateLegacyBookmarksIfNeeded(String userId);
 }

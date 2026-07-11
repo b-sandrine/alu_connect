@@ -30,4 +30,12 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
     required String opportunityId,
   }) =>
       _datasource.isBookmarked(userId: userId, opportunityId: opportunityId);
+
+  @override
+  Future<int> getBookmarkCount(String opportunityId) =>
+      _datasource.getBookmarkCount(opportunityId);
+
+  @override
+  Future<void> migrateLegacyBookmarksIfNeeded(String userId) =>
+      _datasource.migrateLegacyBookmarksIfNeeded(userId);
 }

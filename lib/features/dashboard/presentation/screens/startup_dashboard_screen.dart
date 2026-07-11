@@ -8,6 +8,7 @@ import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/loading_overlay.dart';
 import '../../../../features/applications/domain/entities/application_entity.dart';
 import '../../../../features/applications/presentation/providers/application_providers.dart';
+import '../../../../features/bookmarks/presentation/providers/bookmark_providers.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../../../features/applications/presentation/widgets/application_timeline.dart';
 import '../../../../features/messaging/presentation/providers/messaging_providers.dart';
@@ -315,6 +316,12 @@ class _OpportunitiesTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final opportunitiesAsync =
         ref.watch(opportunitiesByStartupProvider(userId));
+    final applicationsAsync = ref.watch(startupApplicationsProvider(userId));
+    final applicationCountByOpportunity = <String, int>{};
+    for (final a in applicationsAsync.valueOrNull ?? const []) {
+      applicationCountByOpportunity[a.opportunityId] =
+          (applicationCountByOpportunity[a.opportunityId] ?? 0) + 1;
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('My Postings')),
@@ -352,28 +359,51 @@ class _OpportunitiesTab extends ConsumerWidget {
             itemBuilder: (_, i) {
               final o = opportunities[i];
               return Card(
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 8),
-                  title: Text(o.title, style: AppTextStyles.titleSmall),
-                  subtitle: Text(
-                    '${o.type.name} · ${o.requiredSkills.take(2).join(', ')}',
-                    style: AppTextStyles.bodySmall,
-                  ),
-                  trailing: PopupMenuButton(
-                    itemBuilder: (_) => [
-                      const PopupMenuItem(
-                          value: 'applicants',
-                          child: Text('View applicants')),
-                      const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(o.title, style: AppTextStyles.titleSmall),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${o.type.name} · ${o.requiredSkills.take(2).join(', ')}',
+                                  style: AppTextStyles.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuButton(
+                            itemBuilder: (_) => [
+                              const PopupMenuItem(
+                                  value: 'applicants',
+                                  child: Text('View applicants')),
+                              const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                            ],
+                            onSelected: (v) {
+                              if (v == 'applicants') {
+                                context.push('/opportunities/${o.id}/applicants');
+                              } else if (v == 'edit') {
+                                context.push('/opportunities/${o.id}/edit', extra: o);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      _PostingStatsRow(
+                        views: o.viewCount,
+                        applications: applicationCountByOpportunity[o.id] ?? 0,
+                        opportunityId: o.id,
+                      ),
+                      const SizedBox(height: 4),
                     ],
-                    onSelected: (v) {
-                      if (v == 'applicants') {
-                        context.push('/opportunities/${o.id}/applicants');
-                      } else if (v == 'edit') {
-                        context.push('/opportunities/${o.id}/edit', extra: o);
-                      }
-                    },
                   ),
                 ),
               );
@@ -383,6 +413,52 @@ class _OpportunitiesTab extends ConsumerWidget {
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: e.toString()),
       ),
+    );
+  }
+}
+
+class _PostingStatsRow extends ConsumerWidget {
+  const _PostingStatsRow({
+    required this.views,
+    required this.applications,
+    required this.opportunityId,
+  });
+
+  final int views;
+  final int applications;
+  final String opportunityId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bookmarkCountAsync = ref.watch(bookmarkCountProvider(opportunityId));
+
+    return Row(
+      children: [
+        _StatChip(icon: Icons.visibility_outlined, value: views),
+        const SizedBox(width: 12),
+        _StatChip(icon: Icons.people_outline, value: applications),
+        const SizedBox(width: 12),
+        _StatChip(icon: Icons.bookmark_border, value: bookmarkCountAsync.valueOrNull ?? 0),
+      ],
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.icon, required this.value});
+
+  final IconData icon;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: AppColors.textSecondary),
+        const SizedBox(width: 4),
+        Text('$value', style: AppTextStyles.caption),
+      ],
     );
   }
 }

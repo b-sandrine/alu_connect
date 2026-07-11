@@ -17,6 +17,7 @@ import '../../features/applications/presentation/screens/application_detail_scre
 import '../../features/applications/presentation/screens/apply_screen.dart';
 import '../../features/applications/presentation/screens/my_applications_screen.dart';
 import '../../features/analytics/presentation/screens/startup_analytics_screen.dart';
+import '../../features/bookmarks/presentation/providers/bookmark_providers.dart';
 import '../../features/bookmarks/presentation/screens/bookmarks_screen.dart';
 import '../../features/dashboard/presentation/screens/startup_dashboard_screen.dart';
 import '../../features/dashboard/presentation/screens/student_dashboard_screen.dart';
@@ -28,6 +29,9 @@ import '../../features/opportunities/presentation/screens/create_edit_opportunit
 import '../../features/opportunities/presentation/screens/opportunity_detail_screen.dart';
 import '../../features/profiles/presentation/screens/edit_startup_profile_screen.dart';
 import '../../features/profiles/presentation/screens/edit_student_profile_screen.dart';
+import '../../features/profiles/presentation/screens/manage_founders_screen.dart';
+import '../../features/profiles/presentation/screens/manage_gallery_screen.dart';
+import '../../features/profiles/presentation/screens/manage_team_screen.dart';
 import '../../features/profiles/presentation/screens/startup_profile_screen.dart';
 import '../widgets/error_view.dart';
 
@@ -41,6 +45,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     refreshNotifier.refresh();
   });
   ref.watch(presenceHeartbeatProvider);
+  ref.watch(bookmarkMigrationProvider);
 
   return GoRouter(
     initialLocation: '/',
@@ -82,6 +87,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final startupOnly = location == '/startup-dashboard' ||
           location == '/opportunities/new' ||
           location == '/startup-profile/edit' ||
+          location == '/startup-profile/founders' ||
+          location == '/startup-profile/team' ||
+          location == '/startup-profile/gallery' ||
           location == '/startup-analytics' ||
           isEditOpportunity ||
           isApplicantsView;
@@ -148,6 +156,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/startup-profile/edit',
         builder: (_, __) => const EditStartupProfileScreen(),
+      ),
+      GoRoute(
+        path: '/startup-profile/founders',
+        builder: (_, __) => const ManageFoundersScreen(),
+      ),
+      GoRoute(
+        path: '/startup-profile/team',
+        builder: (_, __) => const ManageTeamScreen(),
+      ),
+      GoRoute(
+        path: '/startup-profile/gallery',
+        builder: (_, __) => const ManageGalleryScreen(),
       ),
       GoRoute(
         path: '/student-profile/edit',

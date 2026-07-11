@@ -18,6 +18,9 @@ class AppConstants {
   static const String profileImagesPath = 'profile_images';
   static const String startupLogosPath = 'startup_logos';
   static const String chatImagesPath = 'chat_images';
+  static const String founderPhotosPath = 'founder_photos';
+  static const String teamPhotosPath = 'team_photos';
+  static const String startupGalleryPath = 'startup_gallery';
 
   // Pagination
   static const int opportunitiesPageSize = 20;

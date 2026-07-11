@@ -41,6 +41,38 @@ service firebase.storage {
         && request.resource.contentType.matches('image/.*');
     }
 
+    // founder_photos/{profileId}/{fileName}, team_photos/{profileId}/{fileName},
+    // startup_gallery/{profileId}/{fileName} — public read (shown on the
+    // startup's public profile to any browsing student), write only by the
+    // startup that owns the referenced startup_profiles/{profileId} doc.
+    // Cross-service check, same pattern as chat_images below.
+    function isProfileOwner(profileId) {
+      return request.auth != null
+        && request.auth.uid ==
+           firestore.get(/databases/(default)/documents/startup_profiles/$(profileId)).data.ownerId;
+    }
+
+    match /founder_photos/{profileId}/{fileName} {
+      allow read: if true;
+      allow write: if isProfileOwner(profileId)
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /team_photos/{profileId}/{fileName} {
+      allow read: if true;
+      allow write: if isProfileOwner(profileId)
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /startup_gallery/{profileId}/{fileName} {
+      allow read: if true;
+      allow write: if isProfileOwner(profileId)
+        && request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }
