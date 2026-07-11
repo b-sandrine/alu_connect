@@ -19,5 +19,9 @@ abstract interface class ApplicationRepository {
     required String applicationId,
     required ApplicationStatus status,
     String? reviewNote,
+    DateTime? interviewScheduledAt,
+    String? interviewLocation,
+    String? interviewNotes,
+    String? offerNote,
   });
 }

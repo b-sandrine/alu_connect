@@ -97,6 +97,100 @@ class ApplicationController extends AsyncNotifier<void> {
     );
   }
 
+  /// Moves an applied application into screening.
+  Future<void> shortlist(ApplicationEntity application) => _transition(
+        application,
+        ApplicationStatus.screening,
+        allowedFrom: const [ApplicationStatus.applied],
+      );
+
+  Future<void> scheduleInterview(
+    ApplicationEntity application, {
+    required DateTime scheduledAt,
+    required String location,
+    String? notes,
+  }) async {
+    if (application.status != ApplicationStatus.screening) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.updateApplicationStatus(
+        applicationId: application.id,
+        status: ApplicationStatus.interview,
+        interviewScheduledAt: scheduledAt,
+        interviewLocation: location,
+        interviewNotes: notes,
+      ),
+    );
+  }
+
+  Future<void> moveToTechnicalAssessment(ApplicationEntity application) =>
+      _transition(
+        application,
+        ApplicationStatus.technicalAssessment,
+        allowedFrom: const [ApplicationStatus.interview],
+      );
+
+  Future<void> makeOffer(ApplicationEntity application, {String? note}) async {
+    if (application.status != ApplicationStatus.technicalAssessment) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.updateApplicationStatus(
+        applicationId: application.id,
+        status: ApplicationStatus.offer,
+        offerNote: note,
+      ),
+    );
+  }
+
+  /// Withdraws/declines an application. Available to the startup at any
+  /// non-terminal stage.
+  Future<void> reject(ApplicationEntity application, {String? note}) async {
+    if (!application.isActive) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.updateApplicationStatus(
+        applicationId: application.id,
+        status: ApplicationStatus.rejected,
+        reviewNote: note,
+      ),
+    );
+  }
+
+  /// Applicant-initiated: accepting their own offer.
+  Future<void> acceptOffer(ApplicationEntity application) => _transition(
+        application,
+        ApplicationStatus.accepted,
+        allowedFrom: const [ApplicationStatus.offer],
+      );
+
+  /// Applicant-initiated: declining their own offer.
+  Future<void> declineOffer(ApplicationEntity application) async {
+    if (application.status != ApplicationStatus.offer) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.updateApplicationStatus(
+        applicationId: application.id,
+        status: ApplicationStatus.rejected,
+        reviewNote: 'Declined by applicant',
+      ),
+    );
+  }
+
+  Future<void> _transition(
+    ApplicationEntity application,
+    ApplicationStatus next, {
+    required List<ApplicationStatus> allowedFrom,
+  }) async {
+    if (!allowedFrom.contains(application.status)) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.updateApplicationStatus(
+        applicationId: application.id,
+        status: next,
+      ),
+    );
+  }
+
   String? getErrorMessage() {
     return state.whenOrNull(
       error: (e, _) => e is AppException ? e.message : 'Something went wrong.',

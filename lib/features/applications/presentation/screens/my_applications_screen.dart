@@ -10,6 +10,7 @@ import '../../../../core/widgets/loading_overlay.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../domain/entities/application_entity.dart';
 import '../providers/application_providers.dart';
+import '../widgets/application_timeline.dart';
 
 class MyApplicationsScreen extends ConsumerWidget {
   const MyApplicationsScreen({super.key});
@@ -35,8 +36,7 @@ class MyApplicationsScreen extends ConsumerWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (_, i) => _ApplicationCard(
               application: applications[i],
-              onTap: () =>
-                  context.push('/opportunities/${applications[i].opportunityId}'),
+              onTap: () => context.push('/applications/${applications[i].id}'),
             ),
           );
         },
@@ -131,11 +131,7 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (label, color) = switch (status) {
-      ApplicationStatus.pending => ('Pending', AppColors.statusPending),
-      ApplicationStatus.accepted => ('Accepted', AppColors.statusAccepted),
-      ApplicationStatus.rejected => ('Rejected', AppColors.statusRejected),
-    };
+    final color = applicationStatusColor(status);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -144,7 +140,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        label,
+        applicationStatusLabel(status),
         style: AppTextStyles.labelSmall.copyWith(color: color),
       ),
     );

@@ -64,7 +64,7 @@ class _ApplyScreenState extends ConsumerState<ApplyScreen> {
       applicantId: user.id,
       applicantName: user.displayName,
       coverLetter: _coverLetterController.text.trim(),
-      status: ApplicationStatus.pending,
+      status: ApplicationStatus.applied,
       appliedAt: DateTime.now(),
     );
 

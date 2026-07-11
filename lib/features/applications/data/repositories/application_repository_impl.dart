@@ -51,10 +51,18 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
     required String applicationId,
     required ApplicationStatus status,
     String? reviewNote,
+    DateTime? interviewScheduledAt,
+    String? interviewLocation,
+    String? interviewNotes,
+    String? offerNote,
   }) =>
       _datasource.updateApplicationStatus(
         applicationId: applicationId,
         status: status,
         reviewNote: reviewNote,
+        interviewScheduledAt: interviewScheduledAt,
+        interviewLocation: interviewLocation,
+        interviewNotes: interviewNotes,
+        offerNote: offerNote,
       );
 }

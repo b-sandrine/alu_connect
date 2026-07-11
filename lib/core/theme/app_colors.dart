@@ -40,6 +40,10 @@ class AppColors {
 
   // Application status
   static const Color statusPending = Color(0xFFFBBC04);
+  static const Color statusScreening = Color(0xFF4285F4);
+  static const Color statusInterview = Color(0xFF9C27B0);
+  static const Color statusTechnicalAssessment = Color(0xFFFF6D00);
+  static const Color statusOffer = Color(0xFF00ACC1);
   static const Color statusAccepted = Color(0xFF34A853);
   static const Color statusRejected = Color(0xFFEA4335);
 }

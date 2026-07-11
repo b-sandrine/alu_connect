@@ -13,6 +13,7 @@ import '../../features/authentication/presentation/screens/splash_screen.dart';
 import '../../features/authentication/presentation/screens/startup_onboarding_screen.dart';
 import '../../features/authentication/presentation/screens/student_onboarding_screen.dart';
 import '../../features/applications/presentation/screens/applicants_screen.dart';
+import '../../features/applications/presentation/screens/application_detail_screen.dart';
 import '../../features/applications/presentation/screens/apply_screen.dart';
 import '../../features/applications/presentation/screens/my_applications_screen.dart';
 import '../../features/bookmarks/presentation/screens/bookmarks_screen.dart';
@@ -78,10 +79,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           isEditOpportunity ||
           isApplicantsView;
 
+      final isApplicationDetail = location.startsWith('/applications/');
+
       final studentOnly = location == '/student-dashboard' ||
           location == '/my-applications' ||
           location == '/bookmarks' ||
-          isApplyView;
+          isApplyView ||
+          isApplicationDetail;
 
       if (user.isStudent && startupOnly) return '/student-dashboard';
       if (user.isStartup && studentOnly) return '/startup-dashboard';
@@ -170,6 +174,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/my-applications',
         builder: (_, __) => const MyApplicationsScreen(),
+      ),
+      GoRoute(
+        path: '/applications/:id',
+        builder: (_, state) =>
+            ApplicationDetailScreen(applicationId: state.pathParameters['id']!),
       ),
     ],
     errorBuilder: (_, state) => Scaffold(

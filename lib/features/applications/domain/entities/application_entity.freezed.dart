@@ -15,6 +15,176 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
+mixin _$ApplicationStatusEvent {
+  ApplicationStatus get status => throw _privateConstructorUsedError;
+  DateTime get changedAt => throw _privateConstructorUsedError;
+  String? get note => throw _privateConstructorUsedError;
+
+  /// Create a copy of ApplicationStatusEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ApplicationStatusEventCopyWith<ApplicationStatusEvent> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ApplicationStatusEventCopyWith<$Res> {
+  factory $ApplicationStatusEventCopyWith(ApplicationStatusEvent value,
+          $Res Function(ApplicationStatusEvent) then) =
+      _$ApplicationStatusEventCopyWithImpl<$Res, ApplicationStatusEvent>;
+  @useResult
+  $Res call({ApplicationStatus status, DateTime changedAt, String? note});
+}
+
+/// @nodoc
+class _$ApplicationStatusEventCopyWithImpl<$Res,
+        $Val extends ApplicationStatusEvent>
+    implements $ApplicationStatusEventCopyWith<$Res> {
+  _$ApplicationStatusEventCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ApplicationStatusEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? status = null,
+    Object? changedAt = null,
+    Object? note = freezed,
+  }) {
+    return _then(_value.copyWith(
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as ApplicationStatus,
+      changedAt: null == changedAt
+          ? _value.changedAt
+          : changedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      note: freezed == note
+          ? _value.note
+          : note // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ApplicationStatusEventImplCopyWith<$Res>
+    implements $ApplicationStatusEventCopyWith<$Res> {
+  factory _$$ApplicationStatusEventImplCopyWith(
+          _$ApplicationStatusEventImpl value,
+          $Res Function(_$ApplicationStatusEventImpl) then) =
+      __$$ApplicationStatusEventImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({ApplicationStatus status, DateTime changedAt, String? note});
+}
+
+/// @nodoc
+class __$$ApplicationStatusEventImplCopyWithImpl<$Res>
+    extends _$ApplicationStatusEventCopyWithImpl<$Res,
+        _$ApplicationStatusEventImpl>
+    implements _$$ApplicationStatusEventImplCopyWith<$Res> {
+  __$$ApplicationStatusEventImplCopyWithImpl(
+      _$ApplicationStatusEventImpl _value,
+      $Res Function(_$ApplicationStatusEventImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ApplicationStatusEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? status = null,
+    Object? changedAt = null,
+    Object? note = freezed,
+  }) {
+    return _then(_$ApplicationStatusEventImpl(
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as ApplicationStatus,
+      changedAt: null == changedAt
+          ? _value.changedAt
+          : changedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      note: freezed == note
+          ? _value.note
+          : note // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$ApplicationStatusEventImpl implements _ApplicationStatusEvent {
+  const _$ApplicationStatusEventImpl(
+      {required this.status, required this.changedAt, this.note});
+
+  @override
+  final ApplicationStatus status;
+  @override
+  final DateTime changedAt;
+  @override
+  final String? note;
+
+  @override
+  String toString() {
+    return 'ApplicationStatusEvent(status: $status, changedAt: $changedAt, note: $note)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ApplicationStatusEventImpl &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.changedAt, changedAt) ||
+                other.changedAt == changedAt) &&
+            (identical(other.note, note) || other.note == note));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, status, changedAt, note);
+
+  /// Create a copy of ApplicationStatusEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ApplicationStatusEventImplCopyWith<_$ApplicationStatusEventImpl>
+      get copyWith => __$$ApplicationStatusEventImplCopyWithImpl<
+          _$ApplicationStatusEventImpl>(this, _$identity);
+}
+
+abstract class _ApplicationStatusEvent implements ApplicationStatusEvent {
+  const factory _ApplicationStatusEvent(
+      {required final ApplicationStatus status,
+      required final DateTime changedAt,
+      final String? note}) = _$ApplicationStatusEventImpl;
+
+  @override
+  ApplicationStatus get status;
+  @override
+  DateTime get changedAt;
+  @override
+  String? get note;
+
+  /// Create a copy of ApplicationStatusEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ApplicationStatusEventImplCopyWith<_$ApplicationStatusEventImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$ApplicationEntity {
   String get id => throw _privateConstructorUsedError;
   String get opportunityId => throw _privateConstructorUsedError;
@@ -28,6 +198,12 @@ mixin _$ApplicationEntity {
   DateTime get appliedAt => throw _privateConstructorUsedError;
   DateTime? get reviewedAt => throw _privateConstructorUsedError;
   String? get reviewNote => throw _privateConstructorUsedError;
+  List<ApplicationStatusEvent> get statusHistory =>
+      throw _privateConstructorUsedError;
+  DateTime? get interviewScheduledAt => throw _privateConstructorUsedError;
+  String? get interviewLocation => throw _privateConstructorUsedError;
+  String? get interviewNotes => throw _privateConstructorUsedError;
+  String? get offerNote => throw _privateConstructorUsedError;
 
   /// Create a copy of ApplicationEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -54,7 +230,12 @@ abstract class $ApplicationEntityCopyWith<$Res> {
       ApplicationStatus status,
       DateTime appliedAt,
       DateTime? reviewedAt,
-      String? reviewNote});
+      String? reviewNote,
+      List<ApplicationStatusEvent> statusHistory,
+      DateTime? interviewScheduledAt,
+      String? interviewLocation,
+      String? interviewNotes,
+      String? offerNote});
 }
 
 /// @nodoc
@@ -84,6 +265,11 @@ class _$ApplicationEntityCopyWithImpl<$Res, $Val extends ApplicationEntity>
     Object? appliedAt = null,
     Object? reviewedAt = freezed,
     Object? reviewNote = freezed,
+    Object? statusHistory = null,
+    Object? interviewScheduledAt = freezed,
+    Object? interviewLocation = freezed,
+    Object? interviewNotes = freezed,
+    Object? offerNote = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -134,6 +320,26 @@ class _$ApplicationEntityCopyWithImpl<$Res, $Val extends ApplicationEntity>
           ? _value.reviewNote
           : reviewNote // ignore: cast_nullable_to_non_nullable
               as String?,
+      statusHistory: null == statusHistory
+          ? _value.statusHistory
+          : statusHistory // ignore: cast_nullable_to_non_nullable
+              as List<ApplicationStatusEvent>,
+      interviewScheduledAt: freezed == interviewScheduledAt
+          ? _value.interviewScheduledAt
+          : interviewScheduledAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      interviewLocation: freezed == interviewLocation
+          ? _value.interviewLocation
+          : interviewLocation // ignore: cast_nullable_to_non_nullable
+              as String?,
+      interviewNotes: freezed == interviewNotes
+          ? _value.interviewNotes
+          : interviewNotes // ignore: cast_nullable_to_non_nullable
+              as String?,
+      offerNote: freezed == offerNote
+          ? _value.offerNote
+          : offerNote // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -158,7 +364,12 @@ abstract class _$$ApplicationEntityImplCopyWith<$Res>
       ApplicationStatus status,
       DateTime appliedAt,
       DateTime? reviewedAt,
-      String? reviewNote});
+      String? reviewNote,
+      List<ApplicationStatusEvent> statusHistory,
+      DateTime? interviewScheduledAt,
+      String? interviewLocation,
+      String? interviewNotes,
+      String? offerNote});
 }
 
 /// @nodoc
@@ -186,6 +397,11 @@ class __$$ApplicationEntityImplCopyWithImpl<$Res>
     Object? appliedAt = null,
     Object? reviewedAt = freezed,
     Object? reviewNote = freezed,
+    Object? statusHistory = null,
+    Object? interviewScheduledAt = freezed,
+    Object? interviewLocation = freezed,
+    Object? interviewNotes = freezed,
+    Object? offerNote = freezed,
   }) {
     return _then(_$ApplicationEntityImpl(
       id: null == id
@@ -236,6 +452,26 @@ class __$$ApplicationEntityImplCopyWithImpl<$Res>
           ? _value.reviewNote
           : reviewNote // ignore: cast_nullable_to_non_nullable
               as String?,
+      statusHistory: null == statusHistory
+          ? _value._statusHistory
+          : statusHistory // ignore: cast_nullable_to_non_nullable
+              as List<ApplicationStatusEvent>,
+      interviewScheduledAt: freezed == interviewScheduledAt
+          ? _value.interviewScheduledAt
+          : interviewScheduledAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      interviewLocation: freezed == interviewLocation
+          ? _value.interviewLocation
+          : interviewLocation // ignore: cast_nullable_to_non_nullable
+              as String?,
+      interviewNotes: freezed == interviewNotes
+          ? _value.interviewNotes
+          : interviewNotes // ignore: cast_nullable_to_non_nullable
+              as String?,
+      offerNote: freezed == offerNote
+          ? _value.offerNote
+          : offerNote // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -255,8 +491,15 @@ class _$ApplicationEntityImpl extends _ApplicationEntity {
       required this.status,
       required this.appliedAt,
       this.reviewedAt,
-      this.reviewNote})
-      : super._();
+      this.reviewNote,
+      final List<ApplicationStatusEvent> statusHistory =
+          const <ApplicationStatusEvent>[],
+      this.interviewScheduledAt,
+      this.interviewLocation,
+      this.interviewNotes,
+      this.offerNote})
+      : _statusHistory = statusHistory,
+        super._();
 
   @override
   final String id;
@@ -282,10 +525,27 @@ class _$ApplicationEntityImpl extends _ApplicationEntity {
   final DateTime? reviewedAt;
   @override
   final String? reviewNote;
+  final List<ApplicationStatusEvent> _statusHistory;
+  @override
+  @JsonKey()
+  List<ApplicationStatusEvent> get statusHistory {
+    if (_statusHistory is EqualUnmodifiableListView) return _statusHistory;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_statusHistory);
+  }
+
+  @override
+  final DateTime? interviewScheduledAt;
+  @override
+  final String? interviewLocation;
+  @override
+  final String? interviewNotes;
+  @override
+  final String? offerNote;
 
   @override
   String toString() {
-    return 'ApplicationEntity(id: $id, opportunityId: $opportunityId, opportunityTitle: $opportunityTitle, startupId: $startupId, startupName: $startupName, applicantId: $applicantId, applicantName: $applicantName, coverLetter: $coverLetter, status: $status, appliedAt: $appliedAt, reviewedAt: $reviewedAt, reviewNote: $reviewNote)';
+    return 'ApplicationEntity(id: $id, opportunityId: $opportunityId, opportunityTitle: $opportunityTitle, startupId: $startupId, startupName: $startupName, applicantId: $applicantId, applicantName: $applicantName, coverLetter: $coverLetter, status: $status, appliedAt: $appliedAt, reviewedAt: $reviewedAt, reviewNote: $reviewNote, statusHistory: $statusHistory, interviewScheduledAt: $interviewScheduledAt, interviewLocation: $interviewLocation, interviewNotes: $interviewNotes, offerNote: $offerNote)';
   }
 
   @override
@@ -314,7 +574,17 @@ class _$ApplicationEntityImpl extends _ApplicationEntity {
             (identical(other.reviewedAt, reviewedAt) ||
                 other.reviewedAt == reviewedAt) &&
             (identical(other.reviewNote, reviewNote) ||
-                other.reviewNote == reviewNote));
+                other.reviewNote == reviewNote) &&
+            const DeepCollectionEquality()
+                .equals(other._statusHistory, _statusHistory) &&
+            (identical(other.interviewScheduledAt, interviewScheduledAt) ||
+                other.interviewScheduledAt == interviewScheduledAt) &&
+            (identical(other.interviewLocation, interviewLocation) ||
+                other.interviewLocation == interviewLocation) &&
+            (identical(other.interviewNotes, interviewNotes) ||
+                other.interviewNotes == interviewNotes) &&
+            (identical(other.offerNote, offerNote) ||
+                other.offerNote == offerNote));
   }
 
   @override
@@ -331,7 +601,12 @@ class _$ApplicationEntityImpl extends _ApplicationEntity {
       status,
       appliedAt,
       reviewedAt,
-      reviewNote);
+      reviewNote,
+      const DeepCollectionEquality().hash(_statusHistory),
+      interviewScheduledAt,
+      interviewLocation,
+      interviewNotes,
+      offerNote);
 
   /// Create a copy of ApplicationEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -356,7 +631,12 @@ abstract class _ApplicationEntity extends ApplicationEntity {
       required final ApplicationStatus status,
       required final DateTime appliedAt,
       final DateTime? reviewedAt,
-      final String? reviewNote}) = _$ApplicationEntityImpl;
+      final String? reviewNote,
+      final List<ApplicationStatusEvent> statusHistory,
+      final DateTime? interviewScheduledAt,
+      final String? interviewLocation,
+      final String? interviewNotes,
+      final String? offerNote}) = _$ApplicationEntityImpl;
   const _ApplicationEntity._() : super._();
 
   @override
@@ -383,6 +663,16 @@ abstract class _ApplicationEntity extends ApplicationEntity {
   DateTime? get reviewedAt;
   @override
   String? get reviewNote;
+  @override
+  List<ApplicationStatusEvent> get statusHistory;
+  @override
+  DateTime? get interviewScheduledAt;
+  @override
+  String? get interviewLocation;
+  @override
+  String? get interviewNotes;
+  @override
+  String? get offerNote;
 
   /// Create a copy of ApplicationEntity
   /// with the given fields replaced by the non-null parameter values.

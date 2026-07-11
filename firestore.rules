@@ -49,10 +49,12 @@ service cloud.firestore {
         && resource.data.startupId == request.auth.uid;
     }
 
-    // applications/{id} — the join between a student and an opportunity.
-    // Students can create their own and read their own; the owning startup
-    // can read theirs and update status/review fields only (can't rewrite
-    // the applicant's submitted content).
+    // applications/{id} — the join between a student and an opportunity,
+    // now tracking a full status pipeline (applied -> screening ->
+    // interview -> technicalAssessment -> offer -> accepted/rejected).
+    // Strict stage-adjacency validation lives in the app (ApplicationController),
+    // not here — these rules are the coarser security backstop: only the
+    // right actor can write, and terminal states can't be reopened.
     match /applications/{applicationId} {
       allow read: if isSignedIn()
         && (resource.data.applicantId == request.auth.uid
@@ -63,10 +65,25 @@ service cloud.firestore {
         && userRole(request.auth.uid) == 'student'
         && get(/databases/$(database)/documents/opportunities/$(request.resource.data.opportunityId)).data.isActive == true;
 
+      // Startup: can move a non-terminal application through the pipeline
+      // (or reject it) but can't touch the applicant's original content.
       allow update: if isSignedIn()
         && resource.data.startupId == request.auth.uid
+        && resource.data.status != 'accepted'
+        && resource.data.status != 'rejected'
         && unchanged('applicantId')
         && unchanged('opportunityId')
+        && unchanged('coverLetter')
+        && unchanged('appliedAt');
+
+      // Applicant: can only respond to their own offer (accept or decline).
+      allow update: if isSignedIn()
+        && resource.data.applicantId == request.auth.uid
+        && resource.data.status == 'offer'
+        && (request.resource.data.status == 'accepted'
+            || request.resource.data.status == 'rejected')
+        && unchanged('opportunityId')
+        && unchanged('startupId')
         && unchanged('coverLetter')
         && unchanged('appliedAt');
 

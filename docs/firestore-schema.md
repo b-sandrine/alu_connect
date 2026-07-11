@@ -48,11 +48,16 @@ Doc ID = auto-generated.
 | `startupId`, `startupName` | string | **denormalized** |
 | `applicantId`, `applicantName` | string | |
 | `coverLetter` | string | |
-| `status` | string enum | pending / accepted / rejected |
+| `status` | string enum | `applied` -> `screening` -> `interview` -> `technicalAssessment` -> `offer` -> `accepted`; `rejected` reachable from any non-terminal stage. `pending` is a legacy alias for `applied`, kept only so documents written before the pipeline existed still parse. |
 | `appliedAt` | timestamp | |
-| `reviewedAt`, `reviewNote` | timestamp?, string? | set by the startup on status change |
+| `reviewedAt`, `reviewNote` | timestamp?, string? | set on every status change (reviewNote doubles as the reject/decline reason) |
+| `statusHistory` | array of `{status, changedAt, note?}` | appended (never overwritten) on every transition — this is what powers the visual pipeline/tracker UI, not just the current `status` label |
+| `interviewScheduledAt`, `interviewLocation`, `interviewNotes` | timestamp?, string?, string? | set when the startup schedules an interview |
+| `offerNote` | string? | optional message accompanying an offer (stipend, start date, etc.) |
 
 **Why it exists**: the join between a student and an opportunity. Denormalizing `opportunityTitle`/`startupName`/`applicantName` means both the student's "My Applications" list and the startup's "Applicants" list render directly from this one collection with no follow-up reads to `opportunities` or `users`.
+
+**Transition validation**: strict stage-adjacency (e.g. you can't jump straight from `applied` to `offer`) is enforced in the app layer (`ApplicationController`), not in `firestore.rules` — Firestore's rules language isn't well-suited to expressing a full state machine, and over-fitting the rules to it risks fragile rules that block legitimate operations. The rules instead provide a coarser backstop: the owning startup can update a non-terminal application's status/history/interview/offer fields but never the applicant's original content (`applicantId`/`opportunityId`/`coverLetter`/`appliedAt`); a separate rule lets the applicant themselves flip `offer` -> `accepted`/`rejected` (responding to their own offer) and nothing else; `accepted`/`rejected` are immutable once set.
 
 ### `startup_profiles/{id}`
 Doc ID = auto-generated (not the owner's UID — see below).

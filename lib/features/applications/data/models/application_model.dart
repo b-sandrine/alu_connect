@@ -1,6 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/application_entity.dart';
 
+ApplicationStatusEvent _eventFromMap(Map<String, dynamic> map) {
+  return ApplicationStatusEvent(
+    status: ApplicationStatus.values.byName(map['status'] as String),
+    changedAt: (map['changedAt'] as Timestamp).toDate(),
+    note: map['note'] as String?,
+  );
+}
+
+Map<String, dynamic> _eventToMap(ApplicationStatusEvent e) {
+  return {
+    'status': e.status.name,
+    'changedAt': Timestamp.fromDate(e.changedAt),
+    'note': e.note,
+  };
+}
+
 class ApplicationModel {
   const ApplicationModel({
     required this.id,
@@ -15,6 +31,11 @@ class ApplicationModel {
     required this.appliedAt,
     this.reviewedAt,
     this.reviewNote,
+    this.statusHistory = const [],
+    this.interviewScheduledAt,
+    this.interviewLocation,
+    this.interviewNotes,
+    this.offerNote,
   });
 
   final String id;
@@ -29,6 +50,11 @@ class ApplicationModel {
   final DateTime appliedAt;
   final DateTime? reviewedAt;
   final String? reviewNote;
+  final List<ApplicationStatusEvent> statusHistory;
+  final DateTime? interviewScheduledAt;
+  final String? interviewLocation;
+  final String? interviewNotes;
+  final String? offerNote;
 
   factory ApplicationModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -47,6 +73,15 @@ class ApplicationModel {
           ? (data['reviewedAt'] as Timestamp).toDate()
           : null,
       reviewNote: data['reviewNote'] as String?,
+      statusHistory: (data['statusHistory'] as List? ?? [])
+          .map((e) => _eventFromMap(Map<String, dynamic>.from(e as Map)))
+          .toList(),
+      interviewScheduledAt: data['interviewScheduledAt'] != null
+          ? (data['interviewScheduledAt'] as Timestamp).toDate()
+          : null,
+      interviewLocation: data['interviewLocation'] as String?,
+      interviewNotes: data['interviewNotes'] as String?,
+      offerNote: data['offerNote'] as String?,
     );
   }
 
@@ -64,6 +99,11 @@ class ApplicationModel {
       appliedAt: e.appliedAt,
       reviewedAt: e.reviewedAt,
       reviewNote: e.reviewNote,
+      statusHistory: e.statusHistory,
+      interviewScheduledAt: e.interviewScheduledAt,
+      interviewLocation: e.interviewLocation,
+      interviewNotes: e.interviewNotes,
+      offerNote: e.offerNote,
     );
   }
 
@@ -80,6 +120,13 @@ class ApplicationModel {
       'appliedAt': Timestamp.fromDate(appliedAt),
       'reviewedAt': reviewedAt != null ? Timestamp.fromDate(reviewedAt!) : null,
       'reviewNote': reviewNote,
+      'statusHistory': statusHistory.map(_eventToMap).toList(),
+      'interviewScheduledAt': interviewScheduledAt != null
+          ? Timestamp.fromDate(interviewScheduledAt!)
+          : null,
+      'interviewLocation': interviewLocation,
+      'interviewNotes': interviewNotes,
+      'offerNote': offerNote,
     };
   }
 
@@ -97,6 +144,11 @@ class ApplicationModel {
       appliedAt: appliedAt,
       reviewedAt: reviewedAt,
       reviewNote: reviewNote,
+      statusHistory: statusHistory,
+      interviewScheduledAt: interviewScheduledAt,
+      interviewLocation: interviewLocation,
+      interviewNotes: interviewNotes,
+      offerNote: offerNote,
     );
   }
 }

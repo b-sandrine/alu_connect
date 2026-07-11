@@ -34,6 +34,7 @@ class ApplicationRemoteDatasource {
           );
         }
 
+        final now = DateTime.now();
         final withId = ApplicationModel(
           id: docRef.id,
           opportunityId: application.opportunityId,
@@ -43,8 +44,11 @@ class ApplicationRemoteDatasource {
           applicantId: application.applicantId,
           applicantName: application.applicantName,
           coverLetter: application.coverLetter,
-          status: ApplicationStatus.pending,
-          appliedAt: DateTime.now(),
+          status: ApplicationStatus.applied,
+          appliedAt: now,
+          statusHistory: [
+            ApplicationStatusEvent(status: ApplicationStatus.applied, changedAt: now),
+          ],
         );
 
         transaction.set(docRef, withId.toFirestore());
@@ -104,13 +108,33 @@ class ApplicationRemoteDatasource {
     required String applicationId,
     required ApplicationStatus status,
     String? reviewNote,
+    DateTime? interviewScheduledAt,
+    String? interviewLocation,
+    String? interviewNotes,
+    String? offerNote,
   }) async {
     try {
-      await _collection.doc(applicationId).update({
+      final now = DateTime.now();
+      final update = <String, dynamic>{
         'status': status.name,
-        'reviewedAt': Timestamp.fromDate(DateTime.now()),
+        'reviewedAt': Timestamp.fromDate(now),
         'reviewNote': reviewNote,
-      });
+        'statusHistory': FieldValue.arrayUnion([
+          {
+            'status': status.name,
+            'changedAt': Timestamp.fromDate(now),
+            'note': reviewNote,
+          },
+        ]),
+      };
+      if (interviewScheduledAt != null) {
+        update['interviewScheduledAt'] = Timestamp.fromDate(interviewScheduledAt);
+      }
+      if (interviewLocation != null) update['interviewLocation'] = interviewLocation;
+      if (interviewNotes != null) update['interviewNotes'] = interviewNotes;
+      if (offerNote != null) update['offerNote'] = offerNote;
+
+      await _collection.doc(applicationId).update(update);
     } on FirebaseException catch (e) {
       throw FirebaseErrorMapper.fromCode(e.code);
     }

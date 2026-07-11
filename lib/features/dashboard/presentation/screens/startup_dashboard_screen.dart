@@ -10,6 +10,7 @@ import '../../../../features/applications/domain/entities/application_entity.dar
 import '../../../../features/applications/presentation/providers/application_providers.dart';
 import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
+import '../../../../features/applications/presentation/widgets/application_timeline.dart';
 import '../../../../features/opportunities/presentation/providers/opportunity_providers.dart';
 import '../../../../features/profiles/presentation/providers/startup_profile_providers.dart';
 import '../providers/dashboard_stats_provider.dart';
@@ -251,11 +252,7 @@ class _RecentApplicationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (_, statusColor) = switch (application.status) {
-      ApplicationStatus.pending => ('Pending', AppColors.statusPending),
-      ApplicationStatus.accepted => ('Accepted', AppColors.statusAccepted),
-      ApplicationStatus.rejected => ('Rejected', AppColors.statusRejected),
-    };
+    final statusColor = applicationStatusColor(application.status);
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
