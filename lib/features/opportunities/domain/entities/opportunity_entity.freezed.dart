@@ -32,6 +32,7 @@ mixin _$OpportunityEntity {
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
+  int get viewCount => throw _privateConstructorUsedError;
 
   /// Create a copy of OpportunityEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -62,7 +63,8 @@ abstract class $OpportunityEntityCopyWith<$Res> {
       String? compensation,
       DateTime createdAt,
       DateTime updatedAt,
-      bool isActive});
+      bool isActive,
+      int viewCount});
 }
 
 /// @nodoc
@@ -96,6 +98,7 @@ class _$OpportunityEntityCopyWithImpl<$Res, $Val extends OpportunityEntity>
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? isActive = null,
+    Object? viewCount = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -162,6 +165,10 @@ class _$OpportunityEntityCopyWithImpl<$Res, $Val extends OpportunityEntity>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      viewCount: null == viewCount
+          ? _value.viewCount
+          : viewCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -190,7 +197,8 @@ abstract class _$$OpportunityEntityImplCopyWith<$Res>
       String? compensation,
       DateTime createdAt,
       DateTime updatedAt,
-      bool isActive});
+      bool isActive,
+      int viewCount});
 }
 
 /// @nodoc
@@ -222,6 +230,7 @@ class __$$OpportunityEntityImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? isActive = null,
+    Object? viewCount = null,
   }) {
     return _then(_$OpportunityEntityImpl(
       id: null == id
@@ -288,6 +297,10 @@ class __$$OpportunityEntityImplCopyWithImpl<$Res>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      viewCount: null == viewCount
+          ? _value.viewCount
+          : viewCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -311,7 +324,8 @@ class _$OpportunityEntityImpl extends _OpportunityEntity {
       this.compensation,
       required this.createdAt,
       required this.updatedAt,
-      this.isActive = true})
+      this.isActive = true,
+      this.viewCount = 0})
       : _requiredSkills = requiredSkills,
         super._();
 
@@ -355,10 +369,13 @@ class _$OpportunityEntityImpl extends _OpportunityEntity {
   @override
   @JsonKey()
   final bool isActive;
+  @override
+  @JsonKey()
+  final int viewCount;
 
   @override
   String toString() {
-    return 'OpportunityEntity(id: $id, startupId: $startupId, startupName: $startupName, startupLogoUrl: $startupLogoUrl, title: $title, description: $description, type: $type, category: $category, requiredSkills: $requiredSkills, location: $location, isRemote: $isRemote, deadline: $deadline, compensation: $compensation, createdAt: $createdAt, updatedAt: $updatedAt, isActive: $isActive)';
+    return 'OpportunityEntity(id: $id, startupId: $startupId, startupName: $startupName, startupLogoUrl: $startupLogoUrl, title: $title, description: $description, type: $type, category: $category, requiredSkills: $requiredSkills, location: $location, isRemote: $isRemote, deadline: $deadline, compensation: $compensation, createdAt: $createdAt, updatedAt: $updatedAt, isActive: $isActive, viewCount: $viewCount)';
   }
 
   @override
@@ -394,7 +411,9 @@ class _$OpportunityEntityImpl extends _OpportunityEntity {
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
             (identical(other.isActive, isActive) ||
-                other.isActive == isActive));
+                other.isActive == isActive) &&
+            (identical(other.viewCount, viewCount) ||
+                other.viewCount == viewCount));
   }
 
   @override
@@ -415,7 +434,8 @@ class _$OpportunityEntityImpl extends _OpportunityEntity {
       compensation,
       createdAt,
       updatedAt,
-      isActive);
+      isActive,
+      viewCount);
 
   /// Create a copy of OpportunityEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -444,7 +464,8 @@ abstract class _OpportunityEntity extends OpportunityEntity {
       final String? compensation,
       required final DateTime createdAt,
       required final DateTime updatedAt,
-      final bool isActive}) = _$OpportunityEntityImpl;
+      final bool isActive,
+      final int viewCount}) = _$OpportunityEntityImpl;
   const _OpportunityEntity._() : super._();
 
   @override
@@ -479,6 +500,8 @@ abstract class _OpportunityEntity extends OpportunityEntity {
   DateTime get updatedAt;
   @override
   bool get isActive;
+  @override
+  int get viewCount;
 
   /// Create a copy of OpportunityEntity
   /// with the given fields replaced by the non-null parameter values.

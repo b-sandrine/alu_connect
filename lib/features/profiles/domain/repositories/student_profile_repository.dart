@@ -5,6 +5,8 @@ import '../entities/student_profile_entity.dart';
 abstract interface class StudentProfileRepository {
   Future<StudentProfileEntity?> getProfileByOwnerId(String ownerId);
 
+  Future<List<StudentProfileEntity>> getProfilesByOwnerIds(List<String> ownerIds);
+
   Future<StudentProfileEntity> createProfile(StudentProfileEntity profile);
 
   Future<StudentProfileEntity> updateProfile(StudentProfileEntity profile);

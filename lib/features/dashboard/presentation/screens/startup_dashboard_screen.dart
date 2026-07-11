@@ -108,6 +108,13 @@ class _HomeTab extends ConsumerWidget {
             Text('Startup dashboard', style: AppTextStyles.caption),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart_outlined),
+            tooltip: 'Analytics',
+            onPressed: () => context.push('/startup-analytics'),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

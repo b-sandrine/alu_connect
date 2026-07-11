@@ -57,6 +57,36 @@ class StudentProfileRemoteDatasource {
     }
   }
 
+  /// Fetches profiles for exactly the given owner UIDs — used by the startup
+  /// analytics dashboard to aggregate applicants' skills/locations without a
+  /// per-applicant query. Firestore's `whereIn` caps at 30 values, so this
+  /// chunks like `OpportunityRemoteDatasource.getOpportunitiesByIds`.
+  Future<List<StudentProfileModel>> getProfilesByOwnerIds(
+    List<String> ownerIds,
+  ) async {
+    if (ownerIds.isEmpty) return [];
+    try {
+      final chunks = <List<String>>[
+        for (var i = 0; i < ownerIds.length; i += 30)
+          ownerIds.sublist(
+            i,
+            i + 30 > ownerIds.length ? ownerIds.length : i + 30,
+          ),
+      ];
+      final snapshots = await Future.wait(
+        chunks.map(
+          (chunk) => _collection.where('ownerId', whereIn: chunk).get(),
+        ),
+      );
+      return snapshots
+          .expand((snap) => snap.docs)
+          .map(StudentProfileModel.fromFirestore)
+          .toList();
+    } on FirebaseException catch (e) {
+      throw FirebaseErrorMapper.fromCode(e.code);
+    }
+  }
+
   Future<StudentProfileModel> updateProfile(StudentProfileModel profile) async {
     try {
       await _collection.doc(profile.id).update(profile.toFirestore());

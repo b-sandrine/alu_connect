@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -82,6 +84,14 @@ final hasMoreOpportunitiesProvider = Provider<bool>((ref) {
 
 void loadMoreOpportunities(WidgetRef ref) {
   ref.read(_opportunityPageMultiplierProvider.notifier).state++;
+}
+
+/// Fire-and-forget view counter — failures are swallowed since a missed
+/// view count is never worth surfacing an error to the viewer.
+void recordOpportunityView(WidgetRef ref, String opportunityId) {
+  unawaited(
+    ref.read(opportunityRepositoryProvider).incrementViewCount(opportunityId).catchError((_) {}),
+  );
 }
 
 final filteredOpportunitiesProvider =

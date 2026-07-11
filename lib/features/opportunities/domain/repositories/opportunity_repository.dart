@@ -27,4 +27,8 @@ abstract interface class OpportunityRepository {
   Future<OpportunityEntity> updateOpportunity(OpportunityEntity opportunity);
 
   Future<void> deleteOpportunity(String id);
+
+  /// Fire-and-forget view counter, incremented when a student opens an
+  /// opportunity's detail screen — backs the "Most viewed" analytics chart.
+  Future<void> incrementViewCount(String id);
 }

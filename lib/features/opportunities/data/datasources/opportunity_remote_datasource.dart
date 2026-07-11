@@ -125,4 +125,12 @@ class OpportunityRemoteDatasource {
       throw FirebaseErrorMapper.fromCode(e.code);
     }
   }
+
+  Future<void> incrementViewCount(String id) async {
+    try {
+      await _collection.doc(id).update({'viewCount': FieldValue.increment(1)});
+    } on FirebaseException catch (e) {
+      throw FirebaseErrorMapper.fromCode(e.code);
+    }
+  }
 }

@@ -17,6 +17,14 @@ class StudentProfileRepositoryImpl implements StudentProfileRepository {
   }
 
   @override
+  Future<List<StudentProfileEntity>> getProfilesByOwnerIds(
+    List<String> ownerIds,
+  ) async {
+    final models = await _datasource.getProfilesByOwnerIds(ownerIds);
+    return models.map((m) => m.toEntity()).toList();
+  }
+
+  @override
   Future<StudentProfileEntity> createProfile(StudentProfileEntity profile) async {
     final model = await _datasource.createProfile(
       StudentProfileModel.fromEntity(profile),

@@ -151,11 +151,14 @@ class _Header extends ConsumerWidget {
                   icon: const Icon(Icons.settings_outlined, color: Colors.white),
                   itemBuilder: (_) => const [
                     PopupMenuItem(value: 'edit', child: Text('Edit profile')),
+                    PopupMenuItem(value: 'analytics', child: Text('View analytics')),
                     PopupMenuItem(value: 'signout', child: Text('Sign out')),
                   ],
                   onSelected: (value) {
                     if (value == 'edit') {
                       context.push('/startup-profile/edit');
+                    } else if (value == 'analytics') {
+                      context.push('/startup-analytics');
                     } else if (value == 'signout') {
                       ref.read(authControllerProvider.notifier).signOut();
                     }

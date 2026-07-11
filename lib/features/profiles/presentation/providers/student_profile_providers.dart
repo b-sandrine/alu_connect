@@ -32,6 +32,11 @@ final studentProfileByOwnerProvider =
       .watchProfileByOwnerId(ownerId);
 });
 
+final studentProfilesByOwnerIdsProvider =
+    FutureProvider.family<List<StudentProfileEntity>, List<String>>((ref, ownerIds) {
+  return ref.watch(studentProfileRepositoryProvider).getProfilesByOwnerIds(ownerIds);
+});
+
 class StudentProfileController
     extends AsyncNotifier<StudentProfileEntity?> {
   late StudentProfileRepository _repository;

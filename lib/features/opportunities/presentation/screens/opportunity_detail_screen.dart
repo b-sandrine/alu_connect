@@ -20,16 +20,32 @@ final _opportunityDetailProvider =
   return ref.watch(opportunityRepositoryProvider).getOpportunityById(id);
 });
 
-class OpportunityDetailScreen extends ConsumerWidget {
+class OpportunityDetailScreen extends ConsumerStatefulWidget {
   const OpportunityDetailScreen({super.key, required this.opportunityId});
 
   final String opportunityId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<OpportunityDetailScreen> createState() =>
+      _OpportunityDetailScreenState();
+}
+
+class _OpportunityDetailScreenState
+    extends ConsumerState<OpportunityDetailScreen> {
+  bool _viewRecorded = false;
+
+  void _maybeRecordView(UserEntity? user) {
+    if (_viewRecorded || user == null || !user.isStudent) return;
+    _viewRecorded = true;
+    recordOpportunityView(ref, widget.opportunityId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final opportunityAsync =
-        ref.watch(_opportunityDetailProvider(opportunityId));
+        ref.watch(_opportunityDetailProvider(widget.opportunityId));
     final user = ref.watch(authStateProvider).value;
+    _maybeRecordView(user);
 
     return Scaffold(
       body: opportunityAsync.when(

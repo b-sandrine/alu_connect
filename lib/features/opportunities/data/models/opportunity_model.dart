@@ -19,6 +19,7 @@ class OpportunityModel {
     required this.createdAt,
     required this.updatedAt,
     this.isActive = true,
+    this.viewCount = 0,
   });
 
   final String id;
@@ -37,6 +38,7 @@ class OpportunityModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isActive;
+  final int viewCount;
 
   factory OpportunityModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -57,6 +59,7 @@ class OpportunityModel {
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
       isActive: data['isActive'] as bool? ?? true,
+      viewCount: (data['viewCount'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -78,6 +81,7 @@ class OpportunityModel {
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
       isActive: e.isActive,
+      viewCount: e.viewCount,
     );
   }
 
@@ -98,6 +102,7 @@ class OpportunityModel {
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
       'isActive': isActive,
+      'viewCount': viewCount,
     };
   }
 

@@ -16,6 +16,7 @@ import '../../features/applications/presentation/screens/applicants_screen.dart'
 import '../../features/applications/presentation/screens/application_detail_screen.dart';
 import '../../features/applications/presentation/screens/apply_screen.dart';
 import '../../features/applications/presentation/screens/my_applications_screen.dart';
+import '../../features/analytics/presentation/screens/startup_analytics_screen.dart';
 import '../../features/bookmarks/presentation/screens/bookmarks_screen.dart';
 import '../../features/dashboard/presentation/screens/startup_dashboard_screen.dart';
 import '../../features/dashboard/presentation/screens/student_dashboard_screen.dart';
@@ -81,6 +82,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final startupOnly = location == '/startup-dashboard' ||
           location == '/opportunities/new' ||
           location == '/startup-profile/edit' ||
+          location == '/startup-analytics' ||
           isEditOpportunity ||
           isApplicantsView;
 
@@ -155,6 +157,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/startup-profile/:ownerId',
         builder: (_, state) =>
             StartupProfileScreen(ownerId: state.pathParameters['ownerId']!),
+      ),
+      GoRoute(
+        path: '/startup-analytics',
+        builder: (_, __) => const StartupAnalyticsScreen(),
       ),
       GoRoute(
         path: '/opportunities/new',

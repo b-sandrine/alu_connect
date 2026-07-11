@@ -36,8 +36,11 @@ Doc ID = auto-generated.
 | `deadline`, `createdAt`, `updatedAt` | timestamp | |
 | `compensation` | string? | |
 | `isActive` | bool | soft-delete flag; deletion sets this false rather than removing the doc |
+| `viewCount` | int | denormalized counter, incremented via `FieldValue.increment(1)` each time a student opens the detail screen — powers the startup analytics dashboard's "Most viewed" chart without a separate views collection or per-view document |
 
 **Why it exists**: the core listing students browse and startups manage. `startupName`/`startupLogoUrl` are denormalized onto every opportunity so rendering a list of cards never requires a join read back to `startup_profiles` — this is the single biggest read-reduction in the schema, since the opportunities list is the most-viewed screen in the app.
+
+**View counting rule**: a dedicated `firestore.rules` branch lets *any* signed-in user (not just the owning startup) update `opportunities/{id}`, but only if the diff touches `viewCount` alone and increments it by exactly 1 — every other field stays owner-only. This keeps the counter open to write without opening the rest of the document.
 
 ### `applications/{id}`
 Doc ID = auto-generated.
@@ -132,6 +135,17 @@ Doc ID = **deterministic**: the two participants' UIDs, sorted and joined with `
 Immutable once sent (no edit/delete) — standard chat simplification. No per-message read tracking; read status is derived from the parent conversation's `lastReadAt`.
 
 **Presence (online / last seen)**: reuses `users/{uid}.lastActiveAt` rather than a new collection or Realtime Database. A heartbeat writes it periodically while the app is foregrounded; "online" is computed client-side as "updated within the last 60s" wherever it's shown. This is deliberately approximate — a killed (not gracefully backgrounded) app can show "online" for up to the heartbeat window — chosen over adding Realtime Database's `onDisconnect()` (which would give accurate, server-detected presence) to avoid a second Firebase service, console setup step, and rules file for presence accuracy alone, given this app's scale.
+
+### Startup Analytics Dashboard — no new collection
+
+The Analytics Dashboard (`/startup-analytics`) is a **derived view**, not a new collection: `startup_analytics_provider.dart` composes the same `opportunities` (by `startupId`) and `applications` (by `startupId`) streams the rest of the startup dashboard already reads, plus a batched `student_profiles` fetch (chunked `whereIn` on `ownerId`, mirroring `getOpportunitiesByIds`) for the distinct applicant IDs, to derive:
+
+- **Applications per month** — client-side grouping of `applications.appliedAt` by month.
+- **Most viewed internships** — `opportunities` sorted by `viewCount`.
+- **Acceptance rate** — `accepted / (accepted + rejected)` among applications with a terminal decision.
+- **Top skills / applicant locations** — frequency count over the fetched applicants' `student_profiles.skills` / `.location`.
+
+No extra reads happen on every dashboard visit beyond the one batched profile fetch — everything else rides streams the app already subscribes to.
 
 ## Query & index design
 

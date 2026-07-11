@@ -47,6 +47,13 @@ service cloud.firestore {
         && userRole(request.auth.uid) == 'startup';
       allow update, delete: if isSignedIn()
         && resource.data.startupId == request.auth.uid;
+
+      // Any signed-in student can bump viewCount by exactly 1 when opening
+      // the detail screen — backs the "Most viewed" analytics chart. Scoped
+      // tightly so a viewer can never touch any other field.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount'])
+        && request.resource.data.viewCount == resource.data.viewCount + 1;
     }
 
     // applications/{id} — the join between a student and an opportunity,

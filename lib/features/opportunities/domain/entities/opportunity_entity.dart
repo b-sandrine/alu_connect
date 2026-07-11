@@ -27,6 +27,7 @@ abstract class OpportunityEntity with _$OpportunityEntity {
     required DateTime createdAt,
     required DateTime updatedAt,
     @Default(true) bool isActive,
+    @Default(0) int viewCount,
   }) = _OpportunityEntity;
 
   bool get isExpired => deadline.isBefore(DateTime.now());

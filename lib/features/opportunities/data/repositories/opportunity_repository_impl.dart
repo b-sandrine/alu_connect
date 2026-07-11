@@ -61,4 +61,8 @@ class OpportunityRepositoryImpl implements OpportunityRepository {
   @override
   Future<void> deleteOpportunity(String id) =>
       _datasource.deleteOpportunity(id);
+
+  @override
+  Future<void> incrementViewCount(String id) =>
+      _datasource.incrementViewCount(id);
 }
