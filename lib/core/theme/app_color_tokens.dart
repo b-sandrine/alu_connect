@@ -22,6 +22,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.warning,
     required this.error,
     required this.info,
+    required this.accent,
     required this.studentAccent,
     required this.startupAccent,
     required this.glassFill,
@@ -41,6 +42,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   final Color warning;
   final Color error;
   final Color info;
+  final Color accent;
   final Color studentAccent;
   final Color startupAccent;
   final Color glassFill;
@@ -60,31 +62,33 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     warning: AppColors.warning,
     error: AppColors.error,
     info: AppColors.info,
+    accent: AppColors.accent,
     studentAccent: AppColors.studentBadge,
     startupAccent: AppColors.startupBadge,
     glassFill: Color(0x99FFFFFF),
     glassBorder: Color(0x4DFFFFFF),
-    heroGradient: [AppColors.primary, AppColors.primaryDark],
+    heroGradient: [AppColors.primary, AppColors.secondary],
   );
 
   static const dark = AppColorTokens(
     background: AppColors.backgroundDark,
     surface: AppColors.surfaceDark,
-    surfaceElevated: Color(0xFF2A2A2A),
-    textPrimary: Colors.white,
-    textSecondary: Colors.white70,
-    textHint: Colors.white38,
-    divider: Colors.white12,
-    border: Colors.white24,
+    surfaceElevated: Color(0xFF243044),
+    textPrimary: Color(0xFFF8FAFC),
+    textSecondary: Color(0xFFCBD5E1),
+    textHint: Color(0xFF64748B),
+    divider: Color(0xFF334155),
+    border: Color(0xFF334155),
     success: AppColors.success,
     warning: AppColors.warning,
     error: AppColors.error,
-    info: AppColors.info,
-    studentAccent: Color(0xFF7BA7F9),
-    startupAccent: Color(0xFF6FCF97),
+    info: Color(0xFF3B82F6),
+    accent: Color(0xFFFBBF24),
+    studentAccent: Color(0xFF3B82F6),
+    startupAccent: Color(0xFF4ADE80),
     glassFill: Color(0x14FFFFFF),
     glassBorder: Color(0x26FFFFFF),
-    heroGradient: [Color(0xFF1557B0), Color(0xFF0D2B4E)],
+    heroGradient: [Color(0xFF8B5CF6), Color(0xFF3B82F6)],
   );
 
   @override
@@ -101,6 +105,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? warning,
     Color? error,
     Color? info,
+    Color? accent,
     Color? studentAccent,
     Color? startupAccent,
     Color? glassFill,
@@ -120,6 +125,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       warning: warning ?? this.warning,
       error: error ?? this.error,
       info: info ?? this.info,
+      accent: accent ?? this.accent,
       studentAccent: studentAccent ?? this.studentAccent,
       startupAccent: startupAccent ?? this.startupAccent,
       glassFill: glassFill ?? this.glassFill,
@@ -144,6 +150,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       warning: Color.lerp(warning, other.warning, t)!,
       error: Color.lerp(error, other.error, t)!,
       info: Color.lerp(info, other.info, t)!,
+      accent: Color.lerp(accent, other.accent, t)!,
       studentAccent: Color.lerp(studentAccent, other.studentAccent, t)!,
       startupAccent: Color.lerp(startupAccent, other.startupAccent, t)!,
       glassFill: Color.lerp(glassFill, other.glassFill, t)!,
