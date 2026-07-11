@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/theme/context_theme_x.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/gradient_header.dart';
 import '../providers/auth_controller.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -40,99 +44,120 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final error = ref.read(authControllerProvider.notifier).getErrorMessage();
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      AppSnackBar.showError(context, error);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(authControllerProvider).isLoading;
+    final colors = context.colors;
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 48),
-                Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(10),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            GradientHeader(
+              roundedBottom: true,
+              padding: const EdgeInsets.fromLTRB(24, 56, 24, 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Hero(
+                        tag: 'app-logo',
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.connect_without_contact,
+                            color: Color(0xFF1A73E8),
+                            size: 24,
+                          ),
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.connect_without_contact,
-                        color: Colors.white,
-                        size: 24,
+                      const SizedBox(width: 12),
+                      Text(
+                        'ALU Connect',
+                        style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text('ALU Connect', style: AppTextStyles.titleLarge),
-                  ],
-                ),
-                const SizedBox(height: 40),
-                Text('Welcome back', style: AppTextStyles.displayMedium),
-                const SizedBox(height: 8),
-                Text(
-                  'Sign in to your account',
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    color: AppColors.textSecondary,
+                    ],
                   ),
-                ),
-                const SizedBox(height: 36),
-                AppTextField(
-                  label: 'Email address',
-                  hint: 'you@example.com',
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  prefixIcon: Icons.email_outlined,
-                  validator: Validators.email,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 16),
-                AppTextField(
-                  label: 'Password',
-                  controller: _passwordController,
-                  isPassword: true,
-                  prefixIcon: Icons.lock_outlined,
-                  validator: (v) => Validators.required(v, fieldName: 'Password'),
-                  textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _signIn(),
-                ),
-                const SizedBox(height: 32),
-                AppButton(
-                  label: 'Sign in',
-                  onPressed: _signIn,
-                  isLoading: isLoading,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account? ",
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                  const SizedBox(height: AppSpacing.xxl),
+                  Text(
+                    'Welcome back',
+                    style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
+                  ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.15, end: 0),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    'Sign in to your account',
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: Colors.white.withValues(alpha: 0.85),
                     ),
-                    TextButton(
-                      onPressed: () => context.push('/role-selection'),
-                      child: const Text('Sign up'),
+                  ).animate().fadeIn(duration: 300.ms, delay: 60.ms).slideY(begin: 0.15, end: 0),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppTextField(
+                      label: 'Email address',
+                      hint: 'you@example.com',
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      prefixIcon: Icons.email_outlined,
+                      validator: Validators.email,
+                      textInputAction: TextInputAction.next,
+                    ).animate().fadeIn(duration: 300.ms, delay: 120.ms).slideY(begin: 0.1, end: 0),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppTextField(
+                      label: 'Password',
+                      controller: _passwordController,
+                      isPassword: true,
+                      prefixIcon: Icons.lock_outlined,
+                      validator: (v) => Validators.required(v, fieldName: 'Password'),
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) => _signIn(),
+                    ).animate().fadeIn(duration: 300.ms, delay: 160.ms).slideY(begin: 0.1, end: 0),
+                    const SizedBox(height: AppSpacing.xxl),
+                    AppButton(
+                      label: 'Sign in',
+                      onPressed: _signIn,
+                      isLoading: isLoading,
+                      useGradient: true,
+                    ).animate().fadeIn(duration: 300.ms, delay: 200.ms),
+                    const SizedBox(height: AppSpacing.xl),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't have an account? ",
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => context.push('/role-selection'),
+                          child: const Text('Sign up'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

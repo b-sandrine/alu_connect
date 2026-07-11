@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/gradient_header.dart';
 
 class OnboardingHeader extends StatelessWidget {
   const OnboardingHeader({
@@ -17,10 +18,9 @@ class OnboardingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(color: AppColors.primary),
+    return GradientHeader(
+      roundedBottom: true,
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -29,19 +29,19 @@ class OnboardingHeader extends StatelessWidget {
             style: AppTextStyles.labelSmall.copyWith(
               color: Colors.white.withValues(alpha: 0.7),
             ),
-          ),
+          ).animate().fadeIn(duration: 300.ms),
           const SizedBox(height: 8),
           Text(
             title,
             style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
-          ),
+          ).animate().fadeIn(duration: 350.ms, delay: 60.ms).slideY(begin: 0.15, end: 0),
           const SizedBox(height: 4),
           Text(
             subtitle,
             style: AppTextStyles.bodyMedium.copyWith(
               color: Colors.white.withValues(alpha: 0.8),
             ),
-          ),
+          ).animate().fadeIn(duration: 350.ms, delay: 120.ms).slideY(begin: 0.15, end: 0),
         ],
       ),
     );

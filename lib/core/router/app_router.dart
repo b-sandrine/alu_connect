@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'page_transitions.dart';
 import '../../features/authentication/domain/entities/user_entity.dart';
 import '../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../features/authentication/presentation/screens/login_screen.dart';
@@ -88,30 +89,35 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/',
-        builder: (_, __) => const SplashScreen(),
+        pageBuilder: (_, state) =>
+            fadeThroughPage(state: state, child: const SplashScreen()),
       ),
       GoRoute(
         path: '/login',
-        builder: (_, __) => const LoginScreen(),
+        pageBuilder: (_, state) =>
+            fadeThroughPage(state: state, child: const LoginScreen()),
       ),
       GoRoute(
         path: '/role-selection',
-        builder: (_, __) => const RoleSelectionScreen(),
+        pageBuilder: (_, state) =>
+            sharedAxisPage(state: state, child: const RoleSelectionScreen()),
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final role = state.extra as UserRole? ?? UserRole.student;
-          return RegisterScreen(role: role);
+          return sharedAxisPage(state: state, child: RegisterScreen(role: role));
         },
       ),
       GoRoute(
         path: '/student-onboarding',
-        builder: (_, __) => const StudentOnboardingScreen(),
+        pageBuilder: (_, state) =>
+            sharedAxisPage(state: state, child: const StudentOnboardingScreen()),
       ),
       GoRoute(
         path: '/startup-onboarding',
-        builder: (_, __) => const StartupOnboardingScreen(),
+        pageBuilder: (_, state) =>
+            sharedAxisPage(state: state, child: const StartupOnboardingScreen()),
       ),
       GoRoute(
         path: '/student-dashboard',

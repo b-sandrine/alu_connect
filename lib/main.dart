@@ -23,6 +23,8 @@ class AluConnectApp extends ConsumerWidget {
       title: 'ALU Connect',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
       routerConfig: router,
     );
   }

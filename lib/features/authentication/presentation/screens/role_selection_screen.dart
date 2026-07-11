@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/theme/context_theme_x.dart';
+import '../../../../core/widgets/gradient_header.dart';
 import '../../domain/entities/user_entity.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
@@ -10,65 +13,84 @@ class RoleSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40),
-              Text('Join ALU Connect', style: AppTextStyles.displayMedium),
-              const SizedBox(height: 12),
-              Text(
-                'How will you use ALU Connect?',
-                style: AppTextStyles.bodyLarge.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 48),
-              _RoleCard(
-                role: UserRole.student,
-                title: 'I am a Student',
-                subtitle: 'Discover opportunities, apply to startups, and grow your career.',
-                icon: Icons.school_outlined,
-                color: AppColors.studentBadge,
-                onTap: () => context.push('/register', extra: UserRole.student),
-              ),
-              const SizedBox(height: 16),
-              _RoleCard(
-                role: UserRole.startup,
-                title: 'I represent a Startup',
-                subtitle: 'Post opportunities, review applications, and find top talent.',
-                icon: Icons.business_outlined,
-                color: AppColors.startupBadge,
-                onTap: () => context.push('/register', extra: UserRole.startup),
-              ),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            GradientHeader(
+              roundedBottom: true,
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Already have an account? ',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
+                    'Join ALU Connect',
+                    style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
+                  ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.15, end: 0),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    'How will you use ALU Connect?',
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: Colors.white.withValues(alpha: 0.85),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () => context.go('/login'),
-                    child: const Text('Sign in'),
-                  ),
+                  ).animate().fadeIn(duration: 300.ms, delay: 60.ms).slideY(begin: 0.15, end: 0),
                 ],
               ),
-            ],
-          ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _RoleCard(
+                      role: UserRole.student,
+                      title: 'I am a Student',
+                      subtitle: 'Discover opportunities, apply to startups, and grow your career.',
+                      icon: Icons.school_outlined,
+                      color: colors.studentAccent,
+                      onTap: () => context.push('/register', extra: UserRole.student),
+                    ).animate().fadeIn(duration: 300.ms, delay: 120.ms).slideY(begin: 0.1, end: 0),
+                    const SizedBox(height: AppSpacing.lg),
+                    _RoleCard(
+                      role: UserRole.startup,
+                      title: 'I represent a Startup',
+                      subtitle: 'Post opportunities, review applications, and find top talent.',
+                      icon: Icons.business_outlined,
+                      color: colors.startupAccent,
+                      onTap: () => context.push('/register', extra: UserRole.startup),
+                    ).animate().fadeIn(duration: 300.ms, delay: 200.ms).slideY(begin: 0.1, end: 0),
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Already have an account? ',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => context.go('/login'),
+                          child: const Text('Sign in'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _RoleCard extends StatelessWidget {
+class _RoleCard extends StatefulWidget {
   const _RoleCard({
     required this.role,
     required this.title,
@@ -86,44 +108,73 @@ class _RoleCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_RoleCard> createState() => _RoleCardState();
+}
+
+class _RoleCardState extends State<_RoleCard> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(14),
+    final colors = context.colors;
+
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) => setState(() => _pressed = false),
+      onTapCancel: () => setState(() => _pressed = false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _pressed ? 0.98 : 1,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          decoration: BoxDecoration(
+            color: colors.surfaceElevated,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: widget.color.withValues(alpha: 0.3), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: widget.color.withValues(alpha: 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: AppTextStyles.titleMedium),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: AppTextStyles.bodySmall,
+            ],
+          ),
+          child: Row(
+            children: [
+              Hero(
+                tag: 'role-icon-${widget.role.name}',
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: widget.color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                ],
+                  child: Icon(widget.icon, color: widget.color, size: 28),
+                ),
               ),
-            ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: color),
-          ],
+              const SizedBox(width: AppSpacing.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: AppTextStyles.titleMedium.copyWith(color: colors.textPrimary),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      widget.subtitle,
+                      style: AppTextStyles.bodySmall.copyWith(color: colors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios, size: 16, color: widget.color),
+            ],
+          ),
         ),
       ),
     );
