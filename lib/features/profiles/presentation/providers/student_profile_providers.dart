@@ -77,6 +77,7 @@ class StudentProfileController
             dribbbleUrl: profile.dribbbleUrl,
             mediumUrl: profile.mediumUrl,
             personalWebsiteUrl: profile.personalWebsiteUrl,
+            projects: existing.projects,
             createdAt: existing.createdAt,
             updatedAt: DateTime.now(),
           ),
@@ -103,6 +104,26 @@ class StudentProfileController
       await _repository.uploadResume(profileId, fileBytes, fileName);
       return state.value;
     });
+  }
+
+  Future<String> uploadProjectImage(
+    String profileId,
+    String projectId,
+    String imageId,
+    Uint8List imageBytes,
+  ) =>
+      _repository.uploadProjectImage(profileId, projectId, imageId, imageBytes);
+
+  Future<void> updateProjects(
+    StudentProfileEntity profile,
+    List<ProjectEntity> projects,
+  ) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.updateProfile(
+        profile.copyWith(projects: projects, updatedAt: DateTime.now()),
+      ),
+    );
   }
 
   String? getErrorMessage() {

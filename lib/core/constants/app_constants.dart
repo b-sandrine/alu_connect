@@ -22,6 +22,7 @@ class AppConstants {
   static const String teamPhotosPath = 'team_photos';
   static const String startupGalleryPath = 'startup_gallery';
   static const String resumesPath = 'resumes';
+  static const String projectImagesPath = 'project_images';
 
   // Pagination
   static const int opportunitiesPageSize = 20;

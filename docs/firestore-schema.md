@@ -104,11 +104,14 @@ Doc ID = auto-generated (mirrors `startup_profiles`, not doc-id-as-owner-UID).
 | `resumeFileName` | string? | original filename the student uploaded, shown in the UI since the Storage object itself is always named `{profileId}.pdf` |
 | `resumeUploadedAt` | timestamp? | |
 | `portfolioUrl`, `githubUrl`, `linkedinUrl`, `behanceUrl`, `dribbbleUrl`, `mediumUrl`, `personalWebsiteUrl` | string? | fixed set of optional link fields (not a dynamic array) since the platforms are a known, small, unchanging list — displayed as clickable cards on the profile |
+| `projects` | array of `{id, name, description, technologies, githubUrl?, liveDemoUrl?, imageUrls}` | embedded array, not a subcollection — same reasoning as `startup_profiles.founders`/`teamMembers`: a project is never queried independently of its owner's profile, so keeping it embedded avoids an extra read. `technologies`/`imageUrls` are themselves arrays nested inside each project entry |
 | `createdAt`, `updatedAt` | timestamp | |
 
 **Why it exists, and why it's separate from `users`**: same reasoning as `startup_profiles` — a rich, publicly-readable profile (bio, skills, education) shouldn't bloat the auth identity doc, and a startup will eventually need to read an applicant's profile.
 
-**Verification badge**: unlike `startup_profiles.isVerified` (an admin-granted flag), the student verification checkmark is `completionPercentage >= 100`, computed client-side on `StudentProfileEntity` from how many of its fields are filled (now including `resumeUrl`) — no separate Firestore field needed. Later Pass 2/3 additions (portfolio, projects, etc.) will extend this calculation's denominator additively, not restructure it.
+**Verification badge**: unlike `startup_profiles.isVerified` (an admin-granted flag), the student verification checkmark is `completionPercentage >= 100`, computed client-side on `StudentProfileEntity` from how many of its fields are filled (now including `resumeUrl`, `hasPortfolioLinks`, and `projects`) — no separate Firestore field needed.
+
+**Project images**: stored at `project_images/{profileId}/{projectId}/{imageId}.jpg` — each image gets its own client-generated ID (via the `uuid` package) so a project can hold multiple images, added or removed independently without disturbing the others.
 
 **Resume**: stored at `resumes/{profileId}.pdf` in Firebase Storage — a fixed, deterministic path per profile so "Replace" is just a fresh upload to the same path (no orphaned old files to clean up). "Preview" and "Download" both open `resumeUrl` via `url_launcher`; Flutter has no cross-platform way to force a true forced-download versus inline-view distinction without extra platform-specific code, so both actions currently do the same thing — the browser/OS decides how to present the PDF, which for a Storage-served file is typically inline in a new tab.
 

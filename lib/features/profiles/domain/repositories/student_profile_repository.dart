@@ -19,5 +19,12 @@ abstract interface class StudentProfileRepository {
     String fileName,
   );
 
+  Future<String> uploadProjectImage(
+    String profileId,
+    String projectId,
+    String imageId,
+    Uint8List imageBytes,
+  );
+
   Stream<StudentProfileEntity?> watchProfileByOwnerId(String ownerId);
 }

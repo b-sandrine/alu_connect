@@ -31,6 +31,7 @@ import '../../features/profiles/presentation/screens/edit_startup_profile_screen
 import '../../features/profiles/presentation/screens/edit_student_profile_screen.dart';
 import '../../features/profiles/presentation/screens/manage_founders_screen.dart';
 import '../../features/profiles/presentation/screens/manage_gallery_screen.dart';
+import '../../features/profiles/presentation/screens/manage_projects_screen.dart';
 import '../../features/profiles/presentation/screens/manage_team_screen.dart';
 import '../../features/profiles/presentation/screens/startup_profile_screen.dart';
 import '../widgets/error_view.dart';
@@ -100,6 +101,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           location == '/my-applications' ||
           location == '/bookmarks' ||
           location == '/student-profile/edit' ||
+          location == '/student-profile/projects' ||
           isApplyView ||
           isApplicationDetail;
 
@@ -172,6 +174,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/student-profile/edit',
         builder: (_, __) => const EditStudentProfileScreen(),
+      ),
+      GoRoute(
+        path: '/student-profile/projects',
+        builder: (_, __) => const ManageProjectsScreen(),
       ),
       GoRoute(
         path: '/startup-profile/:ownerId',

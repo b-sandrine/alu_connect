@@ -15,6 +15,286 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
+mixin _$ProjectEntity {
+  String get id => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get description => throw _privateConstructorUsedError;
+  List<String> get technologies => throw _privateConstructorUsedError;
+  String? get githubUrl => throw _privateConstructorUsedError;
+  String? get liveDemoUrl => throw _privateConstructorUsedError;
+  List<String> get imageUrls => throw _privateConstructorUsedError;
+
+  /// Create a copy of ProjectEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ProjectEntityCopyWith<ProjectEntity> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ProjectEntityCopyWith<$Res> {
+  factory $ProjectEntityCopyWith(
+          ProjectEntity value, $Res Function(ProjectEntity) then) =
+      _$ProjectEntityCopyWithImpl<$Res, ProjectEntity>;
+  @useResult
+  $Res call(
+      {String id,
+      String name,
+      String description,
+      List<String> technologies,
+      String? githubUrl,
+      String? liveDemoUrl,
+      List<String> imageUrls});
+}
+
+/// @nodoc
+class _$ProjectEntityCopyWithImpl<$Res, $Val extends ProjectEntity>
+    implements $ProjectEntityCopyWith<$Res> {
+  _$ProjectEntityCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ProjectEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? description = null,
+    Object? technologies = null,
+    Object? githubUrl = freezed,
+    Object? liveDemoUrl = freezed,
+    Object? imageUrls = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      technologies: null == technologies
+          ? _value.technologies
+          : technologies // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      githubUrl: freezed == githubUrl
+          ? _value.githubUrl
+          : githubUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      liveDemoUrl: freezed == liveDemoUrl
+          ? _value.liveDemoUrl
+          : liveDemoUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      imageUrls: null == imageUrls
+          ? _value.imageUrls
+          : imageUrls // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ProjectEntityImplCopyWith<$Res>
+    implements $ProjectEntityCopyWith<$Res> {
+  factory _$$ProjectEntityImplCopyWith(
+          _$ProjectEntityImpl value, $Res Function(_$ProjectEntityImpl) then) =
+      __$$ProjectEntityImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String name,
+      String description,
+      List<String> technologies,
+      String? githubUrl,
+      String? liveDemoUrl,
+      List<String> imageUrls});
+}
+
+/// @nodoc
+class __$$ProjectEntityImplCopyWithImpl<$Res>
+    extends _$ProjectEntityCopyWithImpl<$Res, _$ProjectEntityImpl>
+    implements _$$ProjectEntityImplCopyWith<$Res> {
+  __$$ProjectEntityImplCopyWithImpl(
+      _$ProjectEntityImpl _value, $Res Function(_$ProjectEntityImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ProjectEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? description = null,
+    Object? technologies = null,
+    Object? githubUrl = freezed,
+    Object? liveDemoUrl = freezed,
+    Object? imageUrls = null,
+  }) {
+    return _then(_$ProjectEntityImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      technologies: null == technologies
+          ? _value._technologies
+          : technologies // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      githubUrl: freezed == githubUrl
+          ? _value.githubUrl
+          : githubUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      liveDemoUrl: freezed == liveDemoUrl
+          ? _value.liveDemoUrl
+          : liveDemoUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      imageUrls: null == imageUrls
+          ? _value._imageUrls
+          : imageUrls // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$ProjectEntityImpl implements _ProjectEntity {
+  const _$ProjectEntityImpl(
+      {required this.id,
+      required this.name,
+      required this.description,
+      final List<String> technologies = const <String>[],
+      this.githubUrl,
+      this.liveDemoUrl,
+      final List<String> imageUrls = const <String>[]})
+      : _technologies = technologies,
+        _imageUrls = imageUrls;
+
+  @override
+  final String id;
+  @override
+  final String name;
+  @override
+  final String description;
+  final List<String> _technologies;
+  @override
+  @JsonKey()
+  List<String> get technologies {
+    if (_technologies is EqualUnmodifiableListView) return _technologies;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_technologies);
+  }
+
+  @override
+  final String? githubUrl;
+  @override
+  final String? liveDemoUrl;
+  final List<String> _imageUrls;
+  @override
+  @JsonKey()
+  List<String> get imageUrls {
+    if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_imageUrls);
+  }
+
+  @override
+  String toString() {
+    return 'ProjectEntity(id: $id, name: $name, description: $description, technologies: $technologies, githubUrl: $githubUrl, liveDemoUrl: $liveDemoUrl, imageUrls: $imageUrls)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProjectEntityImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            const DeepCollectionEquality()
+                .equals(other._technologies, _technologies) &&
+            (identical(other.githubUrl, githubUrl) ||
+                other.githubUrl == githubUrl) &&
+            (identical(other.liveDemoUrl, liveDemoUrl) ||
+                other.liveDemoUrl == liveDemoUrl) &&
+            const DeepCollectionEquality()
+                .equals(other._imageUrls, _imageUrls));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      description,
+      const DeepCollectionEquality().hash(_technologies),
+      githubUrl,
+      liveDemoUrl,
+      const DeepCollectionEquality().hash(_imageUrls));
+
+  /// Create a copy of ProjectEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProjectEntityImplCopyWith<_$ProjectEntityImpl> get copyWith =>
+      __$$ProjectEntityImplCopyWithImpl<_$ProjectEntityImpl>(this, _$identity);
+}
+
+abstract class _ProjectEntity implements ProjectEntity {
+  const factory _ProjectEntity(
+      {required final String id,
+      required final String name,
+      required final String description,
+      final List<String> technologies,
+      final String? githubUrl,
+      final String? liveDemoUrl,
+      final List<String> imageUrls}) = _$ProjectEntityImpl;
+
+  @override
+  String get id;
+  @override
+  String get name;
+  @override
+  String get description;
+  @override
+  List<String> get technologies;
+  @override
+  String? get githubUrl;
+  @override
+  String? get liveDemoUrl;
+  @override
+  List<String> get imageUrls;
+
+  /// Create a copy of ProjectEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ProjectEntityImplCopyWith<_$ProjectEntityImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$StudentProfileEntity {
   String get id => throw _privateConstructorUsedError;
   String get ownerId => throw _privateConstructorUsedError;
@@ -37,6 +317,7 @@ mixin _$StudentProfileEntity {
   String? get dribbbleUrl => throw _privateConstructorUsedError;
   String? get mediumUrl => throw _privateConstructorUsedError;
   String? get personalWebsiteUrl => throw _privateConstructorUsedError;
+  List<ProjectEntity> get projects => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -75,6 +356,7 @@ abstract class $StudentProfileEntityCopyWith<$Res> {
       String? dribbbleUrl,
       String? mediumUrl,
       String? personalWebsiteUrl,
+      List<ProjectEntity> projects,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -116,6 +398,7 @@ class _$StudentProfileEntityCopyWithImpl<$Res,
     Object? dribbbleUrl = freezed,
     Object? mediumUrl = freezed,
     Object? personalWebsiteUrl = freezed,
+    Object? projects = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -204,6 +487,10 @@ class _$StudentProfileEntityCopyWithImpl<$Res,
           ? _value.personalWebsiteUrl
           : personalWebsiteUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      projects: null == projects
+          ? _value.projects
+          : projects // ignore: cast_nullable_to_non_nullable
+              as List<ProjectEntity>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -246,6 +533,7 @@ abstract class _$$StudentProfileEntityImplCopyWith<$Res>
       String? dribbbleUrl,
       String? mediumUrl,
       String? personalWebsiteUrl,
+      List<ProjectEntity> projects,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -284,6 +572,7 @@ class __$$StudentProfileEntityImplCopyWithImpl<$Res>
     Object? dribbbleUrl = freezed,
     Object? mediumUrl = freezed,
     Object? personalWebsiteUrl = freezed,
+    Object? projects = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -372,6 +661,10 @@ class __$$StudentProfileEntityImplCopyWithImpl<$Res>
           ? _value.personalWebsiteUrl
           : personalWebsiteUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      projects: null == projects
+          ? _value._projects
+          : projects // ignore: cast_nullable_to_non_nullable
+              as List<ProjectEntity>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -409,9 +702,11 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
       this.dribbbleUrl,
       this.mediumUrl,
       this.personalWebsiteUrl,
+      final List<ProjectEntity> projects = const <ProjectEntity>[],
       required this.createdAt,
       required this.updatedAt})
       : _skills = skills,
+        _projects = projects,
         super._();
 
   @override
@@ -465,6 +760,15 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
   final String? mediumUrl;
   @override
   final String? personalWebsiteUrl;
+  final List<ProjectEntity> _projects;
+  @override
+  @JsonKey()
+  List<ProjectEntity> get projects {
+    if (_projects is EqualUnmodifiableListView) return _projects;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_projects);
+  }
+
   @override
   final DateTime createdAt;
   @override
@@ -472,7 +776,7 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
 
   @override
   String toString() {
-    return 'StudentProfileEntity(id: $id, ownerId: $ownerId, photoUrl: $photoUrl, university: $university, degree: $degree, yearOfStudy: $yearOfStudy, location: $location, bio: $bio, careerInterests: $careerInterests, personalStatement: $personalStatement, skills: $skills, resumeUrl: $resumeUrl, resumeFileName: $resumeFileName, resumeUploadedAt: $resumeUploadedAt, portfolioUrl: $portfolioUrl, githubUrl: $githubUrl, linkedinUrl: $linkedinUrl, behanceUrl: $behanceUrl, dribbbleUrl: $dribbbleUrl, mediumUrl: $mediumUrl, personalWebsiteUrl: $personalWebsiteUrl, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'StudentProfileEntity(id: $id, ownerId: $ownerId, photoUrl: $photoUrl, university: $university, degree: $degree, yearOfStudy: $yearOfStudy, location: $location, bio: $bio, careerInterests: $careerInterests, personalStatement: $personalStatement, skills: $skills, resumeUrl: $resumeUrl, resumeFileName: $resumeFileName, resumeUploadedAt: $resumeUploadedAt, portfolioUrl: $portfolioUrl, githubUrl: $githubUrl, linkedinUrl: $linkedinUrl, behanceUrl: $behanceUrl, dribbbleUrl: $dribbbleUrl, mediumUrl: $mediumUrl, personalWebsiteUrl: $personalWebsiteUrl, projects: $projects, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -517,6 +821,7 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
                 other.mediumUrl == mediumUrl) &&
             (identical(other.personalWebsiteUrl, personalWebsiteUrl) ||
                 other.personalWebsiteUrl == personalWebsiteUrl) &&
+            const DeepCollectionEquality().equals(other._projects, _projects) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -547,6 +852,7 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
         dribbbleUrl,
         mediumUrl,
         personalWebsiteUrl,
+        const DeepCollectionEquality().hash(_projects),
         createdAt,
         updatedAt
       ]);
@@ -585,6 +891,7 @@ abstract class _StudentProfileEntity extends StudentProfileEntity {
       final String? dribbbleUrl,
       final String? mediumUrl,
       final String? personalWebsiteUrl,
+      final List<ProjectEntity> projects,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$StudentProfileEntityImpl;
   const _StudentProfileEntity._() : super._();
@@ -631,6 +938,8 @@ abstract class _StudentProfileEntity extends StudentProfileEntity {
   String? get mediumUrl;
   @override
   String? get personalWebsiteUrl;
+  @override
+  List<ProjectEntity> get projects;
   @override
   DateTime get createdAt;
   @override

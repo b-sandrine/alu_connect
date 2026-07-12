@@ -85,6 +85,15 @@ class StudentProfileScreen extends ConsumerWidget {
                           ),
                     orElse: () => const SizedBox.shrink(),
                   ),
+                  profileAsync.maybeWhen(
+                    data: (profile) => profile == null
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 28),
+                            child: _ProjectsSection(profile: profile),
+                          ),
+                    orElse: () => const SizedBox.shrink(),
+                  ),
                   const SizedBox(height: 24),
                 ]),
               ),
@@ -633,6 +642,175 @@ class _PortfolioCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ProjectsSection extends StatelessWidget {
+  const _ProjectsSection({required this.profile});
+
+  final StudentProfileEntity profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final projects = profile.projects;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Projects', style: AppTextStyles.titleSmall),
+            TextButton.icon(
+              onPressed: () => context.push('/student-profile/projects'),
+              icon: const Icon(Icons.edit_outlined, size: 16),
+              label: const Text('Manage'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (projects.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Showcase what you\'ve built — add a project with a description, tech stack, and links.',
+                  style: AppTextStyles.bodySmall.copyWith(color: colors.textSecondary),
+                ),
+                const SizedBox(height: 14),
+                OutlinedButton.icon(
+                  onPressed: () => context.push('/student-profile/projects'),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add project'),
+                ),
+              ],
+            ),
+          )
+        else
+          Column(
+            children: [
+              for (var i = 0; i < projects.length; i++) ...[
+                if (i > 0) const SizedBox(height: 16),
+                _ProjectCard(project: projects[i]),
+              ],
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class _ProjectCard extends StatelessWidget {
+  const _ProjectCard({required this.project});
+
+  final ProjectEntity project;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colors.border),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (project.imageUrls.isNotEmpty)
+            SizedBox(
+              height: 160,
+              child: PageView(
+                children: [
+                  for (final url in project.imageUrls)
+                    CachedNetworkImage(
+                      imageUrl: url,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => const ColoredBox(color: Colors.black12),
+                      errorWidget: (_, __, ___) => const Icon(Icons.broken_image_outlined),
+                    ),
+                ],
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(project.name, style: AppTextStyles.titleMedium),
+                if (project.description.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(project.description, style: AppTextStyles.bodySmall),
+                ],
+                if (project.technologies.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: project.technologies
+                        .map((t) => Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: colors.info.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                t,
+                                style: AppTextStyles.labelSmall.copyWith(color: colors.info),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ],
+                if (project.githubUrl != null || project.liveDemoUrl != null) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      if (project.githubUrl != null)
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => launchUrl(
+                              Uri.parse(project.githubUrl!),
+                              mode: LaunchMode.externalApplication,
+                            ),
+                            icon: const Icon(FontAwesomeIcons.github, size: 16),
+                            label: const Text('Code'),
+                          ),
+                        ),
+                      if (project.githubUrl != null && project.liveDemoUrl != null)
+                        const SizedBox(width: 10),
+                      if (project.liveDemoUrl != null)
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: () => launchUrl(
+                              Uri.parse(project.liveDemoUrl!),
+                              mode: LaunchMode.externalApplication,
+                            ),
+                            icon: const Icon(Icons.launch, size: 16),
+                            label: const Text('Live demo'),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

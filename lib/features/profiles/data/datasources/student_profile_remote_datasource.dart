@@ -57,6 +57,7 @@ class StudentProfileRemoteDatasource {
         dribbbleUrl: profile.dribbbleUrl,
         mediumUrl: profile.mediumUrl,
         personalWebsiteUrl: profile.personalWebsiteUrl,
+        projects: profile.projects,
         createdAt: profile.createdAt,
         updatedAt: profile.updatedAt,
       );
@@ -137,6 +138,27 @@ class StudentProfileRemoteDatasource {
       return downloadUrl;
     } on FirebaseException catch (e) {
       throw StorageException('Resume upload failed: ${e.message}');
+    }
+  }
+
+  /// Uploads one image for a project and returns its download URL. Callers
+  /// embed the URL into the project's `imageUrls` list before writing via
+  /// [updateProfile] — no separate Firestore write happens here (mirrors
+  /// `uploadFounderPhoto` etc. in the startup profile datasource).
+  Future<String> uploadProjectImage(
+    String profileId,
+    String projectId,
+    String imageId,
+    Uint8List imageBytes,
+  ) async {
+    try {
+      final ref = _storage.ref().child(
+            '${AppConstants.projectImagesPath}/$profileId/$projectId/$imageId.jpg',
+          );
+      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
+      return ref.getDownloadURL();
+    } on FirebaseException catch (e) {
+      throw StorageException('Project image upload failed: ${e.message}');
     }
   }
 

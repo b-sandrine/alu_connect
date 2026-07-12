@@ -24,6 +24,7 @@ class StudentProfileModel {
     this.dribbbleUrl,
     this.mediumUrl,
     this.personalWebsiteUrl,
+    this.projects = const [],
     required this.createdAt,
     required this.updatedAt,
   });
@@ -49,8 +50,33 @@ class StudentProfileModel {
   final String? dribbbleUrl;
   final String? mediumUrl;
   final String? personalWebsiteUrl;
+  final List<ProjectEntity> projects;
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  static ProjectEntity _projectFromMap(Map<String, dynamic> m) {
+    return ProjectEntity(
+      id: m['id'] as String,
+      name: m['name'] as String,
+      description: m['description'] as String,
+      technologies: List<String>.from(m['technologies'] as List? ?? []),
+      githubUrl: m['githubUrl'] as String?,
+      liveDemoUrl: m['liveDemoUrl'] as String?,
+      imageUrls: List<String>.from(m['imageUrls'] as List? ?? []),
+    );
+  }
+
+  static Map<String, dynamic> _projectToMap(ProjectEntity p) {
+    return {
+      'id': p.id,
+      'name': p.name,
+      'description': p.description,
+      'technologies': p.technologies,
+      'githubUrl': p.githubUrl,
+      'liveDemoUrl': p.liveDemoUrl,
+      'imageUrls': p.imageUrls,
+    };
+  }
 
   factory StudentProfileModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -76,6 +102,9 @@ class StudentProfileModel {
       dribbbleUrl: data['dribbbleUrl'] as String?,
       mediumUrl: data['mediumUrl'] as String?,
       personalWebsiteUrl: data['personalWebsiteUrl'] as String?,
+      projects: (data['projects'] as List<dynamic>? ?? [])
+          .map((m) => _projectFromMap(m as Map<String, dynamic>))
+          .toList(),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
     );
@@ -104,6 +133,7 @@ class StudentProfileModel {
       dribbbleUrl: e.dribbbleUrl,
       mediumUrl: e.mediumUrl,
       personalWebsiteUrl: e.personalWebsiteUrl,
+      projects: e.projects,
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
     );
@@ -132,6 +162,7 @@ class StudentProfileModel {
       'dribbbleUrl': dribbbleUrl,
       'mediumUrl': mediumUrl,
       'personalWebsiteUrl': personalWebsiteUrl,
+      'projects': projects.map(_projectToMap).toList(),
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -160,6 +191,7 @@ class StudentProfileModel {
       dribbbleUrl: dribbbleUrl,
       mediumUrl: mediumUrl,
       personalWebsiteUrl: personalWebsiteUrl,
+      projects: projects,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

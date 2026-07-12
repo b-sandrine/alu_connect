@@ -3,6 +3,19 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'student_profile_entity.freezed.dart';
 
 @freezed
+abstract class ProjectEntity with _$ProjectEntity {
+  const factory ProjectEntity({
+    required String id,
+    required String name,
+    required String description,
+    @Default(<String>[]) List<String> technologies,
+    String? githubUrl,
+    String? liveDemoUrl,
+    @Default(<String>[]) List<String> imageUrls,
+  }) = _ProjectEntity;
+}
+
+@freezed
 abstract class StudentProfileEntity with _$StudentProfileEntity {
   const StudentProfileEntity._();
 
@@ -28,6 +41,7 @@ abstract class StudentProfileEntity with _$StudentProfileEntity {
     String? dribbbleUrl,
     String? mediumUrl,
     String? personalWebsiteUrl,
+    @Default(<ProjectEntity>[]) List<ProjectEntity> projects,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _StudentProfileEntity;
@@ -48,6 +62,7 @@ abstract class StudentProfileEntity with _$StudentProfileEntity {
       skills.isNotEmpty ? skills : null,
       resumeUrl,
       hasPortfolioLinks ? true : null,
+      projects.isNotEmpty ? projects : null,
     ];
     final filled = fields.where((f) => f != null).length;
     return ((filled / fields.length) * 100).round();
