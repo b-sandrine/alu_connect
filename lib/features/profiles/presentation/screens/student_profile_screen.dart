@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -16,6 +17,7 @@ import '../../../../core/widgets/loading_overlay.dart';
 import '../../../../features/authentication/domain/entities/user_entity.dart';
 import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
+import '../../../../features/applications/domain/entities/application_entity.dart';
 import '../../../../features/applications/presentation/providers/application_providers.dart';
 import '../../../../features/opportunities/presentation/providers/opportunity_providers.dart';
 import '../../../../features/opportunities/presentation/providers/recommended_opportunities_provider.dart';
@@ -61,6 +63,8 @@ class StudentProfileScreen extends ConsumerWidget {
                     loading: () => const LoadingIndicator(),
                     error: (e, _) => ErrorView(message: e.toString()),
                   ),
+                  const SizedBox(height: 28),
+                  _UpcomingInterviewsSection(studentId: user.id),
                   const SizedBox(height: 28),
                   _RecommendedSection(studentId: user.id),
                   const SizedBox(height: 28),
@@ -1106,6 +1110,157 @@ class _RecentlyViewedCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+String _googleCalendarUrl(ApplicationEntity application) {
+  final start = application.interviewScheduledAt!.toUtc();
+  final end = start.add(const Duration(hours: 1));
+  final fmt = DateFormat("yyyyMMdd'T'HHmmss'Z'");
+
+  final detailLines = <String>[
+    if (application.meetingLink != null) 'Meeting link: ${application.meetingLink}',
+    if (application.interviewNotes != null) application.interviewNotes!,
+  ];
+
+  final params = {
+    'action': 'TEMPLATE',
+    'text': 'Interview: ${application.opportunityTitle} at ${application.startupName}',
+    'dates': '${fmt.format(start)}/${fmt.format(end)}',
+    if (detailLines.isNotEmpty) 'details': detailLines.join('\n'),
+    if (application.interviewLocation != null) 'location': application.interviewLocation!,
+  };
+
+  return Uri.https('calendar.google.com', '/calendar/render', params).toString();
+}
+
+class _UpcomingInterviewsSection extends ConsumerWidget {
+  const _UpcomingInterviewsSection({required this.studentId});
+
+  final String studentId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final interviewsAsync = ref.watch(upcomingInterviewsProvider(studentId));
+
+    return interviewsAsync.maybeWhen(
+      data: (interviews) {
+        if (interviews.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Upcoming Interviews', style: AppTextStyles.titleSmall),
+            const SizedBox(height: 12),
+            Column(
+              children: [
+                for (var i = 0; i < interviews.length; i++) ...[
+                  if (i > 0) const SizedBox(height: 12),
+                  _InterviewCard(application: interviews[i]),
+                ],
+              ],
+            ),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _InterviewCard extends StatelessWidget {
+  const _InterviewCard({required this.application});
+
+  final ApplicationEntity application;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final scheduledAt = application.interviewScheduledAt!;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.info.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(application.opportunityTitle, style: AppTextStyles.titleSmall),
+          const SizedBox(height: 2),
+          Text(
+            application.startupName,
+            style: AppTextStyles.bodySmall.copyWith(color: colors.textSecondary),
+          ),
+          const SizedBox(height: 12),
+          _DetailRow(
+            icon: Icons.calendar_today_outlined,
+            text: DateFormat.yMMMEd().format(scheduledAt),
+          ),
+          const SizedBox(height: 6),
+          _DetailRow(
+            icon: Icons.access_time_outlined,
+            text: DateFormat.jm().format(scheduledAt),
+          ),
+          if (application.interviewLocation != null) ...[
+            const SizedBox(height: 6),
+            _DetailRow(
+              icon: Icons.location_on_outlined,
+              text: application.interviewLocation!,
+            ),
+          ],
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              if (application.meetingLink != null) ...[
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => launchUrl(
+                      Uri.parse(application.meetingLink!),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                    icon: const Icon(Icons.videocam_outlined, size: 16),
+                    label: const Text('Join meeting'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: () => launchUrl(
+                    Uri.parse(_googleCalendarUrl(application)),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  icon: const Icon(Icons.calendar_month_outlined, size: 16),
+                  label: const Text('Add to Calendar'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  const _DetailRow({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Row(
+      children: [
+        Icon(icon, size: 15, color: colors.textSecondary),
+        const SizedBox(width: 6),
+        Expanded(child: Text(text, style: AppTextStyles.bodySmall)),
+      ],
     );
   }
 }

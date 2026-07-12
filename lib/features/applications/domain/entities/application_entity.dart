@@ -45,6 +45,7 @@ abstract class ApplicationEntity with _$ApplicationEntity {
     @Default(<ApplicationStatusEvent>[]) List<ApplicationStatusEvent> statusHistory,
     DateTime? interviewScheduledAt,
     String? interviewLocation,
+    String? meetingLink,
     String? interviewNotes,
     String? offerNote,
   }) = _ApplicationEntity;

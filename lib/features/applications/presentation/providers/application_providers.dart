@@ -56,6 +56,24 @@ final applicantApplicationStatsProvider =
   });
 });
 
+/// Applications with a scheduled interview still in the future, soonest
+/// first — backs the student profile's "Upcoming Interviews" section.
+final upcomingInterviewsProvider =
+    Provider.family<AsyncValue<List<ApplicationEntity>>, String>((ref, applicantId) {
+  final applicationsAsync = ref.watch(applicantApplicationsProvider(applicantId));
+  return applicationsAsync.whenData((applications) {
+    final now = DateTime.now();
+    final upcoming = applications
+        .where((a) =>
+            a.status == ApplicationStatus.interview &&
+            a.interviewScheduledAt != null &&
+            a.interviewScheduledAt!.isAfter(now))
+        .toList()
+      ..sort((a, b) => a.interviewScheduledAt!.compareTo(b.interviewScheduledAt!));
+    return upcoming;
+  });
+});
+
 final hasAppliedProvider =
     FutureProvider.family<bool, ({String applicantId, String opportunityId})>(
   (ref, args) => ref.watch(applicationRepositoryProvider).hasApplied(
@@ -108,6 +126,7 @@ class ApplicationController extends AsyncNotifier<void> {
     ApplicationEntity application, {
     required DateTime scheduledAt,
     required String location,
+    String? meetingLink,
     String? notes,
   }) async {
     if (application.status != ApplicationStatus.screening) return;
@@ -118,6 +137,7 @@ class ApplicationController extends AsyncNotifier<void> {
         status: ApplicationStatus.interview,
         interviewScheduledAt: scheduledAt,
         interviewLocation: location,
+        meetingLink: meetingLink,
         interviewNotes: notes,
       ),
     );

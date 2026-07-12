@@ -53,6 +53,7 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
     String? reviewNote,
     DateTime? interviewScheduledAt,
     String? interviewLocation,
+    String? meetingLink,
     String? interviewNotes,
     String? offerNote,
   }) =>
@@ -62,6 +63,7 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
         reviewNote: reviewNote,
         interviewScheduledAt: interviewScheduledAt,
         interviewLocation: interviewLocation,
+        meetingLink: meetingLink,
         interviewNotes: interviewNotes,
         offerNote: offerNote,
       );

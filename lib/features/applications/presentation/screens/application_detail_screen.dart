@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -79,6 +80,17 @@ class _Detail extends ConsumerWidget {
                 if (application.interviewNotes != null) application.interviewNotes!,
               ],
             ),
+            if (application.meetingLink != null) ...[
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () => launchUrl(
+                  Uri.parse(application.meetingLink!),
+                  mode: LaunchMode.externalApplication,
+                ),
+                icon: const Icon(Icons.videocam_outlined, size: 18),
+                label: const Text('Join meeting'),
+              ),
+            ],
           ],
           if (application.status == ApplicationStatus.offer) ...[
             const SizedBox(height: 8),

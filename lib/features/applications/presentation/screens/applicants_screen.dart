@@ -323,6 +323,7 @@ class _StageActions extends ConsumerWidget {
             application,
             scheduledAt: result.scheduledAt,
             location: result.location,
+            meetingLink: result.meetingLink,
             notes: result.notes,
           ),
     );
@@ -333,11 +334,13 @@ class _InterviewDetails {
   const _InterviewDetails({
     required this.scheduledAt,
     required this.location,
+    this.meetingLink,
     this.notes,
   });
 
   final DateTime scheduledAt;
   final String location;
+  final String? meetingLink;
   final String? notes;
 }
 
@@ -353,11 +356,13 @@ class _ScheduleInterviewDialogState extends State<_ScheduleInterviewDialog> {
   DateTime? _date;
   TimeOfDay? _time;
   final _locationController = TextEditingController();
+  final _meetingLinkController = TextEditingController();
   final _notesController = TextEditingController();
 
   @override
   void dispose() {
     _locationController.dispose();
+    _meetingLinkController.dispose();
     _notesController.dispose();
     super.dispose();
   }
@@ -396,6 +401,9 @@ class _ScheduleInterviewDialogState extends State<_ScheduleInterviewDialog> {
       _InterviewDetails(
         scheduledAt: scheduledAt,
         location: _locationController.text.trim(),
+        meetingLink: _meetingLinkController.text.trim().isEmpty
+            ? null
+            : _meetingLinkController.text.trim(),
         notes: _notesController.text.trim().isEmpty
             ? null
             : _notesController.text.trim(),
@@ -434,9 +442,19 @@ class _ScheduleInterviewDialogState extends State<_ScheduleInterviewDialog> {
             TextField(
               controller: _locationController,
               decoration: const InputDecoration(
-                labelText: 'Location or meeting link',
+                labelText: 'Location',
+                hintText: 'e.g. Office address, or "Virtual"',
               ),
               onChanged: (_) => setState(() {}),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _meetingLinkController,
+              decoration: const InputDecoration(
+                labelText: 'Meeting link (optional)',
+                hintText: 'Zoom, Google Meet, etc.',
+              ),
+              keyboardType: TextInputType.url,
             ),
             const SizedBox(height: 12),
             TextField(

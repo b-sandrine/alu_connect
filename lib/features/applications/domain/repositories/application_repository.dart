@@ -21,6 +21,7 @@ abstract interface class ApplicationRepository {
     String? reviewNote,
     DateTime? interviewScheduledAt,
     String? interviewLocation,
+    String? meetingLink,
     String? interviewNotes,
     String? offerNote,
   });

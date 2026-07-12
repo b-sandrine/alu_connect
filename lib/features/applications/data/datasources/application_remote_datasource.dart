@@ -110,6 +110,7 @@ class ApplicationRemoteDatasource {
     String? reviewNote,
     DateTime? interviewScheduledAt,
     String? interviewLocation,
+    String? meetingLink,
     String? interviewNotes,
     String? offerNote,
   }) async {
@@ -131,6 +132,7 @@ class ApplicationRemoteDatasource {
         update['interviewScheduledAt'] = Timestamp.fromDate(interviewScheduledAt);
       }
       if (interviewLocation != null) update['interviewLocation'] = interviewLocation;
+      if (meetingLink != null) update['meetingLink'] = meetingLink;
       if (interviewNotes != null) update['interviewNotes'] = interviewNotes;
       if (offerNote != null) update['offerNote'] = offerNote;
 

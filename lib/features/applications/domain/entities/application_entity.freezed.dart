@@ -202,6 +202,7 @@ mixin _$ApplicationEntity {
       throw _privateConstructorUsedError;
   DateTime? get interviewScheduledAt => throw _privateConstructorUsedError;
   String? get interviewLocation => throw _privateConstructorUsedError;
+  String? get meetingLink => throw _privateConstructorUsedError;
   String? get interviewNotes => throw _privateConstructorUsedError;
   String? get offerNote => throw _privateConstructorUsedError;
 
@@ -234,6 +235,7 @@ abstract class $ApplicationEntityCopyWith<$Res> {
       List<ApplicationStatusEvent> statusHistory,
       DateTime? interviewScheduledAt,
       String? interviewLocation,
+      String? meetingLink,
       String? interviewNotes,
       String? offerNote});
 }
@@ -268,6 +270,7 @@ class _$ApplicationEntityCopyWithImpl<$Res, $Val extends ApplicationEntity>
     Object? statusHistory = null,
     Object? interviewScheduledAt = freezed,
     Object? interviewLocation = freezed,
+    Object? meetingLink = freezed,
     Object? interviewNotes = freezed,
     Object? offerNote = freezed,
   }) {
@@ -332,6 +335,10 @@ class _$ApplicationEntityCopyWithImpl<$Res, $Val extends ApplicationEntity>
           ? _value.interviewLocation
           : interviewLocation // ignore: cast_nullable_to_non_nullable
               as String?,
+      meetingLink: freezed == meetingLink
+          ? _value.meetingLink
+          : meetingLink // ignore: cast_nullable_to_non_nullable
+              as String?,
       interviewNotes: freezed == interviewNotes
           ? _value.interviewNotes
           : interviewNotes // ignore: cast_nullable_to_non_nullable
@@ -368,6 +375,7 @@ abstract class _$$ApplicationEntityImplCopyWith<$Res>
       List<ApplicationStatusEvent> statusHistory,
       DateTime? interviewScheduledAt,
       String? interviewLocation,
+      String? meetingLink,
       String? interviewNotes,
       String? offerNote});
 }
@@ -400,6 +408,7 @@ class __$$ApplicationEntityImplCopyWithImpl<$Res>
     Object? statusHistory = null,
     Object? interviewScheduledAt = freezed,
     Object? interviewLocation = freezed,
+    Object? meetingLink = freezed,
     Object? interviewNotes = freezed,
     Object? offerNote = freezed,
   }) {
@@ -464,6 +473,10 @@ class __$$ApplicationEntityImplCopyWithImpl<$Res>
           ? _value.interviewLocation
           : interviewLocation // ignore: cast_nullable_to_non_nullable
               as String?,
+      meetingLink: freezed == meetingLink
+          ? _value.meetingLink
+          : meetingLink // ignore: cast_nullable_to_non_nullable
+              as String?,
       interviewNotes: freezed == interviewNotes
           ? _value.interviewNotes
           : interviewNotes // ignore: cast_nullable_to_non_nullable
@@ -496,6 +509,7 @@ class _$ApplicationEntityImpl extends _ApplicationEntity {
           const <ApplicationStatusEvent>[],
       this.interviewScheduledAt,
       this.interviewLocation,
+      this.meetingLink,
       this.interviewNotes,
       this.offerNote})
       : _statusHistory = statusHistory,
@@ -539,13 +553,15 @@ class _$ApplicationEntityImpl extends _ApplicationEntity {
   @override
   final String? interviewLocation;
   @override
+  final String? meetingLink;
+  @override
   final String? interviewNotes;
   @override
   final String? offerNote;
 
   @override
   String toString() {
-    return 'ApplicationEntity(id: $id, opportunityId: $opportunityId, opportunityTitle: $opportunityTitle, startupId: $startupId, startupName: $startupName, applicantId: $applicantId, applicantName: $applicantName, coverLetter: $coverLetter, status: $status, appliedAt: $appliedAt, reviewedAt: $reviewedAt, reviewNote: $reviewNote, statusHistory: $statusHistory, interviewScheduledAt: $interviewScheduledAt, interviewLocation: $interviewLocation, interviewNotes: $interviewNotes, offerNote: $offerNote)';
+    return 'ApplicationEntity(id: $id, opportunityId: $opportunityId, opportunityTitle: $opportunityTitle, startupId: $startupId, startupName: $startupName, applicantId: $applicantId, applicantName: $applicantName, coverLetter: $coverLetter, status: $status, appliedAt: $appliedAt, reviewedAt: $reviewedAt, reviewNote: $reviewNote, statusHistory: $statusHistory, interviewScheduledAt: $interviewScheduledAt, interviewLocation: $interviewLocation, meetingLink: $meetingLink, interviewNotes: $interviewNotes, offerNote: $offerNote)';
   }
 
   @override
@@ -581,6 +597,8 @@ class _$ApplicationEntityImpl extends _ApplicationEntity {
                 other.interviewScheduledAt == interviewScheduledAt) &&
             (identical(other.interviewLocation, interviewLocation) ||
                 other.interviewLocation == interviewLocation) &&
+            (identical(other.meetingLink, meetingLink) ||
+                other.meetingLink == meetingLink) &&
             (identical(other.interviewNotes, interviewNotes) ||
                 other.interviewNotes == interviewNotes) &&
             (identical(other.offerNote, offerNote) ||
@@ -605,6 +623,7 @@ class _$ApplicationEntityImpl extends _ApplicationEntity {
       const DeepCollectionEquality().hash(_statusHistory),
       interviewScheduledAt,
       interviewLocation,
+      meetingLink,
       interviewNotes,
       offerNote);
 
@@ -635,6 +654,7 @@ abstract class _ApplicationEntity extends ApplicationEntity {
       final List<ApplicationStatusEvent> statusHistory,
       final DateTime? interviewScheduledAt,
       final String? interviewLocation,
+      final String? meetingLink,
       final String? interviewNotes,
       final String? offerNote}) = _$ApplicationEntityImpl;
   const _ApplicationEntity._() : super._();
@@ -669,6 +689,8 @@ abstract class _ApplicationEntity extends ApplicationEntity {
   DateTime? get interviewScheduledAt;
   @override
   String? get interviewLocation;
+  @override
+  String? get meetingLink;
   @override
   String? get interviewNotes;
   @override

@@ -34,6 +34,7 @@ class ApplicationModel {
     this.statusHistory = const [],
     this.interviewScheduledAt,
     this.interviewLocation,
+    this.meetingLink,
     this.interviewNotes,
     this.offerNote,
   });
@@ -53,6 +54,7 @@ class ApplicationModel {
   final List<ApplicationStatusEvent> statusHistory;
   final DateTime? interviewScheduledAt;
   final String? interviewLocation;
+  final String? meetingLink;
   final String? interviewNotes;
   final String? offerNote;
 
@@ -80,6 +82,7 @@ class ApplicationModel {
           ? (data['interviewScheduledAt'] as Timestamp).toDate()
           : null,
       interviewLocation: data['interviewLocation'] as String?,
+      meetingLink: data['meetingLink'] as String?,
       interviewNotes: data['interviewNotes'] as String?,
       offerNote: data['offerNote'] as String?,
     );
@@ -102,6 +105,7 @@ class ApplicationModel {
       statusHistory: e.statusHistory,
       interviewScheduledAt: e.interviewScheduledAt,
       interviewLocation: e.interviewLocation,
+      meetingLink: e.meetingLink,
       interviewNotes: e.interviewNotes,
       offerNote: e.offerNote,
     );
@@ -125,6 +129,7 @@ class ApplicationModel {
           ? Timestamp.fromDate(interviewScheduledAt!)
           : null,
       'interviewLocation': interviewLocation,
+      'meetingLink': meetingLink,
       'interviewNotes': interviewNotes,
       'offerNote': offerNote,
     };
@@ -147,6 +152,7 @@ class ApplicationModel {
       statusHistory: statusHistory,
       interviewScheduledAt: interviewScheduledAt,
       interviewLocation: interviewLocation,
+      meetingLink: meetingLink,
       interviewNotes: interviewNotes,
       offerNote: offerNote,
     );
