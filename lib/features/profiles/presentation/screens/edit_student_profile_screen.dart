@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,10 +8,13 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../domain/entities/student_profile_entity.dart';
 import '../providers/student_profile_providers.dart';
+
+const _logTag = '[EditStudentProfile]';
 
 class EditStudentProfileScreen extends ConsumerStatefulWidget {
   const EditStudentProfileScreen({super.key});
@@ -46,6 +48,7 @@ class _EditStudentProfileScreenState
   final List<String> _skills = [];
   StudentProfileEntity? _existingProfile;
   bool _initialized = false;
+  bool _saving = false;
 
   static const _years = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Graduate'];
 
@@ -109,6 +112,7 @@ class _EditStudentProfileScreenState
     );
     if (picked != null) {
       final bytes = await picked.readAsBytes();
+      debugPrint('$_logTag Image selected (${bytes.lengthInBytes} bytes)');
       setState(() => _pickedPhotoBytes = bytes);
     }
   }
@@ -117,61 +121,97 @@ class _EditStudentProfileScreenState
       controller.text.trim().isEmpty ? null : controller.text.trim();
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_selectedYear == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select your year of study')),
-      );
+    debugPrint('$_logTag Save button pressed');
+    if (_saving) return;
+
+    if (!_formKey.currentState!.validate()) {
+      debugPrint('$_logTag Form validation failed');
       return;
     }
+    if (_selectedYear == null) {
+      debugPrint('$_logTag Validation failed: no year of study selected');
+      AppSnackBar.showError(context, 'Please select your year of study');
+      return;
+    }
+    debugPrint('$_logTag Validation passed');
 
     final user = ref.read(authStateProvider).value;
     if (user == null) return;
 
-    final now = DateTime.now();
-    final profile = StudentProfileEntity(
-      id: _existingProfile?.id ?? '',
-      ownerId: user.id,
-      photoUrl: _existingProfile?.photoUrl,
-      university: _universityController.text.trim(),
-      degree: _degreeController.text.trim(),
-      yearOfStudy: _selectedYear!,
-      location: _locationController.text.trim(),
-      bio: _bioController.text.trim(),
-      careerInterests: _careerInterestsController.text.trim(),
-      personalStatement: _personalStatementController.text.trim(),
-      skills: List.unmodifiable(_skills),
-      portfolioUrl: _orNull(_portfolioController),
-      githubUrl: _orNull(_githubController),
-      linkedinUrl: _orNull(_linkedinController),
-      behanceUrl: _orNull(_behanceController),
-      dribbbleUrl: _orNull(_dribbbleController),
-      mediumUrl: _orNull(_mediumController),
-      personalWebsiteUrl: _orNull(_personalWebsiteController),
-      createdAt: _existingProfile?.createdAt ?? now,
-      updatedAt: now,
-    );
-
+    setState(() => _saving = true);
     final controller = ref.read(studentProfileControllerProvider.notifier);
-    await controller.saveProfile(profile);
 
-    if (!mounted) return;
-    final error = controller.getErrorMessage();
-    if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-      return;
-    }
+    try {
+      final now = DateTime.now();
+      final profile = StudentProfileEntity(
+        id: _existingProfile?.id ?? '',
+        ownerId: user.id,
+        photoUrl: _existingProfile?.photoUrl,
+        university: _universityController.text.trim(),
+        degree: _degreeController.text.trim(),
+        yearOfStudy: _selectedYear!,
+        location: _locationController.text.trim(),
+        bio: _bioController.text.trim(),
+        careerInterests: _careerInterestsController.text.trim(),
+        personalStatement: _personalStatementController.text.trim(),
+        skills: List.unmodifiable(_skills),
+        portfolioUrl: _orNull(_portfolioController),
+        githubUrl: _orNull(_githubController),
+        linkedinUrl: _orNull(_linkedinController),
+        behanceUrl: _orNull(_behanceController),
+        dribbbleUrl: _orNull(_dribbbleController),
+        mediumUrl: _orNull(_mediumController),
+        personalWebsiteUrl: _orNull(_personalWebsiteController),
+        createdAt: _existingProfile?.createdAt ?? now,
+        updatedAt: now,
+      );
 
-    if (_pickedPhotoBytes != null) {
-      final savedProfile = ref.read(studentProfileControllerProvider).valueOrNull;
-      final profileId = savedProfile?.id ?? _existingProfile?.id;
-      if (profileId != null && profileId.isNotEmpty) {
-        await controller.uploadPhoto(profileId, _pickedPhotoBytes!);
+      debugPrint('$_logTag saveProfile() called');
+      await controller.saveProfile(profile);
+      final saveError = controller.getErrorMessage();
+      if (saveError != null) {
+        debugPrint('$_logTag saveProfile() failed: $saveError');
+        if (mounted) AppSnackBar.showError(context, saveError);
+        return;
       }
-    }
+      debugPrint('$_logTag saveProfile() completed, Riverpod state updated');
 
-    if (!mounted) return;
-    context.pop();
+      // Read back the profile ID from the controller rather than only
+      // `_existingProfile`, so a photo picked on the very first save (before
+      // any profile document existed) still has somewhere to upload to.
+      final profileId =
+          ref.read(studentProfileControllerProvider).valueOrNull?.id ?? _existingProfile?.id;
+
+      if (_pickedPhotoBytes != null) {
+        if (profileId == null || profileId.isEmpty) {
+          debugPrint('$_logTag Skipped photo upload: no profile id available');
+        } else {
+          debugPrint('$_logTag Upload started for profile $profileId');
+          await controller.uploadPhoto(profileId, _pickedPhotoBytes!);
+          final uploadError = controller.getErrorMessage();
+          if (uploadError != null) {
+            debugPrint('$_logTag Upload failed: $uploadError');
+            if (mounted) AppSnackBar.showError(context, uploadError);
+            return;
+          }
+          debugPrint('$_logTag Upload completed, download URL saved to Firestore');
+        }
+      }
+
+      if (!mounted) return;
+      AppSnackBar.showSuccess(context, 'Profile updated.');
+      debugPrint('$_logTag Navigating back');
+      context.pop();
+      debugPrint('$_logTag Navigation completed');
+    } catch (e, stackTrace) {
+      debugPrint('$_logTag Save FAILED with unexpected error: $e');
+      if (kDebugMode) debugPrintStack(stackTrace: stackTrace, label: _logTag);
+      if (mounted) {
+        AppSnackBar.showError(context, 'Something went wrong while saving. Please try again.');
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
@@ -184,7 +224,6 @@ class _EditStudentProfileScreenState
       });
     }
 
-    final isLoading = ref.watch(studentProfileControllerProvider).isLoading;
     final searchQuery = _skillSearchController.text.trim().toLowerCase();
     final visibleSkills = searchQuery.isEmpty
         ? _skills
@@ -382,7 +421,7 @@ class _EditStudentProfileScreenState
               AppButton(
                 label: 'Save changes',
                 onPressed: _save,
-                isLoading: isLoading,
+                isLoading: _saving,
               ),
             ],
           ),

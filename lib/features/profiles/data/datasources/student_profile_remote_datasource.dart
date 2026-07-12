@@ -1,11 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/app_constants.dart';
-import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/firebase_error_mapper.dart';
+import '../../../../core/utils/storage_upload_helper.dart';
 import '../models/student_profile_model.dart';
 
 class StudentProfileRemoteDatasource {
@@ -108,17 +107,18 @@ class StudentProfileRemoteDatasource {
   }
 
   Future<String> uploadPhoto(String profileId, Uint8List imageBytes) async {
-    try {
-      final ref = _storage
-          .ref()
-          .child('${AppConstants.profileImagesPath}/$profileId.jpg');
-      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
-      final downloadUrl = await ref.getDownloadURL();
-      await _collection.doc(profileId).update({'photoUrl': downloadUrl});
-      return downloadUrl;
-    } on FirebaseException catch (e) {
-      throw StorageException('Photo upload failed: ${e.message}');
-    }
+    final downloadUrl = await uploadBytesWithTimeout(
+      ref: _storage.ref().child('${AppConstants.profileImagesPath}/$profileId.jpg'),
+      bytes: imageBytes,
+      contentType: 'image/jpeg',
+      label: 'student-photo:$profileId',
+    );
+    await _updateProfileFields(
+      profileId,
+      {'photoUrl': downloadUrl},
+      label: 'student-photo:$profileId',
+    );
+    return downloadUrl;
   }
 
   Future<String> uploadResume(
@@ -126,19 +126,22 @@ class StudentProfileRemoteDatasource {
     Uint8List fileBytes,
     String fileName,
   ) async {
-    try {
-      final ref = _storage.ref().child('${AppConstants.resumesPath}/$profileId.pdf');
-      await ref.putData(fileBytes, SettableMetadata(contentType: 'application/pdf'));
-      final downloadUrl = await ref.getDownloadURL();
-      await _collection.doc(profileId).update({
+    final downloadUrl = await uploadBytesWithTimeout(
+      ref: _storage.ref().child('${AppConstants.resumesPath}/$profileId.pdf'),
+      bytes: fileBytes,
+      contentType: 'application/pdf',
+      label: 'resume:$profileId',
+    );
+    await _updateProfileFields(
+      profileId,
+      {
         'resumeUrl': downloadUrl,
         'resumeFileName': fileName,
         'resumeUploadedAt': Timestamp.now(),
-      });
-      return downloadUrl;
-    } on FirebaseException catch (e) {
-      throw StorageException('Resume upload failed: ${e.message}');
-    }
+      },
+      label: 'resume:$profileId',
+    );
+    return downloadUrl;
   }
 
   /// Uploads one image for a project and returns its download URL. Callers
@@ -150,15 +153,28 @@ class StudentProfileRemoteDatasource {
     String projectId,
     String imageId,
     Uint8List imageBytes,
-  ) async {
-    try {
-      final ref = _storage.ref().child(
+  ) {
+    return uploadBytesWithTimeout(
+      ref: _storage.ref().child(
             '${AppConstants.projectImagesPath}/$profileId/$projectId/$imageId.jpg',
-          );
-      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
-      return ref.getDownloadURL();
+          ),
+      bytes: imageBytes,
+      contentType: 'image/jpeg',
+      label: 'project-image:$profileId/$projectId',
+    );
+  }
+
+  Future<void> _updateProfileFields(
+    String profileId,
+    Map<String, dynamic> fields, {
+    required String label,
+  }) async {
+    if (kDebugMode) debugPrint('[StorageUpload] [$label] Firestore update started');
+    try {
+      await _collection.doc(profileId).update(fields);
+      if (kDebugMode) debugPrint('[StorageUpload] [$label] Firestore update completed');
     } on FirebaseException catch (e) {
-      throw StorageException('Project image upload failed: ${e.message}');
+      throw FirebaseErrorMapper.fromCode(e.code);
     }
   }
 

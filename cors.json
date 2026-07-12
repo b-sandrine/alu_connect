@@ -1,0 +1,17 @@
+[
+  {
+    "origin": [
+      "http://localhost:*",
+      "http://127.0.0.1:*",
+      "https://alu-connect-b3a33.web.app",
+      "https://alu-connect-b3a33.firebaseapp.com"
+    ],
+    "method": ["GET", "PUT", "POST", "HEAD", "DELETE"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": [
+      "Content-Type",
+      "Access-Control-Allow-Origin",
+      "x-goog-resumable"
+    ]
+  }
+]

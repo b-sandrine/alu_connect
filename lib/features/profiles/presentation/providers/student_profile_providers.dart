@@ -1,7 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/app_exception.dart';
@@ -48,12 +47,15 @@ class StudentProfileController
   }
 
   Future<void> saveProfile(StudentProfileEntity profile) async {
+    _log('saveProfile started for owner ${profile.ownerId}');
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final existing = await _repository.getProfileByOwnerId(profile.ownerId);
       if (existing == null) {
+        _log('saveProfile: creating new profile');
         return _repository.createProfile(profile);
       } else {
+        _log('saveProfile: updating existing profile ${existing.id}');
         return _repository.updateProfile(
           StudentProfileEntity(
             id: existing.id,
@@ -84,14 +86,29 @@ class StudentProfileController
         );
       }
     });
+    if (state.hasError) {
+      _log('saveProfile FAILED: ${state.error}');
+    } else {
+      _log('saveProfile completed successfully');
+    }
   }
 
   Future<void> uploadPhoto(String profileId, Uint8List imageBytes) async {
+    _log('uploadPhoto started for profile $profileId');
+    // Captured before the AsyncLoading assignment below — state.value on a
+    // bare AsyncLoading() is always null, so without this the controller's
+    // cached profile would silently reset to null on every photo upload.
+    final previous = state.valueOrNull;
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await _repository.uploadPhoto(profileId, imageBytes);
-      return state.value;
+      return previous;
     });
+    if (state.hasError) {
+      _log('uploadPhoto FAILED: ${state.error}');
+    } else {
+      _log('uploadPhoto completed successfully');
+    }
   }
 
   Future<void> uploadResume(
@@ -99,11 +116,18 @@ class StudentProfileController
     Uint8List fileBytes,
     String fileName,
   ) async {
+    _log('uploadResume started for profile $profileId');
+    final previous = state.valueOrNull;
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await _repository.uploadResume(profileId, fileBytes, fileName);
-      return state.value;
+      return previous;
     });
+    if (state.hasError) {
+      _log('uploadResume FAILED: ${state.error}');
+    } else {
+      _log('uploadResume completed successfully');
+    }
   }
 
   Future<String> uploadProjectImage(
@@ -130,6 +154,10 @@ class StudentProfileController
     return state.whenOrNull(
       error: (e, _) => e is AppException ? e.message : 'Something went wrong.',
     );
+  }
+
+  void _log(String message) {
+    if (kDebugMode) debugPrint('[StudentProfileController] $message');
   }
 }
 

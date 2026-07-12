@@ -1,11 +1,11 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/firebase_error_mapper.dart';
+import '../../../../core/utils/storage_upload_helper.dart';
 import '../models/startup_profile_model.dart';
 
 class StartupProfileRemoteDatasource {
@@ -87,17 +87,14 @@ class StartupProfileRemoteDatasource {
   }
 
   Future<String> uploadLogo(String profileId, Uint8List imageBytes) async {
-    try {
-      final ref = _storage.ref().child(
-            '${AppConstants.startupLogosPath}/$profileId.jpg',
-          );
-      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
-      final downloadUrl = await ref.getDownloadURL();
-      await _collection.doc(profileId).update({'logoUrl': downloadUrl});
-      return downloadUrl;
-    } on FirebaseException catch (e) {
-      throw StorageException('Logo upload failed: ${e.message}');
-    }
+    final downloadUrl = await uploadBytesWithTimeout(
+      ref: _storage.ref().child('${AppConstants.startupLogosPath}/$profileId.jpg'),
+      bytes: imageBytes,
+      contentType: 'image/jpeg',
+      label: 'startup-logo:$profileId',
+    );
+    await _updateProfileField(profileId, 'logoUrl', downloadUrl, label: 'startup-logo:$profileId');
+    return downloadUrl;
   }
 
   /// Uploads a founder's photo and returns its download URL. Callers embed
@@ -107,47 +104,59 @@ class StartupProfileRemoteDatasource {
     String profileId,
     String founderId,
     Uint8List imageBytes,
-  ) async {
-    try {
-      final ref = _storage
+  ) {
+    return uploadBytesWithTimeout(
+      ref: _storage
           .ref()
-          .child('${AppConstants.founderPhotosPath}/$profileId/$founderId.jpg');
-      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
-      return ref.getDownloadURL();
-    } on FirebaseException catch (e) {
-      throw StorageException('Founder photo upload failed: ${e.message}');
-    }
+          .child('${AppConstants.founderPhotosPath}/$profileId/$founderId.jpg'),
+      bytes: imageBytes,
+      contentType: 'image/jpeg',
+      label: 'founder-photo:$profileId/$founderId',
+    );
   }
 
   Future<String> uploadTeamMemberPhoto(
     String profileId,
     String memberId,
     Uint8List imageBytes,
-  ) async {
-    try {
-      final ref = _storage
+  ) {
+    return uploadBytesWithTimeout(
+      ref: _storage
           .ref()
-          .child('${AppConstants.teamPhotosPath}/$profileId/$memberId.jpg');
-      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
-      return ref.getDownloadURL();
-    } on FirebaseException catch (e) {
-      throw StorageException('Team member photo upload failed: ${e.message}');
-    }
+          .child('${AppConstants.teamPhotosPath}/$profileId/$memberId.jpg'),
+      bytes: imageBytes,
+      contentType: 'image/jpeg',
+      label: 'team-photo:$profileId/$memberId',
+    );
   }
 
   Future<String> uploadGalleryImage(
     String profileId,
     String imageId,
     Uint8List imageBytes,
-  ) async {
-    try {
-      final ref = _storage
+  ) {
+    return uploadBytesWithTimeout(
+      ref: _storage
           .ref()
-          .child('${AppConstants.startupGalleryPath}/$profileId/$imageId.jpg');
-      await ref.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
-      return ref.getDownloadURL();
+          .child('${AppConstants.startupGalleryPath}/$profileId/$imageId.jpg'),
+      bytes: imageBytes,
+      contentType: 'image/jpeg',
+      label: 'gallery-image:$profileId/$imageId',
+    );
+  }
+
+  Future<void> _updateProfileField(
+    String profileId,
+    String field,
+    String value, {
+    required String label,
+  }) async {
+    if (kDebugMode) debugPrint('[StorageUpload] [$label] Firestore update started');
+    try {
+      await _collection.doc(profileId).update({field: value});
+      if (kDebugMode) debugPrint('[StorageUpload] [$label] Firestore update completed');
     } on FirebaseException catch (e) {
-      throw StorageException('Gallery image upload failed: ${e.message}');
+      throw FirebaseErrorMapper.fromCode(e.code);
     }
   }
 
