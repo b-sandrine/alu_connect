@@ -1,11 +1,22 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/firebase_error_mapper.dart';
 import '../../../../core/utils/storage_upload_helper.dart';
 import '../models/student_profile_model.dart';
+
+/// Same rationale as `storage_upload_helper.dart`'s timeout: on Flutter Web
+/// a Firestore call can — under some rules/connectivity failure modes —
+/// never settle instead of rejecting, leaving a `FutureProvider` stuck in
+/// `AsyncLoading` forever with no error to show. A bounded timeout guarantees
+/// the applicant-insights query (student_profiles lookups) always resolves
+/// one way or the other.
+const _firestoreQueryTimeout = Duration(seconds: 15);
 
 class StudentProfileRemoteDatasource {
   StudentProfileRemoteDatasource({
@@ -75,6 +86,9 @@ class StudentProfileRemoteDatasource {
     List<String> ownerIds,
   ) async {
     if (ownerIds.isEmpty) return [];
+    if (kDebugMode) {
+      debugPrint('[StudentProfileDatasource] getProfilesByOwnerIds started for ${ownerIds.length} ids');
+    }
     try {
       final chunks = <List<String>>[
         for (var i = 0; i < ownerIds.length; i += 30)
@@ -87,12 +101,28 @@ class StudentProfileRemoteDatasource {
         chunks.map(
           (chunk) => _collection.where('ownerId', whereIn: chunk).get(),
         ),
+      ).timeout(
+        _firestoreQueryTimeout,
+        onTimeout: () {
+          throw TimeoutException(
+            'Fetching applicant profiles timed out after ${_firestoreQueryTimeout.inSeconds}s. '
+            'This usually means the deployed Firestore security rules do not yet include the '
+            '"student_profiles" collection rule — see firestore.rules and deploy it.',
+          );
+        },
       );
+      if (kDebugMode) {
+        debugPrint('[StudentProfileDatasource] getProfilesByOwnerIds completed');
+      }
       return snapshots
           .expand((snap) => snap.docs)
           .map(StudentProfileModel.fromFirestore)
           .toList();
+    } on TimeoutException catch (e) {
+      if (kDebugMode) debugPrint('[StudentProfileDatasource] getProfilesByOwnerIds FAILED: $e');
+      throw NetworkException(e.message ?? 'Request timed out. Please try again.');
     } on FirebaseException catch (e) {
+      if (kDebugMode) debugPrint('[StudentProfileDatasource] getProfilesByOwnerIds FAILED: ${e.code}');
       throw FirebaseErrorMapper.fromCode(e.code);
     }
   }
