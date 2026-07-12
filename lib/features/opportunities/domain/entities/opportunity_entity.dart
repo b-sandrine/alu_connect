@@ -6,6 +6,25 @@ enum OpportunityType { internship, partTime, fullTime, contract, volunteer }
 
 enum OpportunityCategory { engineering, design, marketing, business, research, other }
 
+extension OpportunityCategoryX on OpportunityCategory {
+  String get label {
+    switch (this) {
+      case OpportunityCategory.engineering:
+        return 'Engineering';
+      case OpportunityCategory.design:
+        return 'Design';
+      case OpportunityCategory.marketing:
+        return 'Marketing';
+      case OpportunityCategory.business:
+        return 'Business';
+      case OpportunityCategory.research:
+        return 'Research';
+      case OpportunityCategory.other:
+        return 'Other';
+    }
+  }
+}
+
 @freezed
 abstract class OpportunityEntity with _$OpportunityEntity {
   const OpportunityEntity._();

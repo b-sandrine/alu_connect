@@ -169,4 +169,24 @@ class OpportunityRemoteDatasource {
                 ))
             .toList());
   }
+
+  Future<Map<OpportunityCategory, int>> getCategoryCounts() async {
+    try {
+      final counts = await Future.wait(
+        OpportunityCategory.values.map(
+          (category) => _collection
+              .where('isActive', isEqualTo: true)
+              .where('category', isEqualTo: category.name)
+              .count()
+              .get(),
+        ),
+      );
+      return {
+        for (var i = 0; i < OpportunityCategory.values.length; i++)
+          OpportunityCategory.values[i]: counts[i].count ?? 0,
+      };
+    } on FirebaseException catch (e) {
+      throw FirebaseErrorMapper.fromCode(e.code);
+    }
+  }
 }

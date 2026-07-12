@@ -142,6 +142,20 @@ final recentlyViewedOpportunitiesProvider =
   });
 });
 
+/// Active-opportunity count per category for the dashboard's "Browse by
+/// Category" section — cheap `.count()` aggregates, refreshed on pull-to-refresh
+/// via `ref.invalidate`.
+final categoryCountsProvider =
+    FutureProvider<Map<OpportunityCategory, int>>((ref) {
+  return ref.watch(opportunityRepositoryProvider).getCategoryCounts();
+});
+
+/// Dashboard-only category filter — deliberately separate from
+/// [opportunityFilterProvider] (which drives the Discover tab's search) so
+/// tapping a category chip on the Home tab never leaks into Discover state.
+final dashboardCategoryFilterProvider =
+    StateProvider<OpportunityCategory?>((ref) => null);
+
 final filteredOpportunitiesProvider =
     Provider<AsyncValue<List<OpportunityEntity>>>((ref) {
   final filter = ref.watch(opportunityFilterProvider);

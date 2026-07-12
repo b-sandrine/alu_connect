@@ -63,11 +63,11 @@ class StudentProfileScreen extends ConsumerWidget {
                     error: (e, _) => ErrorView(message: e.toString()),
                   ),
                   const SizedBox(height: 28),
-                  _UpcomingInterviewsSection(studentId: user.id),
+                  UpcomingInterviewsSection(studentId: user.id),
                   const SizedBox(height: 28),
-                  _RecommendedSection(studentId: user.id),
+                  RecommendedOpportunitiesSection(studentId: user.id),
                   const SizedBox(height: 28),
-                  _RecentlyViewedSection(studentId: user.id),
+                  RecentlyViewedSection(studentId: user.id),
                   const SizedBox(height: 28),
                   Text('About Me', style: AppTextStyles.titleSmall),
                   const SizedBox(height: 12),
@@ -816,8 +816,9 @@ class _ProjectCard extends StatelessWidget {
   }
 }
 
-class _RecommendedSection extends ConsumerWidget {
-  const _RecommendedSection({required this.studentId});
+/// Reused as-is on the student dashboard's Home tab, hence public.
+class RecommendedOpportunitiesSection extends ConsumerWidget {
+  const RecommendedOpportunitiesSection({super.key, required this.studentId});
 
   final String studentId;
 
@@ -1001,8 +1002,9 @@ String _timeAgo(DateTime time) {
   return '${(diff.inDays / 7).floor()}w ago';
 }
 
-class _RecentlyViewedSection extends ConsumerWidget {
-  const _RecentlyViewedSection({required this.studentId});
+/// Reused as-is on the student dashboard's Home tab, hence public.
+class RecentlyViewedSection extends ConsumerWidget {
+  const RecentlyViewedSection({super.key, required this.studentId});
 
   final String studentId;
 
@@ -1124,8 +1126,9 @@ String _googleCalendarUrl(ApplicationEntity application) {
   return Uri.https('calendar.google.com', '/calendar/render', params).toString();
 }
 
-class _UpcomingInterviewsSection extends ConsumerWidget {
-  const _UpcomingInterviewsSection({required this.studentId});
+/// Reused as-is on the student dashboard's Home tab, hence public.
+class UpcomingInterviewsSection extends ConsumerWidget {
+  const UpcomingInterviewsSection({super.key, required this.studentId});
 
   final String studentId;
 

@@ -41,4 +41,8 @@ abstract interface class OpportunityRepository {
     String userId, {
     int limit = 10,
   });
+
+  /// Active-opportunity count per category, via cheap Firestore `.count()`
+  /// aggregates (no document transfer) — backs "Browse by Category".
+  Future<Map<OpportunityCategory, int>> getCategoryCounts();
 }

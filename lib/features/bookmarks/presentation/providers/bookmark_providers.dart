@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/analytics/analytics_service.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
+import '../../../opportunities/domain/entities/opportunity_entity.dart';
+import '../../../opportunities/presentation/providers/opportunity_providers.dart';
 import '../../data/datasources/bookmark_remote_datasource.dart';
 import '../../data/repositories/bookmark_repository_impl.dart';
 import '../../domain/repositories/bookmark_repository.dart';
@@ -33,6 +35,21 @@ final isBookmarkedProvider =
 
 final bookmarkCountProvider = FutureProvider.family<int, String>((ref, opportunityId) {
   return ref.watch(bookmarkRepositoryProvider).getBookmarkCount(opportunityId);
+});
+
+/// Joins the user's bookmarked IDs against actual opportunity data — backs
+/// the dashboard's Saved Opportunities section.
+final savedOpportunitiesProvider =
+    Provider.family<AsyncValue<List<OpportunityEntity>>, String>((ref, userId) {
+  final idsAsync = ref.watch(bookmarkedIdsProvider(userId));
+  return idsAsync.when(
+    data: (ids) {
+      if (ids.isEmpty) return const AsyncData([]);
+      return ref.watch(opportunitiesByIdsProvider(ids));
+    },
+    loading: () => const AsyncLoading(),
+    error: (e, st) => AsyncError(e, st),
+  );
 });
 
 /// Self-managing, mirrors `presenceHeartbeatProvider`: watch once from the

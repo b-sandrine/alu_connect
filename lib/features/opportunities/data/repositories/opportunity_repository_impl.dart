@@ -76,4 +76,8 @@ class OpportunityRepositoryImpl implements OpportunityRepository {
     int limit = 10,
   }) =>
       _datasource.watchRecentlyViewed(userId, limit: limit);
+
+  @override
+  Future<Map<OpportunityCategory, int>> getCategoryCounts() =>
+      _datasource.getCategoryCounts();
 }

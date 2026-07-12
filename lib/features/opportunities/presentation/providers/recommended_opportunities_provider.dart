@@ -14,10 +14,24 @@ typedef RecommendedOpportunity = ({
 /// A broad, unfiltered pool of active opportunities to score against — kept
 /// independent of `opportunitiesStreamProvider`/`opportunityFilterProvider`
 /// so a student's Discover-tab search/filter never affects what shows up
-/// here.
-final _recommendationCandidatesProvider =
+/// here. Public so the dashboard's Featured Opportunities section can reuse
+/// the same pool instead of issuing a second, near-identical query.
+final opportunityCandidatePoolProvider =
     StreamProvider<List<OpportunityEntity>>((ref) {
   return ref.watch(opportunityRepositoryProvider).watchOpportunities(limit: 50);
+});
+
+/// "Featured" is computed, not a stored flag: the most-viewed active,
+/// non-expired opportunities among recent postings. No schema change, still
+/// fully real Firestore data.
+final featuredOpportunitiesProvider =
+    Provider<AsyncValue<List<OpportunityEntity>>>((ref) {
+  final candidatesAsync = ref.watch(opportunityCandidatePoolProvider);
+  return candidatesAsync.whenData((candidates) {
+    final featured = candidates.where((o) => o.isActive && !o.isExpired).toList()
+      ..sort((a, b) => b.viewCount.compareTo(a.viewCount));
+    return featured.take(10).toList();
+  });
 });
 
 /// Minimum match to bother showing — below this a recommendation is more
@@ -38,7 +52,7 @@ const _minMatchPercent = 30;
 final recommendedOpportunitiesProvider =
     Provider.family<AsyncValue<List<RecommendedOpportunity>>, String>((ref, studentId) {
   final profileAsync = ref.watch(studentProfileByOwnerProvider(studentId));
-  final candidatesAsync = ref.watch(_recommendationCandidatesProvider);
+  final candidatesAsync = ref.watch(opportunityCandidatePoolProvider);
   final applicationsAsync = ref.watch(applicantApplicationsProvider(studentId));
 
   if (profileAsync.isLoading || candidatesAsync.isLoading || applicationsAsync.isLoading) {
