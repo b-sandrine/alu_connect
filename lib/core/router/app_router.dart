@@ -34,6 +34,14 @@ import '../../features/profiles/presentation/screens/manage_gallery_screen.dart'
 import '../../features/profiles/presentation/screens/manage_projects_screen.dart';
 import '../../features/profiles/presentation/screens/manage_team_screen.dart';
 import '../../features/profiles/presentation/screens/startup_profile_screen.dart';
+import '../../features/settings/presentation/screens/about_screen.dart';
+import '../../features/settings/presentation/screens/account_settings_screen.dart';
+import '../../features/settings/presentation/screens/change_password_screen.dart';
+import '../../features/settings/presentation/screens/delete_account_screen.dart';
+import '../../features/settings/presentation/screens/help_screen.dart';
+import '../../features/settings/presentation/screens/language_settings_screen.dart';
+import '../../features/settings/presentation/screens/privacy_settings_screen.dart';
+import '../../features/settings/presentation/screens/security_settings_screen.dart';
 import '../widgets/error_view.dart';
 
 class GoRouterRefreshNotifier extends ChangeNotifier {
@@ -221,6 +229,38 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/applications/:id',
         builder: (_, state) =>
             ApplicationDetailScreen(applicationId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (_, __) => const AccountSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/privacy',
+        builder: (_, __) => const PrivacySettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/security',
+        builder: (_, __) => const SecuritySettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/password',
+        builder: (_, __) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: '/settings/language',
+        builder: (_, __) => const LanguageSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/help',
+        builder: (_, __) => const HelpScreen(),
+      ),
+      GoRoute(
+        path: '/settings/about',
+        builder: (_, __) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: '/settings/delete-account',
+        builder: (_, __) => const DeleteAccountScreen(),
       ),
       GoRoute(
         path: '/messages',

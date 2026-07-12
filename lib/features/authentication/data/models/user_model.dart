@@ -11,6 +11,7 @@ class UserModel {
     this.hasCompletedOnboarding = false,
     required this.createdAt,
     this.lastActiveAt,
+    this.fcmToken,
   });
 
   final String id;
@@ -21,6 +22,7 @@ class UserModel {
   final bool hasCompletedOnboarding;
   final DateTime createdAt;
   final DateTime? lastActiveAt;
+  final String? fcmToken;
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -35,6 +37,7 @@ class UserModel {
       lastActiveAt: data['lastActiveAt'] != null
           ? (data['lastActiveAt'] as Timestamp).toDate()
           : null,
+      fcmToken: data['fcmToken'] as String?,
     );
   }
 
@@ -61,6 +64,7 @@ class UserModel {
       hasCompletedOnboarding: hasCompletedOnboarding,
       createdAt: createdAt,
       lastActiveAt: lastActiveAt,
+      fcmToken: fcmToken,
     );
   }
 

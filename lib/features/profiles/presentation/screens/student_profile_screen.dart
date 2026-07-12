@@ -15,7 +15,6 @@ import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/gradient_header.dart';
 import '../../../../core/widgets/loading_overlay.dart';
 import '../../../../features/authentication/domain/entities/user_entity.dart';
-import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../../../features/applications/domain/entities/application_entity.dart';
 import '../../../../features/applications/presentation/providers/application_providers.dart';
@@ -175,19 +174,9 @@ class _Header extends ConsumerWidget {
                 icon: const Icon(Icons.edit_outlined, color: Colors.white),
                 onPressed: () => context.push('/student-profile/edit'),
               ),
-              PopupMenuButton<String>(
+              IconButton(
                 icon: const Icon(Icons.settings_outlined, color: Colors.white),
-                itemBuilder: (_) => const [
-                  PopupMenuItem(value: 'edit', child: Text('Edit profile')),
-                  PopupMenuItem(value: 'signout', child: Text('Sign out')),
-                ],
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    context.push('/student-profile/edit');
-                  } else if (value == 'signout') {
-                    ref.read(authControllerProvider.notifier).signOut();
-                  }
-                },
+                onPressed: () => context.push('/settings'),
               ),
             ],
           ),

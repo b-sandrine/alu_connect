@@ -62,6 +62,41 @@ class AuthController extends AsyncNotifier<void> {
     state = await AsyncValue.guard(() => _repository.completeOnboarding(userId));
   }
 
+  bool get isEmailVerified => _repository.isEmailVerified;
+
+  Future<void> sendEmailVerification() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _repository.sendEmailVerification());
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repository.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      ),
+    );
+  }
+
+  Future<void> deleteAccount({required String password}) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _repository.deleteAccount(password: password));
+  }
+
+  /// Requests notification permission and registers the device's FCM token.
+  /// Called automatically after sign-in, and re-callable from Settings if
+  /// the user turns push notifications back on.
+  Future<void> registerPushNotifications(String userId) => _registerFcmToken(userId);
+
+  Future<void> disablePushNotifications(String userId) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _repository.clearFcmToken(userId));
+  }
+
   String? getErrorMessage() {
     return state.whenOrNull(
       error: (e, _) => e is AppException ? e.message : 'Something went wrong.',

@@ -24,6 +24,7 @@ mixin _$UserEntity {
   bool get hasCompletedOnboarding => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get lastActiveAt => throw _privateConstructorUsedError;
+  String? get fcmToken => throw _privateConstructorUsedError;
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -46,7 +47,8 @@ abstract class $UserEntityCopyWith<$Res> {
       String? photoUrl,
       bool hasCompletedOnboarding,
       DateTime createdAt,
-      DateTime? lastActiveAt});
+      DateTime? lastActiveAt,
+      String? fcmToken});
 }
 
 /// @nodoc
@@ -72,6 +74,7 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
     Object? hasCompletedOnboarding = null,
     Object? createdAt = null,
     Object? lastActiveAt = freezed,
+    Object? fcmToken = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -106,6 +109,10 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
           ? _value.lastActiveAt
           : lastActiveAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      fcmToken: freezed == fcmToken
+          ? _value.fcmToken
+          : fcmToken // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -126,7 +133,8 @@ abstract class _$$UserEntityImplCopyWith<$Res>
       String? photoUrl,
       bool hasCompletedOnboarding,
       DateTime createdAt,
-      DateTime? lastActiveAt});
+      DateTime? lastActiveAt,
+      String? fcmToken});
 }
 
 /// @nodoc
@@ -150,6 +158,7 @@ class __$$UserEntityImplCopyWithImpl<$Res>
     Object? hasCompletedOnboarding = null,
     Object? createdAt = null,
     Object? lastActiveAt = freezed,
+    Object? fcmToken = freezed,
   }) {
     return _then(_$UserEntityImpl(
       id: null == id
@@ -184,6 +193,10 @@ class __$$UserEntityImplCopyWithImpl<$Res>
           ? _value.lastActiveAt
           : lastActiveAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      fcmToken: freezed == fcmToken
+          ? _value.fcmToken
+          : fcmToken // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -199,7 +212,8 @@ class _$UserEntityImpl extends _UserEntity {
       this.photoUrl,
       this.hasCompletedOnboarding = false,
       required this.createdAt,
-      this.lastActiveAt})
+      this.lastActiveAt,
+      this.fcmToken})
       : super._();
 
   @override
@@ -219,10 +233,12 @@ class _$UserEntityImpl extends _UserEntity {
   final DateTime createdAt;
   @override
   final DateTime? lastActiveAt;
+  @override
+  final String? fcmToken;
 
   @override
   String toString() {
-    return 'UserEntity(id: $id, email: $email, displayName: $displayName, role: $role, photoUrl: $photoUrl, hasCompletedOnboarding: $hasCompletedOnboarding, createdAt: $createdAt, lastActiveAt: $lastActiveAt)';
+    return 'UserEntity(id: $id, email: $email, displayName: $displayName, role: $role, photoUrl: $photoUrl, hasCompletedOnboarding: $hasCompletedOnboarding, createdAt: $createdAt, lastActiveAt: $lastActiveAt, fcmToken: $fcmToken)';
   }
 
   @override
@@ -242,12 +258,14 @@ class _$UserEntityImpl extends _UserEntity {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.lastActiveAt, lastActiveAt) ||
-                other.lastActiveAt == lastActiveAt));
+                other.lastActiveAt == lastActiveAt) &&
+            (identical(other.fcmToken, fcmToken) ||
+                other.fcmToken == fcmToken));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, id, email, displayName, role,
-      photoUrl, hasCompletedOnboarding, createdAt, lastActiveAt);
+      photoUrl, hasCompletedOnboarding, createdAt, lastActiveAt, fcmToken);
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -267,7 +285,8 @@ abstract class _UserEntity extends UserEntity {
       final String? photoUrl,
       final bool hasCompletedOnboarding,
       required final DateTime createdAt,
-      final DateTime? lastActiveAt}) = _$UserEntityImpl;
+      final DateTime? lastActiveAt,
+      final String? fcmToken}) = _$UserEntityImpl;
   const _UserEntity._() : super._();
 
   @override
@@ -286,6 +305,8 @@ abstract class _UserEntity extends UserEntity {
   DateTime get createdAt;
   @override
   DateTime? get lastActiveAt;
+  @override
+  String? get fcmToken;
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.

@@ -57,10 +57,33 @@ class AuthRepositoryImpl implements AuthRepository {
       _datasource.updateFcmToken(userId, token);
 
   @override
+  Future<void> clearFcmToken(String userId) => _datasource.clearFcmToken(userId);
+
+  @override
   Future<void> updateLastActiveAt(String userId) =>
       _datasource.updateLastActiveAt(userId);
 
   @override
   Stream<UserEntity?> watchUserById(String userId) =>
       _datasource.watchUserById(userId).map((model) => model?.toEntity());
+
+  @override
+  bool get isEmailVerified => _datasource.isEmailVerified;
+
+  @override
+  Future<void> sendEmailVerification() => _datasource.sendEmailVerification();
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) =>
+      _datasource.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+
+  @override
+  Future<void> deleteAccount({required String password}) =>
+      _datasource.deleteAccount(password: password);
 }

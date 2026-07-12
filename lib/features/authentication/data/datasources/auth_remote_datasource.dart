@@ -112,6 +112,17 @@ class AuthRemoteDatasource {
     }
   }
 
+  Future<void> clearFcmToken(String userId) async {
+    try {
+      await _firestore.collection(AppConstants.usersCollection).doc(userId).update({
+        'fcmToken': FieldValue.delete(),
+        'fcmTokenUpdatedAt': Timestamp.now(),
+      });
+    } on FirebaseException catch (e) {
+      throw FirebaseErrorMapper.fromCode(e.code);
+    }
+  }
+
   Future<void> updateLastActiveAt(String userId) async {
     try {
       await _firestore
@@ -129,6 +140,80 @@ class AuthRemoteDatasource {
         .doc(userId)
         .snapshots()
         .map((doc) => doc.exists ? UserModel.fromFirestore(doc) : null);
+  }
+
+  bool get isEmailVerified => _auth.currentUser?.emailVerified ?? false;
+
+  Future<void> sendEmailVerification() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    try {
+      await user.sendEmailVerification();
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseErrorMapper.fromAuthException(e);
+    }
+  }
+
+  Future<void> _reauthenticate(String password) async {
+    final user = _auth.currentUser;
+    if (user == null || user.email == null) {
+      throw const AuthException('You must be signed in to do this.');
+    }
+    try {
+      final credential =
+          EmailAuthProvider.credential(email: user.email!, password: password);
+      await user.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseErrorMapper.fromAuthException(e);
+    }
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await _reauthenticate(currentPassword);
+    try {
+      await _auth.currentUser!.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseErrorMapper.fromAuthException(e);
+    }
+  }
+
+  Future<void> deleteAccount({required String password}) async {
+    await _reauthenticate(password);
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final uid = user.uid;
+      final batch = _firestore.batch();
+
+      final studentProfiles = await _firestore
+          .collection(AppConstants.studentProfilesCollection)
+          .where('ownerId', isEqualTo: uid)
+          .get();
+      for (final doc in studentProfiles.docs) {
+        batch.delete(doc.reference);
+      }
+
+      final startupProfiles = await _firestore
+          .collection(AppConstants.startupProfilesCollection)
+          .where('ownerId', isEqualTo: uid)
+          .get();
+      for (final doc in startupProfiles.docs) {
+        batch.delete(doc.reference);
+      }
+
+      batch.delete(_firestore.collection(AppConstants.usersCollection).doc(uid));
+      await batch.commit();
+
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseErrorMapper.fromAuthException(e);
+    } on FirebaseException catch (e) {
+      throw FirebaseErrorMapper.fromCode(e.code);
+    }
   }
 
   Future<UserModel> _fetchUserDocument(String uid) async {

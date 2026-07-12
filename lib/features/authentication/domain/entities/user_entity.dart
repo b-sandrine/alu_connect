@@ -17,6 +17,7 @@ abstract class UserEntity with _$UserEntity {
     @Default(false) bool hasCompletedOnboarding,
     required DateTime createdAt,
     DateTime? lastActiveAt,
+    String? fcmToken,
   }) = _UserEntity;
 
   static const _onlineThreshold = Duration(seconds: 60);

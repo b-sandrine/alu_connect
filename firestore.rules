@@ -35,7 +35,10 @@ service cloud.firestore {
         && unchanged('role')
         && unchanged('email')
         && unchanged('createdAt');
-      allow delete: if false;
+      // Self-deletion only, used by AccountSettings' Delete Account flow —
+      // the client reauthenticates before this write, and it happens
+      // alongside deleting the matching Firebase Auth account.
+      allow delete: if isSelf(userId);
 
       // users/{uid}/bookmarks/{opportunityId} — one tiny doc per bookmark
       // (doc ID = opportunityId) rather than an array-in-doc, so a
@@ -121,7 +124,8 @@ service cloud.firestore {
         && request.resource.data.ownerId == request.auth.uid
         && userRole(request.auth.uid) == 'startup';
       allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      allow delete: if false;
+      // Self-deletion only, used by Delete Account.
+      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
     }
 
     // bookmarks/{uid} — LEGACY array-in-doc shape, superseded by
@@ -152,7 +156,8 @@ service cloud.firestore {
         && request.resource.data.ownerId == request.auth.uid
         && userRole(request.auth.uid) == 'student';
       allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      allow delete: if false;
+      // Self-deletion only, used by Delete Account.
+      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
     }
 
     // conversations/{id} — 1:1 thread between a student and a startup.

@@ -21,6 +21,10 @@ Doc ID = Firebase Auth UID.
 
 **Why it exists**: the auth-linked identity record and role gate the entire app's navigation (student vs. startup dashboards, protected routes). Kept minimal and immutable on the sensitive fields so a compromised client can't self-promote from student to startup.
 
+**Account Settings**: `/settings` is a shared screen (not role-specific) reachable from either profile's header, covering Edit Profile, Privacy (push-notification toggle — writes/clears `fcmToken` above), Security (email verification status + change password), Password, Language, Theme, Help, About, Logout, and Delete Account. Two things are deliberately **not** Firestore fields: **Theme** is persisted locally via `shared_preferences` (`ThemeModeController`), not synced across devices, since a per-device display preference doesn't need a backend round-trip; **Language** only offers English today — no i18n framework is wired up yet, so the screen says so honestly rather than pretending to switch languages.
+
+**Delete Account**: reauthenticates the user (password re-entry, via `reauthenticateWithCredential`), then in one batch deletes their `student_profiles`/`startup_profiles` doc(s) and their `users/{uid}` doc, then deletes the Firebase Auth account itself. `firestore.rules` was updated so `users`, `student_profiles`, and `startup_profiles` each allow self-delete (previously all three were `allow delete: if false`). **Known limitation**: this does not cascade-delete the user's opportunities, applications, bookmarks, or messages — a complete cascade would need a Cloud Function trigger on Auth user deletion (no Cloud Functions are set up in this project). What's implemented covers the core "delete my identity and profile" expectation but leaves some orphaned records referencing a UID that no longer resolves to a user.
+
 ### `opportunities/{id}`
 Doc ID = auto-generated.
 

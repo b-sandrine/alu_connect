@@ -11,7 +11,6 @@ import '../../../../core/theme/context_theme_x.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/gradient_header.dart';
 import '../../../../core/widgets/loading_overlay.dart';
-import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../domain/entities/startup_profile_entity.dart';
 import '../providers/startup_profile_providers.dart';
@@ -396,22 +395,9 @@ class _Header extends ConsumerWidget {
                   icon: const Icon(Icons.edit_outlined, color: Colors.white),
                   onPressed: () => context.push('/startup-profile/edit'),
                 ),
-                PopupMenuButton<String>(
+                IconButton(
                   icon: const Icon(Icons.settings_outlined, color: Colors.white),
-                  itemBuilder: (_) => const [
-                    PopupMenuItem(value: 'edit', child: Text('Edit profile')),
-                    PopupMenuItem(value: 'analytics', child: Text('View analytics')),
-                    PopupMenuItem(value: 'signout', child: Text('Sign out')),
-                  ],
-                  onSelected: (value) {
-                    if (value == 'edit') {
-                      context.push('/startup-profile/edit');
-                    } else if (value == 'analytics') {
-                      context.push('/startup-analytics');
-                    } else if (value == 'signout') {
-                      ref.read(authControllerProvider.notifier).signOut();
-                    }
-                  },
+                  onPressed: () => context.push('/settings'),
                 ),
               ],
             ],
