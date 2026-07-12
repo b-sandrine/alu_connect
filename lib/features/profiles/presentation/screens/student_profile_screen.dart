@@ -17,6 +17,7 @@ import '../../../../features/authentication/domain/entities/user_entity.dart';
 import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
 import '../../../../features/applications/presentation/providers/application_providers.dart';
+import '../../../../features/opportunities/presentation/providers/opportunity_providers.dart';
 import '../../../../features/opportunities/presentation/providers/recommended_opportunities_provider.dart';
 import '../../domain/entities/student_profile_entity.dart';
 import '../providers/student_profile_providers.dart';
@@ -62,6 +63,8 @@ class StudentProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 28),
                   _RecommendedSection(studentId: user.id),
+                  const SizedBox(height: 28),
+                  _RecentlyViewedSection(studentId: user.id),
                   const SizedBox(height: 28),
                   Text('About Me', style: AppTextStyles.titleSmall),
                   const SizedBox(height: 12),
@@ -988,6 +991,117 @@ class _RecommendedCard extends ConsumerWidget {
                     : () => context.push('/opportunities/${opportunity.id}/apply'),
                 child: Text(hasApplied ? 'Applied' : 'Apply'),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+String _timeAgo(DateTime time) {
+  final diff = DateTime.now().difference(time);
+  if (diff.inMinutes < 1) return 'Just now';
+  if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+  if (diff.inHours < 24) return '${diff.inHours}h ago';
+  if (diff.inDays < 7) return '${diff.inDays}d ago';
+  return '${(diff.inDays / 7).floor()}w ago';
+}
+
+class _RecentlyViewedSection extends ConsumerWidget {
+  const _RecentlyViewedSection({required this.studentId});
+
+  final String studentId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recentAsync = ref.watch(recentlyViewedOpportunitiesProvider(studentId));
+
+    return recentAsync.maybeWhen(
+      data: (entries) {
+        if (entries.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Recently Viewed', style: AppTextStyles.titleSmall),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 108,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: entries.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (_, i) => _RecentlyViewedCard(entry: entries[i]),
+              ),
+            ),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _RecentlyViewedCard extends StatelessWidget {
+  const _RecentlyViewedCard({required this.entry});
+
+  final RecentlyViewedEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final opportunity = entry.opportunity;
+
+    return GestureDetector(
+      onTap: () => context.push('/opportunities/${opportunity.id}'),
+      child: Container(
+        width: 220,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 14,
+                  backgroundColor: colors.info.withValues(alpha: 0.12),
+                  backgroundImage: opportunity.startupLogoUrl != null
+                      ? CachedNetworkImageProvider(opportunity.startupLogoUrl!)
+                      : null,
+                  child: opportunity.startupLogoUrl == null
+                      ? Icon(Icons.business, size: 14, color: colors.info)
+                      : null,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    opportunity.startupName,
+                    style: AppTextStyles.labelSmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              opportunity.title,
+              style: AppTextStyles.titleSmall,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const Spacer(),
+            Row(
+              children: [
+                Icon(Icons.history, size: 12, color: colors.textHint),
+                const SizedBox(width: 4),
+                Text(_timeAgo(entry.viewedAt), style: AppTextStyles.caption),
+              ],
             ),
           ],
         ),

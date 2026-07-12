@@ -38,6 +38,7 @@ class _OpportunityDetailScreenState
     if (_viewRecorded || user == null || !user.isStudent) return;
     _viewRecorded = true;
     recordOpportunityView(ref, widget.opportunityId);
+    recordRecentlyViewed(ref, user.id, widget.opportunityId);
   }
 
   @override

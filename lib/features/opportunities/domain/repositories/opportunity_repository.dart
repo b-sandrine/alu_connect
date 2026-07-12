@@ -31,4 +31,14 @@ abstract interface class OpportunityRepository {
   /// Fire-and-forget view counter, incremented when a student opens an
   /// opportunity's detail screen — backs the "Most viewed" analytics chart.
   Future<void> incrementViewCount(String id);
+
+  /// Records that a student viewed this opportunity just now — backs their
+  /// personal "Recently Viewed" list. Separate from [incrementViewCount],
+  /// which is an aggregate counter with no per-user history.
+  Future<void> recordRecentlyViewed(String userId, String opportunityId);
+
+  Stream<List<({String opportunityId, DateTime viewedAt})>> watchRecentlyViewed(
+    String userId, {
+    int limit = 10,
+  });
 }

@@ -94,6 +94,54 @@ void recordOpportunityView(WidgetRef ref, String opportunityId) {
   );
 }
 
+/// Fire-and-forget personal view history — backs the student's own
+/// "Recently Viewed" list. Separate call from [recordOpportunityView] since
+/// one is an aggregate counter and this is a per-user record.
+void recordRecentlyViewed(WidgetRef ref, String userId, String opportunityId) {
+  unawaited(
+    ref
+        .read(opportunityRepositoryProvider)
+        .recordRecentlyViewed(userId, opportunityId)
+        .catchError((_) {}),
+  );
+}
+
+final _recentlyViewedRawProvider =
+    StreamProvider.family<List<({String opportunityId, DateTime viewedAt})>, String>(
+        (ref, userId) {
+  return ref.watch(opportunityRepositoryProvider).watchRecentlyViewed(userId);
+});
+
+typedef RecentlyViewedEntry = ({OpportunityEntity opportunity, DateTime viewedAt});
+
+/// Joins the raw viewed-id-plus-timestamp history against actual
+/// opportunity data, preserving most-recent-first order (an unordered
+/// `whereIn` fetch underneath would otherwise scramble it) and silently
+/// dropping any opportunity that's since been deleted.
+final recentlyViewedOpportunitiesProvider =
+    Provider.family<AsyncValue<List<RecentlyViewedEntry>>, String>((ref, userId) {
+  final entriesAsync = ref.watch(_recentlyViewedRawProvider(userId));
+  if (entriesAsync.isLoading) return const AsyncLoading();
+  if (entriesAsync.hasError) {
+    return AsyncError(entriesAsync.error!, entriesAsync.stackTrace ?? StackTrace.current);
+  }
+
+  final entries = entriesAsync.requireValue;
+  if (entries.isEmpty) return const AsyncData([]);
+
+  final ids = entries.map((e) => e.opportunityId).toList();
+  final opportunitiesAsync = ref.watch(opportunitiesByIdsProvider(ids));
+
+  return opportunitiesAsync.whenData((opportunities) {
+    final byId = {for (final o in opportunities) o.id: o};
+    return [
+      for (final e in entries)
+        if (byId[e.opportunityId] != null)
+          (opportunity: byId[e.opportunityId]!, viewedAt: e.viewedAt),
+    ];
+  });
+});
+
 final filteredOpportunitiesProvider =
     Provider<AsyncValue<List<OpportunityEntity>>>((ref) {
   final filter = ref.watch(opportunityFilterProvider);

@@ -65,4 +65,15 @@ class OpportunityRepositoryImpl implements OpportunityRepository {
   @override
   Future<void> incrementViewCount(String id) =>
       _datasource.incrementViewCount(id);
+
+  @override
+  Future<void> recordRecentlyViewed(String userId, String opportunityId) =>
+      _datasource.recordRecentlyViewed(userId, opportunityId);
+
+  @override
+  Stream<List<({String opportunityId, DateTime viewedAt})>> watchRecentlyViewed(
+    String userId, {
+    int limit = 10,
+  }) =>
+      _datasource.watchRecentlyViewed(userId, limit: limit);
 }

@@ -11,6 +11,7 @@ class AppConstants {
   static const String opportunitiesCollection = 'opportunities';
   static const String applicationsCollection = 'applications';
   static const String bookmarksCollection = 'bookmarks';
+  static const String recentlyViewedCollection = 'recently_viewed';
   static const String conversationsCollection = 'conversations';
   static const String messagesSubcollection = 'messages';
 

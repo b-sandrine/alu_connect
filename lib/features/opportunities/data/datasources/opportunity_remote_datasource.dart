@@ -133,4 +133,40 @@ class OpportunityRemoteDatasource {
       throw FirebaseErrorMapper.fromCode(e.code);
     }
   }
+
+  // users/{uid}/recently_viewed/{opportunityId} — doc ID = opportunityId so
+  // re-viewing the same opportunity just bumps its timestamp instead of
+  // creating a duplicate entry.
+  CollectionReference<Map<String, dynamic>> _recentlyViewed(String userId) =>
+      _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(userId)
+          .collection(AppConstants.recentlyViewedCollection);
+
+  Future<void> recordRecentlyViewed(String userId, String opportunityId) async {
+    try {
+      await _recentlyViewed(userId).doc(opportunityId).set({
+        'opportunityId': opportunityId,
+        'viewedAt': Timestamp.now(),
+      });
+    } on FirebaseException catch (e) {
+      throw FirebaseErrorMapper.fromCode(e.code);
+    }
+  }
+
+  Stream<List<({String opportunityId, DateTime viewedAt})>> watchRecentlyViewed(
+    String userId, {
+    int limit = 10,
+  }) {
+    return _recentlyViewed(userId)
+        .orderBy('viewedAt', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map((snap) => snap.docs
+            .map((d) => (
+                  opportunityId: d.id,
+                  viewedAt: (d.data()['viewedAt'] as Timestamp).toDate(),
+                ))
+            .toList());
+  }
 }

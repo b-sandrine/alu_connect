@@ -129,6 +129,16 @@ Doc ID = the bookmarked opportunity's ID — one tiny doc per bookmark, not an a
 
 **Read exposure tradeoff**: the `collectionGroup` count query requires a broad rule (`match /{path=**}/bookmarks/{bookmarkId} { allow read: if isSignedIn(); }`) since Firestore evaluates rules per-document even for aggregate queries. This is safe because `.count()` never returns document data to the client — only the numeric total — so no user's individual bookmark list is exposed, only "how many bookmarked this opportunity."
 
+### `users/{uid}/recently_viewed/{opportunityId}`
+Doc ID = the viewed opportunity's ID — same shape as `bookmarks`, so re-viewing just overwrites the timestamp instead of creating duplicate history entries.
+
+| Field | Type | Notes |
+|---|---|---|
+| `opportunityId` | string | |
+| `viewedAt` | timestamp | overwritten on every view; the student's "Recently Viewed" list is `orderBy('viewedAt', descending: true).limit(10)` |
+
+**Why it exists, and why separate from `opportunities.viewCount`**: `viewCount` (see the `opportunities` section) is an aggregate counter with no per-user history — it answers "how many views total," not "who viewed what, when." This subcollection answers the latter, powering each student's own "Recently Viewed" section. Both are recorded from the same trigger (`OpportunityDetailScreen._maybeRecordView`, fired once per screen visit, students only) but are otherwise independent — one write updates the aggregate, a separate write updates personal history. No `collectionGroup` rule needed here (unlike bookmarks) since nothing ever needs to query "who viewed opportunity X" across all users — it stays owner-only.
+
 ### `conversations/{id}`
 Doc ID = **deterministic**: the two participants' UIDs, sorted and joined with `_` (not auto-generated) — makes "find or create the thread between these two users" a direct doc read instead of a query.
 

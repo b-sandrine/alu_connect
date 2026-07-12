@@ -44,6 +44,14 @@ service cloud.firestore {
       match /bookmarks/{opportunityId} {
         allow read, write: if isSelf(userId);
       }
+
+      // users/{uid}/recently_viewed/{opportunityId} — a student's personal
+      // view history, doc ID = opportunityId so re-viewing just bumps the
+      // timestamp. No collectionGroup use case here (unlike bookmarks),
+      // so this stays owner-only with no broader read rule.
+      match /recently_viewed/{opportunityId} {
+        allow read, write: if isSelf(userId);
+      }
     }
 
     // opportunities/{id} — postings browsed by every student, managed only
