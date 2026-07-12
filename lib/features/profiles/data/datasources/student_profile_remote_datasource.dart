@@ -50,6 +50,13 @@ class StudentProfileRemoteDatasource {
         resumeUrl: profile.resumeUrl,
         resumeFileName: profile.resumeFileName,
         resumeUploadedAt: profile.resumeUploadedAt,
+        portfolioUrl: profile.portfolioUrl,
+        githubUrl: profile.githubUrl,
+        linkedinUrl: profile.linkedinUrl,
+        behanceUrl: profile.behanceUrl,
+        dribbbleUrl: profile.dribbbleUrl,
+        mediumUrl: profile.mediumUrl,
+        personalWebsiteUrl: profile.personalWebsiteUrl,
         createdAt: profile.createdAt,
         updatedAt: profile.updatedAt,
       );

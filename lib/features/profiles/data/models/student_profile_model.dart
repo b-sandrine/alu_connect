@@ -17,6 +17,13 @@ class StudentProfileModel {
     this.resumeUrl,
     this.resumeFileName,
     this.resumeUploadedAt,
+    this.portfolioUrl,
+    this.githubUrl,
+    this.linkedinUrl,
+    this.behanceUrl,
+    this.dribbbleUrl,
+    this.mediumUrl,
+    this.personalWebsiteUrl,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -35,6 +42,13 @@ class StudentProfileModel {
   final String? resumeUrl;
   final String? resumeFileName;
   final DateTime? resumeUploadedAt;
+  final String? portfolioUrl;
+  final String? githubUrl;
+  final String? linkedinUrl;
+  final String? behanceUrl;
+  final String? dribbbleUrl;
+  final String? mediumUrl;
+  final String? personalWebsiteUrl;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -55,6 +69,13 @@ class StudentProfileModel {
       resumeUrl: data['resumeUrl'] as String?,
       resumeFileName: data['resumeFileName'] as String?,
       resumeUploadedAt: (data['resumeUploadedAt'] as Timestamp?)?.toDate(),
+      portfolioUrl: data['portfolioUrl'] as String?,
+      githubUrl: data['githubUrl'] as String?,
+      linkedinUrl: data['linkedinUrl'] as String?,
+      behanceUrl: data['behanceUrl'] as String?,
+      dribbbleUrl: data['dribbbleUrl'] as String?,
+      mediumUrl: data['mediumUrl'] as String?,
+      personalWebsiteUrl: data['personalWebsiteUrl'] as String?,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
     );
@@ -76,6 +97,13 @@ class StudentProfileModel {
       resumeUrl: e.resumeUrl,
       resumeFileName: e.resumeFileName,
       resumeUploadedAt: e.resumeUploadedAt,
+      portfolioUrl: e.portfolioUrl,
+      githubUrl: e.githubUrl,
+      linkedinUrl: e.linkedinUrl,
+      behanceUrl: e.behanceUrl,
+      dribbbleUrl: e.dribbbleUrl,
+      mediumUrl: e.mediumUrl,
+      personalWebsiteUrl: e.personalWebsiteUrl,
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
     );
@@ -97,6 +125,13 @@ class StudentProfileModel {
       'resumeFileName': resumeFileName,
       'resumeUploadedAt':
           resumeUploadedAt != null ? Timestamp.fromDate(resumeUploadedAt!) : null,
+      'portfolioUrl': portfolioUrl,
+      'githubUrl': githubUrl,
+      'linkedinUrl': linkedinUrl,
+      'behanceUrl': behanceUrl,
+      'dribbbleUrl': dribbbleUrl,
+      'mediumUrl': mediumUrl,
+      'personalWebsiteUrl': personalWebsiteUrl,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -118,6 +153,13 @@ class StudentProfileModel {
       resumeUrl: resumeUrl,
       resumeFileName: resumeFileName,
       resumeUploadedAt: resumeUploadedAt,
+      portfolioUrl: portfolioUrl,
+      githubUrl: githubUrl,
+      linkedinUrl: linkedinUrl,
+      behanceUrl: behanceUrl,
+      dribbbleUrl: dribbbleUrl,
+      mediumUrl: mediumUrl,
+      personalWebsiteUrl: personalWebsiteUrl,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

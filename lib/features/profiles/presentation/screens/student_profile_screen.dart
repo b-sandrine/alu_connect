@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -72,6 +73,15 @@ class StudentProfileScreen extends ConsumerWidget {
                         : Padding(
                             padding: const EdgeInsets.only(top: 28),
                             child: _ResumeSection(profile: profile),
+                          ),
+                    orElse: () => const SizedBox.shrink(),
+                  ),
+                  profileAsync.maybeWhen(
+                    data: (profile) => profile == null
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 28),
+                            child: _PortfolioSection(profile: profile),
                           ),
                     orElse: () => const SizedBox.shrink(),
                   ),
@@ -494,6 +504,137 @@ class _ResumeSectionState extends ConsumerState<_ResumeSection> {
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+}
+
+class _PortfolioLink {
+  const _PortfolioLink({required this.label, required this.icon, required this.color, required this.url});
+
+  final String label;
+  final IconData icon;
+  final Color color;
+  final String url;
+}
+
+class _PortfolioSection extends StatelessWidget {
+  const _PortfolioSection({required this.profile});
+
+  final StudentProfileEntity profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    final links = <_PortfolioLink>[
+      if (profile.portfolioUrl != null)
+        _PortfolioLink(label: 'Portfolio', icon: Icons.language, color: colors.info, url: profile.portfolioUrl!),
+      if (profile.githubUrl != null)
+        _PortfolioLink(label: 'GitHub', icon: FontAwesomeIcons.github, color: colors.textPrimary, url: profile.githubUrl!),
+      if (profile.linkedinUrl != null)
+        _PortfolioLink(label: 'LinkedIn', icon: FontAwesomeIcons.linkedin, color: const Color(0xFF0A66C2), url: profile.linkedinUrl!),
+      if (profile.behanceUrl != null)
+        _PortfolioLink(label: 'Behance', icon: FontAwesomeIcons.behance, color: const Color(0xFF1769FF), url: profile.behanceUrl!),
+      if (profile.dribbbleUrl != null)
+        _PortfolioLink(label: 'Dribbble', icon: FontAwesomeIcons.dribbble, color: const Color(0xFFEA4C89), url: profile.dribbbleUrl!),
+      if (profile.mediumUrl != null)
+        _PortfolioLink(label: 'Medium', icon: FontAwesomeIcons.medium, color: colors.textPrimary, url: profile.mediumUrl!),
+      if (profile.personalWebsiteUrl != null)
+        _PortfolioLink(label: 'Personal site', icon: Icons.public, color: colors.accent, url: profile.personalWebsiteUrl!),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Portfolio & Links', style: AppTextStyles.titleSmall),
+        const SizedBox(height: 12),
+        if (links.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Add your GitHub, LinkedIn, portfolio, or other links so startups can see your work.',
+                  style: AppTextStyles.bodySmall.copyWith(color: colors.textSecondary),
+                ),
+                const SizedBox(height: 14),
+                OutlinedButton.icon(
+                  onPressed: () => context.push('/student-profile/edit'),
+                  icon: const Icon(Icons.add_link),
+                  label: const Text('Add links'),
+                ),
+              ],
+            ),
+          )
+        else
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: links.map((link) => _PortfolioCard(link: link)).toList(),
+          ),
+      ],
+    );
+  }
+}
+
+class _PortfolioCard extends StatelessWidget {
+  const _PortfolioCard({required this.link});
+
+  final _PortfolioLink link;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () async {
+        final uri = Uri.parse(link.url);
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      },
+      child: Container(
+        width: 132,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: link.color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(link.icon, size: 18, color: link.color),
+            ),
+            const SizedBox(height: 10),
+            Text(link.label, style: AppTextStyles.labelLarge),
+            const SizedBox(height: 2),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Visit',
+                    style: AppTextStyles.caption.copyWith(color: colors.textHint),
+                  ),
+                ),
+                Icon(Icons.arrow_outward, size: 12, color: colors.textHint),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

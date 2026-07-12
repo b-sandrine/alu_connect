@@ -30,6 +30,13 @@ mixin _$StudentProfileEntity {
   String? get resumeUrl => throw _privateConstructorUsedError;
   String? get resumeFileName => throw _privateConstructorUsedError;
   DateTime? get resumeUploadedAt => throw _privateConstructorUsedError;
+  String? get portfolioUrl => throw _privateConstructorUsedError;
+  String? get githubUrl => throw _privateConstructorUsedError;
+  String? get linkedinUrl => throw _privateConstructorUsedError;
+  String? get behanceUrl => throw _privateConstructorUsedError;
+  String? get dribbbleUrl => throw _privateConstructorUsedError;
+  String? get mediumUrl => throw _privateConstructorUsedError;
+  String? get personalWebsiteUrl => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -61,6 +68,13 @@ abstract class $StudentProfileEntityCopyWith<$Res> {
       String? resumeUrl,
       String? resumeFileName,
       DateTime? resumeUploadedAt,
+      String? portfolioUrl,
+      String? githubUrl,
+      String? linkedinUrl,
+      String? behanceUrl,
+      String? dribbbleUrl,
+      String? mediumUrl,
+      String? personalWebsiteUrl,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -95,6 +109,13 @@ class _$StudentProfileEntityCopyWithImpl<$Res,
     Object? resumeUrl = freezed,
     Object? resumeFileName = freezed,
     Object? resumeUploadedAt = freezed,
+    Object? portfolioUrl = freezed,
+    Object? githubUrl = freezed,
+    Object? linkedinUrl = freezed,
+    Object? behanceUrl = freezed,
+    Object? dribbbleUrl = freezed,
+    Object? mediumUrl = freezed,
+    Object? personalWebsiteUrl = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -155,6 +176,34 @@ class _$StudentProfileEntityCopyWithImpl<$Res,
           ? _value.resumeUploadedAt
           : resumeUploadedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      portfolioUrl: freezed == portfolioUrl
+          ? _value.portfolioUrl
+          : portfolioUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      githubUrl: freezed == githubUrl
+          ? _value.githubUrl
+          : githubUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      linkedinUrl: freezed == linkedinUrl
+          ? _value.linkedinUrl
+          : linkedinUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      behanceUrl: freezed == behanceUrl
+          ? _value.behanceUrl
+          : behanceUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      dribbbleUrl: freezed == dribbbleUrl
+          ? _value.dribbbleUrl
+          : dribbbleUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      mediumUrl: freezed == mediumUrl
+          ? _value.mediumUrl
+          : mediumUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      personalWebsiteUrl: freezed == personalWebsiteUrl
+          ? _value.personalWebsiteUrl
+          : personalWebsiteUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -190,6 +239,13 @@ abstract class _$$StudentProfileEntityImplCopyWith<$Res>
       String? resumeUrl,
       String? resumeFileName,
       DateTime? resumeUploadedAt,
+      String? portfolioUrl,
+      String? githubUrl,
+      String? linkedinUrl,
+      String? behanceUrl,
+      String? dribbbleUrl,
+      String? mediumUrl,
+      String? personalWebsiteUrl,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -221,6 +277,13 @@ class __$$StudentProfileEntityImplCopyWithImpl<$Res>
     Object? resumeUrl = freezed,
     Object? resumeFileName = freezed,
     Object? resumeUploadedAt = freezed,
+    Object? portfolioUrl = freezed,
+    Object? githubUrl = freezed,
+    Object? linkedinUrl = freezed,
+    Object? behanceUrl = freezed,
+    Object? dribbbleUrl = freezed,
+    Object? mediumUrl = freezed,
+    Object? personalWebsiteUrl = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -281,6 +344,34 @@ class __$$StudentProfileEntityImplCopyWithImpl<$Res>
           ? _value.resumeUploadedAt
           : resumeUploadedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      portfolioUrl: freezed == portfolioUrl
+          ? _value.portfolioUrl
+          : portfolioUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      githubUrl: freezed == githubUrl
+          ? _value.githubUrl
+          : githubUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      linkedinUrl: freezed == linkedinUrl
+          ? _value.linkedinUrl
+          : linkedinUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      behanceUrl: freezed == behanceUrl
+          ? _value.behanceUrl
+          : behanceUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      dribbbleUrl: freezed == dribbbleUrl
+          ? _value.dribbbleUrl
+          : dribbbleUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      mediumUrl: freezed == mediumUrl
+          ? _value.mediumUrl
+          : mediumUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      personalWebsiteUrl: freezed == personalWebsiteUrl
+          ? _value.personalWebsiteUrl
+          : personalWebsiteUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -311,6 +402,13 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
       this.resumeUrl,
       this.resumeFileName,
       this.resumeUploadedAt,
+      this.portfolioUrl,
+      this.githubUrl,
+      this.linkedinUrl,
+      this.behanceUrl,
+      this.dribbbleUrl,
+      this.mediumUrl,
+      this.personalWebsiteUrl,
       required this.createdAt,
       required this.updatedAt})
       : _skills = skills,
@@ -354,13 +452,27 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
   @override
   final DateTime? resumeUploadedAt;
   @override
+  final String? portfolioUrl;
+  @override
+  final String? githubUrl;
+  @override
+  final String? linkedinUrl;
+  @override
+  final String? behanceUrl;
+  @override
+  final String? dribbbleUrl;
+  @override
+  final String? mediumUrl;
+  @override
+  final String? personalWebsiteUrl;
+  @override
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'StudentProfileEntity(id: $id, ownerId: $ownerId, photoUrl: $photoUrl, university: $university, degree: $degree, yearOfStudy: $yearOfStudy, location: $location, bio: $bio, careerInterests: $careerInterests, personalStatement: $personalStatement, skills: $skills, resumeUrl: $resumeUrl, resumeFileName: $resumeFileName, resumeUploadedAt: $resumeUploadedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'StudentProfileEntity(id: $id, ownerId: $ownerId, photoUrl: $photoUrl, university: $university, degree: $degree, yearOfStudy: $yearOfStudy, location: $location, bio: $bio, careerInterests: $careerInterests, personalStatement: $personalStatement, skills: $skills, resumeUrl: $resumeUrl, resumeFileName: $resumeFileName, resumeUploadedAt: $resumeUploadedAt, portfolioUrl: $portfolioUrl, githubUrl: $githubUrl, linkedinUrl: $linkedinUrl, behanceUrl: $behanceUrl, dribbbleUrl: $dribbbleUrl, mediumUrl: $mediumUrl, personalWebsiteUrl: $personalWebsiteUrl, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -391,6 +503,20 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
                 other.resumeFileName == resumeFileName) &&
             (identical(other.resumeUploadedAt, resumeUploadedAt) ||
                 other.resumeUploadedAt == resumeUploadedAt) &&
+            (identical(other.portfolioUrl, portfolioUrl) ||
+                other.portfolioUrl == portfolioUrl) &&
+            (identical(other.githubUrl, githubUrl) ||
+                other.githubUrl == githubUrl) &&
+            (identical(other.linkedinUrl, linkedinUrl) ||
+                other.linkedinUrl == linkedinUrl) &&
+            (identical(other.behanceUrl, behanceUrl) ||
+                other.behanceUrl == behanceUrl) &&
+            (identical(other.dribbbleUrl, dribbbleUrl) ||
+                other.dribbbleUrl == dribbbleUrl) &&
+            (identical(other.mediumUrl, mediumUrl) ||
+                other.mediumUrl == mediumUrl) &&
+            (identical(other.personalWebsiteUrl, personalWebsiteUrl) ||
+                other.personalWebsiteUrl == personalWebsiteUrl) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -398,24 +524,32 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      ownerId,
-      photoUrl,
-      university,
-      degree,
-      yearOfStudy,
-      location,
-      bio,
-      careerInterests,
-      personalStatement,
-      const DeepCollectionEquality().hash(_skills),
-      resumeUrl,
-      resumeFileName,
-      resumeUploadedAt,
-      createdAt,
-      updatedAt);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        ownerId,
+        photoUrl,
+        university,
+        degree,
+        yearOfStudy,
+        location,
+        bio,
+        careerInterests,
+        personalStatement,
+        const DeepCollectionEquality().hash(_skills),
+        resumeUrl,
+        resumeFileName,
+        resumeUploadedAt,
+        portfolioUrl,
+        githubUrl,
+        linkedinUrl,
+        behanceUrl,
+        dribbbleUrl,
+        mediumUrl,
+        personalWebsiteUrl,
+        createdAt,
+        updatedAt
+      ]);
 
   /// Create a copy of StudentProfileEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -444,6 +578,13 @@ abstract class _StudentProfileEntity extends StudentProfileEntity {
       final String? resumeUrl,
       final String? resumeFileName,
       final DateTime? resumeUploadedAt,
+      final String? portfolioUrl,
+      final String? githubUrl,
+      final String? linkedinUrl,
+      final String? behanceUrl,
+      final String? dribbbleUrl,
+      final String? mediumUrl,
+      final String? personalWebsiteUrl,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$StudentProfileEntityImpl;
   const _StudentProfileEntity._() : super._();
@@ -476,6 +617,20 @@ abstract class _StudentProfileEntity extends StudentProfileEntity {
   String? get resumeFileName;
   @override
   DateTime? get resumeUploadedAt;
+  @override
+  String? get portfolioUrl;
+  @override
+  String? get githubUrl;
+  @override
+  String? get linkedinUrl;
+  @override
+  String? get behanceUrl;
+  @override
+  String? get dribbbleUrl;
+  @override
+  String? get mediumUrl;
+  @override
+  String? get personalWebsiteUrl;
   @override
   DateTime get createdAt;
   @override

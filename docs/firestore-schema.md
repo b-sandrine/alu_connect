@@ -103,6 +103,7 @@ Doc ID = auto-generated (mirrors `startup_profiles`, not doc-id-as-owner-UID).
 | `resumeUrl` | string? | Storage download URL |
 | `resumeFileName` | string? | original filename the student uploaded, shown in the UI since the Storage object itself is always named `{profileId}.pdf` |
 | `resumeUploadedAt` | timestamp? | |
+| `portfolioUrl`, `githubUrl`, `linkedinUrl`, `behanceUrl`, `dribbbleUrl`, `mediumUrl`, `personalWebsiteUrl` | string? | fixed set of optional link fields (not a dynamic array) since the platforms are a known, small, unchanging list — displayed as clickable cards on the profile |
 | `createdAt`, `updatedAt` | timestamp | |
 
 **Why it exists, and why it's separate from `users`**: same reasoning as `startup_profiles` — a rich, publicly-readable profile (bio, skills, education) shouldn't bloat the auth identity doc, and a startup will eventually need to read an applicant's profile.

@@ -21,6 +21,13 @@ abstract class StudentProfileEntity with _$StudentProfileEntity {
     String? resumeUrl,
     String? resumeFileName,
     DateTime? resumeUploadedAt,
+    String? portfolioUrl,
+    String? githubUrl,
+    String? linkedinUrl,
+    String? behanceUrl,
+    String? dribbbleUrl,
+    String? mediumUrl,
+    String? personalWebsiteUrl,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _StudentProfileEntity;
@@ -40,12 +47,22 @@ abstract class StudentProfileEntity with _$StudentProfileEntity {
       personalStatement.isNotEmpty ? personalStatement : null,
       skills.isNotEmpty ? skills : null,
       resumeUrl,
+      hasPortfolioLinks ? true : null,
     ];
     final filled = fields.where((f) => f != null).length;
     return ((filled / fields.length) * 100).round();
   }
 
   bool get hasResume => resumeUrl != null;
+
+  bool get hasPortfolioLinks =>
+      portfolioUrl != null ||
+      githubUrl != null ||
+      linkedinUrl != null ||
+      behanceUrl != null ||
+      dribbbleUrl != null ||
+      mediumUrl != null ||
+      personalWebsiteUrl != null;
 
   bool get isComplete => completionPercentage >= 100;
 }

@@ -33,6 +33,13 @@ class _EditStudentProfileScreenState
   final _personalStatementController = TextEditingController();
   final _skillController = TextEditingController();
   final _skillSearchController = TextEditingController();
+  final _portfolioController = TextEditingController();
+  final _githubController = TextEditingController();
+  final _linkedinController = TextEditingController();
+  final _behanceController = TextEditingController();
+  final _dribbbleController = TextEditingController();
+  final _mediumController = TextEditingController();
+  final _personalWebsiteController = TextEditingController();
 
   String? _selectedYear;
   Uint8List? _pickedPhotoBytes;
@@ -52,6 +59,13 @@ class _EditStudentProfileScreenState
     _personalStatementController.dispose();
     _skillController.dispose();
     _skillSearchController.dispose();
+    _portfolioController.dispose();
+    _githubController.dispose();
+    _linkedinController.dispose();
+    _behanceController.dispose();
+    _dribbbleController.dispose();
+    _mediumController.dispose();
+    _personalWebsiteController.dispose();
     super.dispose();
   }
 
@@ -65,6 +79,13 @@ class _EditStudentProfileScreenState
     _personalStatementController.text = profile.personalStatement;
     _selectedYear = profile.yearOfStudy.isEmpty ? null : profile.yearOfStudy;
     _skills.addAll(profile.skills);
+    _portfolioController.text = profile.portfolioUrl ?? '';
+    _githubController.text = profile.githubUrl ?? '';
+    _linkedinController.text = profile.linkedinUrl ?? '';
+    _behanceController.text = profile.behanceUrl ?? '';
+    _dribbbleController.text = profile.dribbbleUrl ?? '';
+    _mediumController.text = profile.mediumUrl ?? '';
+    _personalWebsiteController.text = profile.personalWebsiteUrl ?? '';
     _existingProfile = profile;
     _initialized = true;
   }
@@ -92,6 +113,9 @@ class _EditStudentProfileScreenState
     }
   }
 
+  String? _orNull(TextEditingController controller) =>
+      controller.text.trim().isEmpty ? null : controller.text.trim();
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedYear == null) {
@@ -117,6 +141,13 @@ class _EditStudentProfileScreenState
       careerInterests: _careerInterestsController.text.trim(),
       personalStatement: _personalStatementController.text.trim(),
       skills: List.unmodifiable(_skills),
+      portfolioUrl: _orNull(_portfolioController),
+      githubUrl: _orNull(_githubController),
+      linkedinUrl: _orNull(_linkedinController),
+      behanceUrl: _orNull(_behanceController),
+      dribbbleUrl: _orNull(_dribbbleController),
+      mediumUrl: _orNull(_mediumController),
+      personalWebsiteUrl: _orNull(_personalWebsiteController),
       createdAt: _existingProfile?.createdAt ?? now,
       updatedAt: now,
     );
@@ -284,6 +315,69 @@ class _EditStudentProfileScreenState
                       .toList(),
                 ),
               ],
+              const SizedBox(height: 24),
+              Text('Portfolio & Links', style: AppTextStyles.titleSmall),
+              const SizedBox(height: 4),
+              Text(
+                'All optional — add whichever platforms you use.',
+                style: AppTextStyles.caption,
+              ),
+              const SizedBox(height: 12),
+              AppTextField(
+                label: 'Portfolio website',
+                controller: _portfolioController,
+                prefixIcon: Icons.language,
+                keyboardType: TextInputType.url,
+                validator: Validators.url,
+              ),
+              const SizedBox(height: 12),
+              AppTextField(
+                label: 'GitHub',
+                controller: _githubController,
+                prefixIcon: Icons.code,
+                keyboardType: TextInputType.url,
+                validator: Validators.url,
+              ),
+              const SizedBox(height: 12),
+              AppTextField(
+                label: 'LinkedIn',
+                controller: _linkedinController,
+                prefixIcon: Icons.business_center_outlined,
+                keyboardType: TextInputType.url,
+                validator: Validators.url,
+              ),
+              const SizedBox(height: 12),
+              AppTextField(
+                label: 'Behance',
+                controller: _behanceController,
+                prefixIcon: Icons.palette_outlined,
+                keyboardType: TextInputType.url,
+                validator: Validators.url,
+              ),
+              const SizedBox(height: 12),
+              AppTextField(
+                label: 'Dribbble',
+                controller: _dribbbleController,
+                prefixIcon: Icons.brush_outlined,
+                keyboardType: TextInputType.url,
+                validator: Validators.url,
+              ),
+              const SizedBox(height: 12),
+              AppTextField(
+                label: 'Medium',
+                controller: _mediumController,
+                prefixIcon: Icons.article_outlined,
+                keyboardType: TextInputType.url,
+                validator: Validators.url,
+              ),
+              const SizedBox(height: 12),
+              AppTextField(
+                label: 'Personal website',
+                controller: _personalWebsiteController,
+                prefixIcon: Icons.public,
+                keyboardType: TextInputType.url,
+                validator: Validators.url,
+              ),
               const SizedBox(height: 32),
               AppButton(
                 label: 'Save changes',
