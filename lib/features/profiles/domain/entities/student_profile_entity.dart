@@ -18,6 +18,9 @@ abstract class StudentProfileEntity with _$StudentProfileEntity {
     @Default('') String careerInterests,
     @Default('') String personalStatement,
     @Default(<String>[]) List<String> skills,
+    String? resumeUrl,
+    String? resumeFileName,
+    DateTime? resumeUploadedAt,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _StudentProfileEntity;
@@ -36,10 +39,13 @@ abstract class StudentProfileEntity with _$StudentProfileEntity {
       careerInterests.isNotEmpty ? careerInterests : null,
       personalStatement.isNotEmpty ? personalStatement : null,
       skills.isNotEmpty ? skills : null,
+      resumeUrl,
     ];
     final filled = fields.where((f) => f != null).length;
     return ((filled / fields.length) * 100).round();
   }
+
+  bool get hasResume => resumeUrl != null;
 
   bool get isComplete => completionPercentage >= 100;
 }

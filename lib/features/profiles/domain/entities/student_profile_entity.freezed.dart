@@ -27,6 +27,9 @@ mixin _$StudentProfileEntity {
   String get careerInterests => throw _privateConstructorUsedError;
   String get personalStatement => throw _privateConstructorUsedError;
   List<String> get skills => throw _privateConstructorUsedError;
+  String? get resumeUrl => throw _privateConstructorUsedError;
+  String? get resumeFileName => throw _privateConstructorUsedError;
+  DateTime? get resumeUploadedAt => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -55,6 +58,9 @@ abstract class $StudentProfileEntityCopyWith<$Res> {
       String careerInterests,
       String personalStatement,
       List<String> skills,
+      String? resumeUrl,
+      String? resumeFileName,
+      DateTime? resumeUploadedAt,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -86,6 +92,9 @@ class _$StudentProfileEntityCopyWithImpl<$Res,
     Object? careerInterests = null,
     Object? personalStatement = null,
     Object? skills = null,
+    Object? resumeUrl = freezed,
+    Object? resumeFileName = freezed,
+    Object? resumeUploadedAt = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -134,6 +143,18 @@ class _$StudentProfileEntityCopyWithImpl<$Res,
           ? _value.skills
           : skills // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      resumeUrl: freezed == resumeUrl
+          ? _value.resumeUrl
+          : resumeUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resumeFileName: freezed == resumeFileName
+          ? _value.resumeFileName
+          : resumeFileName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resumeUploadedAt: freezed == resumeUploadedAt
+          ? _value.resumeUploadedAt
+          : resumeUploadedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -166,6 +187,9 @@ abstract class _$$StudentProfileEntityImplCopyWith<$Res>
       String careerInterests,
       String personalStatement,
       List<String> skills,
+      String? resumeUrl,
+      String? resumeFileName,
+      DateTime? resumeUploadedAt,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -194,6 +218,9 @@ class __$$StudentProfileEntityImplCopyWithImpl<$Res>
     Object? careerInterests = null,
     Object? personalStatement = null,
     Object? skills = null,
+    Object? resumeUrl = freezed,
+    Object? resumeFileName = freezed,
+    Object? resumeUploadedAt = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -242,6 +269,18 @@ class __$$StudentProfileEntityImplCopyWithImpl<$Res>
           ? _value._skills
           : skills // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      resumeUrl: freezed == resumeUrl
+          ? _value.resumeUrl
+          : resumeUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resumeFileName: freezed == resumeFileName
+          ? _value.resumeFileName
+          : resumeFileName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resumeUploadedAt: freezed == resumeUploadedAt
+          ? _value.resumeUploadedAt
+          : resumeUploadedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -269,6 +308,9 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
       this.careerInterests = '',
       this.personalStatement = '',
       final List<String> skills = const <String>[],
+      this.resumeUrl,
+      this.resumeFileName,
+      this.resumeUploadedAt,
       required this.createdAt,
       required this.updatedAt})
       : _skills = skills,
@@ -306,13 +348,19 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
   }
 
   @override
+  final String? resumeUrl;
+  @override
+  final String? resumeFileName;
+  @override
+  final DateTime? resumeUploadedAt;
+  @override
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'StudentProfileEntity(id: $id, ownerId: $ownerId, photoUrl: $photoUrl, university: $university, degree: $degree, yearOfStudy: $yearOfStudy, location: $location, bio: $bio, careerInterests: $careerInterests, personalStatement: $personalStatement, skills: $skills, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'StudentProfileEntity(id: $id, ownerId: $ownerId, photoUrl: $photoUrl, university: $university, degree: $degree, yearOfStudy: $yearOfStudy, location: $location, bio: $bio, careerInterests: $careerInterests, personalStatement: $personalStatement, skills: $skills, resumeUrl: $resumeUrl, resumeFileName: $resumeFileName, resumeUploadedAt: $resumeUploadedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -337,6 +385,12 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
             (identical(other.personalStatement, personalStatement) ||
                 other.personalStatement == personalStatement) &&
             const DeepCollectionEquality().equals(other._skills, _skills) &&
+            (identical(other.resumeUrl, resumeUrl) ||
+                other.resumeUrl == resumeUrl) &&
+            (identical(other.resumeFileName, resumeFileName) ||
+                other.resumeFileName == resumeFileName) &&
+            (identical(other.resumeUploadedAt, resumeUploadedAt) ||
+                other.resumeUploadedAt == resumeUploadedAt) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -357,6 +411,9 @@ class _$StudentProfileEntityImpl extends _StudentProfileEntity {
       careerInterests,
       personalStatement,
       const DeepCollectionEquality().hash(_skills),
+      resumeUrl,
+      resumeFileName,
+      resumeUploadedAt,
       createdAt,
       updatedAt);
 
@@ -384,6 +441,9 @@ abstract class _StudentProfileEntity extends StudentProfileEntity {
       final String careerInterests,
       final String personalStatement,
       final List<String> skills,
+      final String? resumeUrl,
+      final String? resumeFileName,
+      final DateTime? resumeUploadedAt,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$StudentProfileEntityImpl;
   const _StudentProfileEntity._() : super._();
@@ -410,6 +470,12 @@ abstract class _StudentProfileEntity extends StudentProfileEntity {
   String get personalStatement;
   @override
   List<String> get skills;
+  @override
+  String? get resumeUrl;
+  @override
+  String? get resumeFileName;
+  @override
+  DateTime? get resumeUploadedAt;
   @override
   DateTime get createdAt;
   @override

@@ -45,6 +45,14 @@ class StudentProfileRepositoryImpl implements StudentProfileRepository {
       _datasource.uploadPhoto(profileId, imageBytes);
 
   @override
+  Future<String> uploadResume(
+    String profileId,
+    Uint8List fileBytes,
+    String fileName,
+  ) =>
+      _datasource.uploadResume(profileId, fileBytes, fileName);
+
+  @override
   Stream<StudentProfileEntity?> watchProfileByOwnerId(String ownerId) =>
       _datasource.watchProfileByOwnerId(ownerId).map((model) => model?.toEntity());
 }

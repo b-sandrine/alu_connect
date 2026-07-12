@@ -1,10 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/theme/context_theme_x.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/gradient_header.dart';
 import '../../../../core/widgets/loading_overlay.dart';
@@ -60,6 +64,15 @@ class StudentProfileScreen extends ConsumerWidget {
                     data: (profile) => profile == null
                         ? const _NoProfileYet()
                         : _AboutSection(profile: profile),
+                    orElse: () => const SizedBox.shrink(),
+                  ),
+                  profileAsync.maybeWhen(
+                    data: (profile) => profile == null
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 28),
+                            child: _ResumeSection(profile: profile),
+                          ),
                     orElse: () => const SizedBox.shrink(),
                   ),
                   const SizedBox(height: 24),
@@ -300,6 +313,187 @@ class _AboutSection extends StatelessWidget {
           ),
       ],
     );
+  }
+}
+
+class _ResumeSection extends ConsumerStatefulWidget {
+  const _ResumeSection({required this.profile});
+
+  final StudentProfileEntity profile;
+
+  @override
+  ConsumerState<_ResumeSection> createState() => _ResumeSectionState();
+}
+
+class _ResumeSectionState extends ConsumerState<_ResumeSection> {
+  bool _uploading = false;
+
+  Future<void> _pickAndUpload() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+      withData: true,
+    );
+    final picked = result?.files.single;
+    if (picked == null || picked.bytes == null) return;
+
+    if (picked.bytes!.lengthInBytes > 10 * 1024 * 1024) {
+      if (mounted) AppSnackBar.showError(context, 'Resume must be under 10MB.');
+      return;
+    }
+
+    setState(() => _uploading = true);
+    await ref.read(studentProfileControllerProvider.notifier).uploadResume(
+          widget.profile.id,
+          picked.bytes!,
+          picked.name,
+        );
+    if (!mounted) return;
+    setState(() => _uploading = false);
+
+    final error = ref.read(studentProfileControllerProvider.notifier).getErrorMessage();
+    if (error != null) {
+      AppSnackBar.showError(context, error);
+    } else {
+      AppSnackBar.showSuccess(context, 'Resume uploaded.');
+    }
+  }
+
+  Future<void> _openResume() async {
+    final url = widget.profile.resumeUrl;
+    if (url == null) return;
+    final uri = Uri.parse(url);
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      AppSnackBar.showError(context, 'Could not open resume.');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final profile = widget.profile;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Resume', style: AppTextStyles.titleSmall),
+        const SizedBox(height: 12),
+        if (!profile.hasResume)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Add your resume so startups can review your background alongside your application.',
+                  style: AppTextStyles.bodySmall.copyWith(color: colors.textSecondary),
+                ),
+                const SizedBox(height: 14),
+                FilledButton.icon(
+                  onPressed: _uploading ? null : _pickAndUpload,
+                  icon: _uploading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Icon(Icons.upload_file_outlined),
+                  label: Text(_uploading ? 'Uploading…' : 'Upload resume (PDF)'),
+                ),
+              ],
+            ),
+          )
+        else
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.picture_as_pdf_outlined, color: colors.error),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            profile.resumeFileName ?? 'Resume.pdf',
+                            style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (profile.resumeUploadedAt != null)
+                            Text(
+                              'Uploaded ${_formatDate(profile.resumeUploadedAt!)}',
+                              style: AppTextStyles.caption,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _openResume,
+                        icon: const Icon(Icons.visibility_outlined, size: 18),
+                        label: const Text('Preview'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _openResume,
+                        icon: const Icon(Icons.download_outlined, size: 18),
+                        label: const Text('Download'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton.icon(
+                    onPressed: _uploading ? null : _pickAndUpload,
+                    icon: _uploading
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.refresh, size: 18),
+                    label: Text(_uploading ? 'Uploading…' : 'Replace resume'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 }
 

@@ -47,6 +47,9 @@ class StudentProfileRemoteDatasource {
         careerInterests: profile.careerInterests,
         personalStatement: profile.personalStatement,
         skills: profile.skills,
+        resumeUrl: profile.resumeUrl,
+        resumeFileName: profile.resumeFileName,
+        resumeUploadedAt: profile.resumeUploadedAt,
         createdAt: profile.createdAt,
         updatedAt: profile.updatedAt,
       );
@@ -107,6 +110,26 @@ class StudentProfileRemoteDatasource {
       return downloadUrl;
     } on FirebaseException catch (e) {
       throw StorageException('Photo upload failed: ${e.message}');
+    }
+  }
+
+  Future<String> uploadResume(
+    String profileId,
+    Uint8List fileBytes,
+    String fileName,
+  ) async {
+    try {
+      final ref = _storage.ref().child('${AppConstants.resumesPath}/$profileId.pdf');
+      await ref.putData(fileBytes, SettableMetadata(contentType: 'application/pdf'));
+      final downloadUrl = await ref.getDownloadURL();
+      await _collection.doc(profileId).update({
+        'resumeUrl': downloadUrl,
+        'resumeFileName': fileName,
+        'resumeUploadedAt': Timestamp.now(),
+      });
+      return downloadUrl;
+    } on FirebaseException catch (e) {
+      throw StorageException('Resume upload failed: ${e.message}');
     }
   }
 

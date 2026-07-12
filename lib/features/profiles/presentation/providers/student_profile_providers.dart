@@ -67,6 +67,9 @@ class StudentProfileController
             careerInterests: profile.careerInterests,
             personalStatement: profile.personalStatement,
             skills: profile.skills,
+            resumeUrl: existing.resumeUrl,
+            resumeFileName: existing.resumeFileName,
+            resumeUploadedAt: existing.resumeUploadedAt,
             createdAt: existing.createdAt,
             updatedAt: DateTime.now(),
           ),
@@ -79,6 +82,18 @@ class StudentProfileController
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await _repository.uploadPhoto(profileId, imageBytes);
+      return state.value;
+    });
+  }
+
+  Future<void> uploadResume(
+    String profileId,
+    Uint8List fileBytes,
+    String fileName,
+  ) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await _repository.uploadResume(profileId, fileBytes, fileName);
       return state.value;
     });
   }

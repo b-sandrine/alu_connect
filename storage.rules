@@ -73,6 +73,25 @@ service firebase.storage {
         && request.resource.contentType.matches('image/.*');
     }
 
+    // resumes/{profileId}.pdf — a student's resume. Read restricted to any
+    // signed-in user (not fully public like logos/photos, since a resume
+    // carries more personal detail than a profile picture) — matches how
+    // the student_profiles Firestore doc itself is already readable by any
+    // signed-in user. Write only by the student who owns the referenced
+    // student_profiles/{profileId} doc.
+    function isStudentProfileOwner(profileId) {
+      return request.auth != null
+        && request.auth.uid ==
+           firestore.get(/databases/(default)/documents/student_profiles/$(profileId)).data.ownerId;
+    }
+
+    match /resumes/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if isStudentProfileOwner(fileName.split('.')[0])
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType == 'application/pdf';
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

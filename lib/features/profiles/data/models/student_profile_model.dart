@@ -14,6 +14,9 @@ class StudentProfileModel {
     this.careerInterests = '',
     this.personalStatement = '',
     this.skills = const [],
+    this.resumeUrl,
+    this.resumeFileName,
+    this.resumeUploadedAt,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -29,6 +32,9 @@ class StudentProfileModel {
   final String careerInterests;
   final String personalStatement;
   final List<String> skills;
+  final String? resumeUrl;
+  final String? resumeFileName;
+  final DateTime? resumeUploadedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -46,6 +52,9 @@ class StudentProfileModel {
       careerInterests: data['careerInterests'] as String? ?? '',
       personalStatement: data['personalStatement'] as String? ?? '',
       skills: List<String>.from(data['skills'] as List? ?? []),
+      resumeUrl: data['resumeUrl'] as String?,
+      resumeFileName: data['resumeFileName'] as String?,
+      resumeUploadedAt: (data['resumeUploadedAt'] as Timestamp?)?.toDate(),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
     );
@@ -64,6 +73,9 @@ class StudentProfileModel {
       careerInterests: e.careerInterests,
       personalStatement: e.personalStatement,
       skills: e.skills,
+      resumeUrl: e.resumeUrl,
+      resumeFileName: e.resumeFileName,
+      resumeUploadedAt: e.resumeUploadedAt,
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
     );
@@ -81,6 +93,10 @@ class StudentProfileModel {
       'careerInterests': careerInterests,
       'personalStatement': personalStatement,
       'skills': skills,
+      'resumeUrl': resumeUrl,
+      'resumeFileName': resumeFileName,
+      'resumeUploadedAt':
+          resumeUploadedAt != null ? Timestamp.fromDate(resumeUploadedAt!) : null,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -99,6 +115,9 @@ class StudentProfileModel {
       careerInterests: careerInterests,
       personalStatement: personalStatement,
       skills: skills,
+      resumeUrl: resumeUrl,
+      resumeFileName: resumeFileName,
+      resumeUploadedAt: resumeUploadedAt,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
