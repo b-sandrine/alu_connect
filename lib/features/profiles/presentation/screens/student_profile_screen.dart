@@ -16,6 +16,8 @@ import '../../../../core/widgets/loading_overlay.dart';
 import '../../../../features/authentication/domain/entities/user_entity.dart';
 import '../../../../features/authentication/presentation/providers/auth_controller.dart';
 import '../../../../features/authentication/presentation/providers/auth_providers.dart';
+import '../../../../features/applications/presentation/providers/application_providers.dart';
+import '../../../../features/opportunities/presentation/providers/recommended_opportunities_provider.dart';
 import '../../domain/entities/student_profile_entity.dart';
 import '../providers/student_profile_providers.dart';
 import '../providers/student_profile_stats_provider.dart';
@@ -58,6 +60,8 @@ class StudentProfileScreen extends ConsumerWidget {
                     loading: () => const LoadingIndicator(),
                     error: (e, _) => ErrorView(message: e.toString()),
                   ),
+                  const SizedBox(height: 28),
+                  _RecommendedSection(studentId: user.id),
                   const SizedBox(height: 28),
                   Text('About Me', style: AppTextStyles.titleSmall),
                   const SizedBox(height: 12),
@@ -811,6 +815,182 @@ class _ProjectCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _RecommendedSection extends ConsumerWidget {
+  const _RecommendedSection({required this.studentId});
+
+  final String studentId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final recommendationsAsync = ref.watch(recommendedOpportunitiesProvider(studentId));
+
+    return recommendationsAsync.maybeWhen(
+      data: (recommendations) {
+        if (recommendations.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Recommended For You', style: AppTextStyles.titleSmall),
+            const SizedBox(height: 4),
+            Text(
+              'Based on your skills, location, and interests.',
+              style: AppTextStyles.caption.copyWith(color: colors.textHint),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 236,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: recommendations.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (_, i) => _RecommendedCard(
+                  studentId: studentId,
+                  recommendation: recommendations[i],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _RecommendedCard extends ConsumerWidget {
+  const _RecommendedCard({required this.studentId, required this.recommendation});
+
+  final String studentId;
+  final RecommendedOpportunity recommendation;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final opportunity = recommendation.opportunity;
+    final matchPercent = recommendation.matchPercent;
+    final matchColor = matchPercent >= 80
+        ? colors.success
+        : matchPercent >= 50
+            ? colors.accent
+            : colors.textSecondary;
+
+    final hasAppliedAsync = ref.watch(hasAppliedProvider((
+      applicantId: studentId,
+      opportunityId: opportunity.id,
+    )));
+    final hasApplied = hasAppliedAsync.valueOrNull ?? false;
+
+    return GestureDetector(
+      onTap: () => context.push('/opportunities/${opportunity.id}'),
+      child: Container(
+        width: 240,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: colors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: colors.info.withValues(alpha: 0.12),
+                  backgroundImage: opportunity.startupLogoUrl != null
+                      ? CachedNetworkImageProvider(opportunity.startupLogoUrl!)
+                      : null,
+                  child: opportunity.startupLogoUrl == null
+                      ? Icon(Icons.business, size: 16, color: colors.info)
+                      : null,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    opportunity.startupName,
+                    style: AppTextStyles.labelSmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: matchColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '$matchPercent% Match',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: matchColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              opportunity.title,
+              style: AppTextStyles.titleSmall,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(Icons.location_on_outlined, size: 14, color: colors.textHint),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    opportunity.isRemote ? 'Remote' : opportunity.location,
+                    style: AppTextStyles.caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            if (recommendation.matchedSkills.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children: recommendation.matchedSkills
+                    .take(3)
+                    .map((s) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: colors.success.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            s,
+                            style: AppTextStyles.labelSmall.copyWith(color: colors.success),
+                          ),
+                        ))
+                    .toList(),
+              ),
+            ],
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: hasApplied
+                    ? null
+                    : () => context.push('/opportunities/${opportunity.id}/apply'),
+                child: Text(hasApplied ? 'Applied' : 'Apply'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
